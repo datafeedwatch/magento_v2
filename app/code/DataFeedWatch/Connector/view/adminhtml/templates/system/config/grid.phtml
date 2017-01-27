@@ -1,0 +1,34 @@
+<?php /** @var /DataFeedWatch\Connector\Block\System\Config\Grid $this */ ?>
+<div id="inheritance_grid">
+    <div class="attribute_inheritance_grid_header">
+        <div class="attribute_name"><?php echo __('Name') ?></div>
+        <div class="attribute_import"><?php echo __('Import') ?></div>
+        <div class="attribute_inheritance">
+            <div class="inheritance_child"><?php echo __('Child') ?></div>
+            <div class="inheritance_parent"><?php echo __('Parent') ?></div>
+            <div class="inheritance_child_then_parent"><?php echo __('Child Then Parent') ?></div>
+        </div>
+    </div>
+    <div id="attribute_inheritance_grid_items">
+        <div class="spinner">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+    <p class="note"><?php echo __('Every change is save automatically') ?></p>
+</div>
+
+<script type="text/javascript">
+    require([
+        'jquery',
+        'mage/template',
+        'jquery/ui',
+        'mage/translate'
+    ], function ($) {
+        DataFeedWatchGrid = new DataFeedWatchGrid({
+            "url": '<?php echo $this->getActionUrl() ?>',
+            "saveInheritanceUrl": '<?php echo $this->getSaveInheritanceActionUrl() ?>',
+            "saveImportUrl": '<?php echo $this->getSaveImportActionUrl() ?>',
+            "itemContainer": document.getElementById('attribute_inheritance_grid_items')
+        });
+    });
+</script>

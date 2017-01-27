@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="DataFeedWatch\Connector\Api\ConnectorInterface"
+                type="DataFeedWatch\Connector\Model\Connector"/>
+    <type name="DataFeedWatch\Connector\Logger\Handler\Api">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="DataFeedWatch\Connector\Logger\Handler\Cron">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="DataFeedWatch\Connector\Logger\Handler\Sql">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="DataFeedWatch\Connector\Logger\Api">
+        <arguments>
+            <argument name="name" xsi:type="string">DataFeedWatchConnectorApiLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">DataFeedWatch\Connector\Logger\Handler\Api</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="DataFeedWatch\Connector\Logger\Sql">
+        <arguments>
+            <argument name="name" xsi:type="string">DataFeedWatchConnectorSqlLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">DataFeedWatch\Connector\Logger\Handler\Sql</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="DataFeedWatch\Connector\Logger\Cron">
+        <arguments>
+            <argument name="name" xsi:type="string">DataFeedWatchConnectorCronLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">DataFeedWatch\Connector\Logger\Handler\Cron</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Config\Model\Config">
+        <plugin name="DataFeedWatchConnectorConfigPlugin" type="\DataFeedWatch\Connector\Plugin\ConfigPlugin"/>
+    </type>
+    <type name="Magento\Catalog\Model\Category">
+        <plugin name="DataFeedWatchConnectorCategoryTreePlugin"
+                type="\DataFeedWatch\Connector\Plugin\CategoryTreePlugin"/>
+    </type>
+</config>

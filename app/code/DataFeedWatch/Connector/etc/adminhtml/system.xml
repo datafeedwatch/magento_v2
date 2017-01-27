@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="datafeedwatch" translate="label" sortOrder="100">
+            <label>DataFeedWatch</label>
+        </tab>
+        <section id="datafeedwatch_connector" translate="label" type="text" sortOrder="100" showInDefault="1"
+                 showInWebsite="0" showInStore="0">
+            <label>Settings</label>
+            <tab>datafeedwatch</tab>
+            <resource>DataFeedWatch_Connector::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>General Configuration</label>
+                <field id="connector_open" translate="label" type="label" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Go To My DataFeedWatch</label>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Open</frontend_model>
+                </field>
+                <field id="debug" translate="label comment" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Debug Mode</label>
+                    <comment>
+                        <![CDATA[Debug data will be written to var/log/DataFeedWatch_Connector/. Please save after change]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="connector_refresh" translate="label comment" type="label" sortOrder="30" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Refresh DataFeedWatch Access</label>
+                    <comment>Refresh DataFeedWatch access: SOAP user and role</comment>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Refresh</frontend_model>
+                </field>
+                <field id="connector_add_store" translate="label" type="label" sortOrder="40" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Add Store To DataFeedWatch</label>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Add</frontend_model>
+                </field>
+                <field id="connector_get_all" translate="label" type="label" sortOrder="50" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Get all product data with next download</label>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Extort</frontend_model>
+                </field>
+            </group>
+            <group id="custom_inheritance" translate="label" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="0" showInStore="0">
+                <label>Inheritance</label>
+                <field id="product_url" translate="label comment" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Inherit Product Url In Child Products</label>
+                    <comment>Please save after change</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="image_url" translate="label comment" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Inherit Image Url In Child Products</label>
+                    <comment>Please save after change</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="restore_original_config" translate="label comment" type="label" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Restore Original Config</label>
+                    <comment>Reset Inheritance Logic Configuration</comment>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Restore</frontend_model>
+                </field>
+                <field id="inheritance_grid" translate="label" type="label" sortOrder="30" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Attributes</label>
+                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid</frontend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

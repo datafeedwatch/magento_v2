@@ -1,0 +1,6 @@
+<?php /** @var /DataFeedWatch\Connector\Block\System\Config\Grid\Items $this */ ?>
+<?php $attributeCollection = $this->getCollection(); ?>
+<?php foreach ($attributeCollection as $attribute): ?>
+    <?php echo $this->getItemRow($attribute) ?>
+<?php endforeach; ?>
+<?php echo $this->getPagerHtml() ?>

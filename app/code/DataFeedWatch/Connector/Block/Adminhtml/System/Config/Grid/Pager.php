@@ -1,0 +1,98 @@
+<?php
+/**
+ * Created by Q-Solutions Studio
+ * Date: 29.08.16
+ *
+ * @category    DataFeedWatch
+ * @package     DataFeedWatch_Connector
+ * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ */
+
+namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid;
+
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductAttributeCollectionCollection;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+
+class Pager
+    extends Template
+{
+    /** @var int */
+    public $page = 1;
+    
+    /** @var int */
+    public $limit = 10;
+    
+    /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection */
+    public $attributeCollection;
+    
+    /**
+     * Pager constructor.
+     *
+     * @param Context                              $context
+     * @param array                                $data
+     * @param ProductAttributeCollectionCollection $attributeCollection
+     */
+    public function __construct(Context $context,
+                                array $data = [],
+                                ProductAttributeCollectionCollection $attributeCollection) {
+        $this->attributeCollection = $attributeCollection;
+        parent::__construct($context, $data);
+    }
+    
+    /**
+     * @return ProductAttributeCollectionCollection
+     */
+    public function getCollection() {
+        $this->attributeCollection->addVisibleFilter()->setPageSize($this->limit)
+                                  ->setCurPage($this->page);
+        $this->attributeCollection->getSelect()
+                                  ->where('additional_table.can_configure_inheritance != 0 and additional_table.import_to_dfw != 0 or additional_table.can_configure_inheritance = 1');
+        $this->attributeCollection->setOrder('frontend_label', 'asc');
+        $this->attributeCollection->load();
+        
+        return $this->attributeCollection;
+    }
+    
+    /**
+     * @param int $page
+     *
+     * @return $this
+     */
+    public function setPage($page) {
+        if (!empty($page) && is_numeric($page)) {
+            $this->page = $page;
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getPage() {
+        
+        return (int) $this->page;
+    }
+    
+    /**
+     * @param int $limit
+     *
+     * @return $this
+     */
+    public function setLimit($limit) {
+        if (!empty($limit) && is_numeric($limit)) {
+            $this->limit = $limit;
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @return int
+     */
+    public function getLimit() {
+        
+        return (int) $this->limit;
+    }
+}

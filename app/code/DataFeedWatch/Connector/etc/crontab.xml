@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="datafeedwatch_connector">
+        <job name="datafeedwatch_connector_fill_updated_at_table"
+             instance="DataFeedWatch\Connector\Cron\FillUpdatedAtTable" method="execute">
+            <schedule>0 * * * *</schedule>
+        </job>
+    </group>
+</config>

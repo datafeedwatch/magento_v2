@@ -1,0 +1,60 @@
+<?php /** @var DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Pager $this */ ?>
+<span class="inheritance_pager">
+    <span class="page">
+    <?php echo __('Page') ?>
+        <?php $currentPage = $this->getPage(); ?>
+        <?php $currentLimit = $this->getLimit(); ?>
+        <?php $lastPage = $this->getCollection()->getLastPageNumber(); ?>
+    
+        <?php if ($currentPage > 1): ?>
+            <button class="action-previous"
+                    type="button"
+                    onclick="DataFeedWatchGrid.getInheritanceGrid(<?php echo sprintf('%d, %d', $currentPage - 1, $currentLimit); ?>);return false;">
+                        <span><?php echo __('Previous page') ?></span>
+            </button>
+        <?php else: ?>
+            <button type="button"
+                    class="action-previous disabled"><span><?php echo __('Previous page') ?></span></button>
+        <?php endif; ?>
+    
+        <input type="text" name="page" value="<?php echo $currentPage; ?>" class="input-text page"
+               onkeyup="DataFeedWatchGrid.getInheritanceGrid(this.value, <?php echo $currentLimit; ?>)"/>
+    
+        <?php if ($currentPage < $lastPage): ?>
+            <button type="button"
+                    title="<?php echo __('Next page'); ?>"
+                    class="action-next"
+                    onclick="DataFeedWatchGrid.getInheritanceGrid(<?php echo sprintf('%d, %d', $currentPage + 1, $currentLimit); ?>);return false;">
+                        <span><?php echo __('Next page') ?></span>
+            </button>
+        <?php else: ?>
+            <button type="button" class="action-next disabled"><span><?php echo __('Next page') ?></span></button>
+        <?php endif; ?>
+        <?php echo __('of %1 pages', $this->getCollection()->getLastPageNumber()); ?>
+    </span>
+    <span class="limit">
+    <?php echo __('View'); ?>
+        <select name="limit" onchange="DataFeedWatchGrid.getInheritanceGrid(<?php echo $currentPage; ?>, this.value)">
+            <option
+                value="5"<?php if ($this->getCollection()->getPageSize() == 5): ?> selected="selected"<?php endif; ?>>5</option>
+            <option
+                value="10"<?php if ($this->getCollection()->getPageSize() == 10): ?> selected="selected"<?php endif; ?>>10</option>
+            <option
+                value="20"<?php if ($this->getCollection()->getPageSize() == 20): ?> selected="selected"<?php endif; ?>>20</option>
+            <option
+                value="50"<?php if ($this->getCollection()->getPageSize() == 50): ?> selected="selected"<?php endif; ?>>50</option>
+            <option
+                value="100"<?php if ($this->getCollection()->getPageSize() == 100): ?> selected="selected"<?php endif; ?>>100</option>
+            <option
+                value="200"<?php if ($this->getCollection()->getPageSize() == 200): ?> selected="selected"<?php endif; ?>>200</option>
+            <option
+                value="500"<?php if ($this->getCollection()->getPageSize() == 500): ?> selected="selected"<?php endif; ?>>500</option>
+        </select>
+        <?php echo __('per page') ?>
+    </span>
+    <span class="total_of">
+    <?php echo __('Total %1 records found', $this->getCollection()->getSize()); ?>
+        <span id="dfw_grid_inheritance_total_count"
+              class="no-display"><?php echo $this->getCollection()->getSize(); ?></span>
+    </span>
+</span>

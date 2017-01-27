@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="formkey"/>
+    <update handle="adminhtml_cache_block"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items" name="datafeed.grid.items"
+                   template="DataFeedWatch_Connector::system/config/grid/items.phtml">
+                <block class="DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Pager"
+                       name="datafeed.grid.pager" template="DataFeedWatch_Connector::system/config/grid/pager.phtml"/>
+                <block class="DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items\Row"
+                       name="datafeed.grid.items.row"
+                       template="DataFeedWatch_Connector::system/config/grid/items/row.phtml"/>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
