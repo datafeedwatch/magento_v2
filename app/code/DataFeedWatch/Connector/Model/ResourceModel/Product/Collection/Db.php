@@ -100,7 +100,6 @@ class Db
         \Magento\Customer\Api\GroupManagementInterface $groupManagement,
         \DataFeedWatch\Connector\Helper\Registry $registryHelper,
         \Magento\Framework\Registry $registry,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeConfigurable,
         \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron,
