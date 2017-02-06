@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Model;
 
 use DataFeedWatch\Connector\Api\ConnectorInterface;
 
-class Connector
-    implements ConnectorInterface
+class Connector implements ConnectorInterface
 {
     const MODULE_NAME = 'DataFeedWatch_Connector';
     
@@ -45,7 +44,8 @@ class Connector
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $productCollection,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
-        \DataFeedWatch\Connector\Model\Api\User $dfwApiUser) {
+        \DataFeedWatch\Connector\Model\Api\User $dfwApiUser
+    ) {
 
         $this->moduleList           = $moduleList;
         $this->logger               = $logger;
@@ -59,7 +59,8 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function version() {
+    public function version()
+    {
         $this->logger->debug('datafeedwatch.version');
         $version = $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
         $this->logger->debug($version);
@@ -70,8 +71,9 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function gmt_offset() {
-        $this->logger->debug('datafeedwatch.gmt_offset');
+    public function gmtOffset()
+    {
+        $this->logger->debug('datafeedwatch.gmtOffset');
         $timeZone = $this->scopeConfig->getValue('general/locale/timezone');
         $timeZone = new \DateTimeZone($timeZone);
         $time     = new \DateTime('now', $timeZone);
@@ -84,19 +86,22 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function stores() {
+    public function stores()
+    {
         $this->logger->debug('datafeedwatch.stores');
         $storeViews = $this->getStoresArray();
         $this->logger->debug($storeViews);
 
-        return array($storeViews);
+        return [$storeViews];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function products($store = null, $type = array(), $status = null, $perPage = 100, $page = 1) {
+    public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    {
         $this->logger->debug('datafeedwatch.products');
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
@@ -107,12 +112,14 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function product_count($store = null, $type = array(), $status = null, $perPage = 100, $page = 1) {
-        $this->logger->debug('datafeedwatch.product_count');
+    public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    {
+        $this->logger->debug('datafeedwatch.productCount');
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
         $collection = $this->getProductCollection($options);
         $amount     = (int) $collection->getSize();
-        $this->logger->debug(sprintf('datafeedwatch.product_count %d', $amount));
+        $this->logger->debug(sprintf('datafeedwatch.productCount %d', $amount));
 
         return $amount;
     }
@@ -120,8 +127,17 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function updated_products($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1) {
-        $this->logger->debug('datafeedwatch.updated_products');
+    public function updatedProducts(
+        $store = null, 
+        $type = [], 
+        $status = null, 
+        $timezone = null, 
+        $fromDate = null, 
+        $perPage = 100, 
+        $page = 1
+    ) {
+        $this->logger->debug('datafeedwatch.updatedProducts');
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
@@ -129,7 +145,7 @@ class Connector
 
             return $this->processProducts($collection);
         } else {
-            $this->logger->debug('datafeedwatch.updated_products -> datafeedwatch.products');
+            $this->logger->debug('datafeedwatch.updatedProducts -> datafeedwatch.products');
 
             return $this->products($options);
         }
@@ -138,16 +154,25 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function updated_product_count($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1) {
-        $this->logger->debug('datafeedwatch.updated_product_count');
+    public function updatedProductCount(
+        $store = null, 
+        $type = [], 
+        $status = null, 
+        $timezone = null, 
+        $fromDate = null, 
+        $perPage = 100, 
+        $page = 1
+    ) {
+        $this->logger->debug('datafeedwatch.updatedProductCount');
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
-            $this->logger->debug(sprintf('datafeedwatch.updated_product_count %d', $amount));
+            $this->logger->debug(sprintf('datafeedwatch.updatedProductCount %d', $amount));
         } else {
-            $this->logger->debug('datafeedwatch.updated_product_count -> datafeedwatch.product_count');
-            $amount = $this->product_count($options);
+            $this->logger->debug('datafeedwatch.updatedProductCount -> datafeedwatch.productCount');
+            $amount = $this->productCount($options);
         }
 
         return $amount;
@@ -156,9 +181,17 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function product_ids($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1) {
-        $options = array();
-        $this->logger->debug('datafeedwatch.product_ids');
+    public function productIds(
+        $store = null, 
+        $type = [], 
+        $status = null, 
+        $timezone = null, 
+        $fromDate = null, 
+        $perPage = 100, 
+        $page = 1
+    ) {
+        $options = [];
+        $this->logger->debug('datafeedwatch.productIds');
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         $collection = $this->getProductCollection($options);
 
@@ -168,7 +201,7 @@ class Connector
     /**
      * {@inheritdoc}
      */
-    public function revoke_access_token($token = null)
+    public function revokeAccessToken($token = null)
     {
         return $this->dfwApiUser->revokeDfwUserAccessTokens($token);
     }
@@ -176,16 +209,17 @@ class Connector
     /**
      * @return array
      */
-    protected function getStoresArray() {
-        $storeViews = array();
+    protected function getStoresArray()
+    {
+        $storeViews = [];
         foreach ($this->storeManager->getWebsites() as $website) {
             foreach ($website->getGroups() as $group) {
                 foreach ($group->getStores() as $store) {
-                    $storeViews[$store->getCode()] = array(
+                    $storeViews[$store->getCode()] = [
                         'Website'       => $website->getName(),
                         'Store'         => $group->getName(),
                         'Store View'    => $store->getName(),
-                    );
+                    ];
                 }
             }
         }
@@ -197,7 +231,8 @@ class Connector
      * @param array $options
      * @return \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection
      */
-    public function getProductCollection($options) {
+    public function getProductCollection($options)
+    {
         /** @var \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->productCollection->addAttributeToSelect('*');
         $collection->applyFiltersOnCollection($options);
@@ -214,20 +249,29 @@ class Connector
      * @param int  $perPage
      * @param int  $page
      */
-    public function filterOptions(&$options, $store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1) {
-        if (!is_null($store) && is_string($store)) {
+    public function filterOptions(
+        &$options, 
+        $store = null, 
+        $type = [], 
+        $status = null, 
+        $timezone = null, 
+        $fromDate = null, 
+        $perPage = 100, 
+        $page = 1
+    ) {
+        if ($store !== null && is_string($store)) {
             $options['store'] = $store;
         }
-        if (!is_null($type) && is_array($type)) {
+        if ($type !== null && is_array($type)) {
             $options['type'] = $type;
         }
-        if (!is_null($status) && is_string($status)) {
+        if ($status !== null && is_string($status)) {
             $options['status'] = $status;
         }
-        if (!is_null($timezone) && is_string($timezone)) {
+        if ($timezone !== null && is_string($timezone)) {
             $options['timezone'] = $timezone;
         }
-        if (!is_null($fromDate) && is_string($fromDate)) {
+        if ($fromDate !== null && is_string($fromDate)) {
             $options['from_date'] = $fromDate;
         }
         $options['per_page'] = (int)$perPage;
@@ -257,13 +301,14 @@ class Connector
     /**
      * @param array $options
      */
-    public function filterStoreOption(&$options) {
+    public function filterStoreOption(&$options)
+    {
         $existingStoreViews = array_keys($this->getStoresArray());
         if (isset($options['store']) && !in_array($options['store'], $existingStoreViews)) {
             $message = 'The store view %s does not exist. Default store will be applied';
             $this->logger->debug(sprintf($message, $options['store']));
             $options['store'] = $this->storeManager->getStore()->getCode();
-        } else if(!isset($options['store'])) {
+        } elseif (!isset($options['store'])) {
             $message = 'The store not specified. Default store has been applied';
             $this->logger->debug($message);
             $options['store'] = $this->storeManager->getStore()->getCode();
@@ -274,16 +319,17 @@ class Connector
     /**
      * @param array $options
      */
-    public function filterTypeOption(&$options) {
+    public function filterTypeOption(&$options)
+    {
         $types          = $options['type'];
-        $magentoTypes   = array(
+        $magentoTypes   = [
             \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
             \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE,
             \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
             \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE,
             \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
             \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE,
-        );
+        ];
         $types = array_map('strtolower', $types);
         $types = array_intersect($types, $magentoTypes);
         if (!empty($types)) {
@@ -298,11 +344,12 @@ class Connector
     /**
      * @param array $options
      */
-    public function filterStatusOption(&$options) {
+    public function filterStatusOption(&$options)
+    {
         $status = (string) $options['status'];
         if ($status === '0') {
             $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
-        } else if ($status === '1') {
+        } elseif ($status === '1') {
             $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
         } else {
             $message = 'The status %s does not exist';
@@ -314,7 +361,8 @@ class Connector
     /**
      * @param array $options
      */
-    public function filterTimeZoneOption(&$options) {
+    public function filterTimeZoneOption(&$options)
+    {
         try {
             $options['timezone'] = new \DateTimeZone($options['timezone']);
         } catch (\Exception $e) {
@@ -326,7 +374,8 @@ class Connector
     /**
      * @param array $options
      */
-    public function filterFromDateOption(&$options) {
+    public function filterFromDateOption(&$options)
+    {
         if (!isset($options['timezone'])) {
             $options['timezone'] = null;
         }
@@ -343,8 +392,9 @@ class Connector
      *
      * @return array
      */
-    protected function processProducts($collection) {
-        $products = array();
+    protected function processProducts($collection)
+    {
+        $products = [];
         foreach ($collection as $product) {
             $products[] = $product->getDataToImport();
         }
@@ -356,7 +406,8 @@ class Connector
      * @param array $options
      * @return bool
      */
-    protected function isFromDateEarlierThanConfigDate($options) {
+    protected function isFromDateEarlierThanConfigDate($options)
+    {
         $this->logger->debug('START: Model/Api.php->isFromDateEarlierThanConfigDate()');
         if (!isset($options['from_date'])) {
             $this->logger->debug('$options[\'from_date\'] is not set');

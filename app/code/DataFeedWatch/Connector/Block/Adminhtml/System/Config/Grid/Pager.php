@@ -14,8 +14,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductA
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
-class Pager
-    extends Template
+class Pager extends Template
 {
     /** @var int */
     public $page = 1;
@@ -25,29 +24,36 @@ class Pager
     
     /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection */
     public $attributeCollection;
-    
+
     /**
      * Pager constructor.
      *
      * @param Context                              $context
-     * @param array                                $data
      * @param ProductAttributeCollectionCollection $attributeCollection
+     * @param array                                $data
      */
-    public function __construct(Context $context,
-                                array $data = [],
-                                ProductAttributeCollectionCollection $attributeCollection) {
+    public function __construct(
+        Context $context,
+        ProductAttributeCollectionCollection $attributeCollection,
+        array $data = []
+    ) {
         $this->attributeCollection = $attributeCollection;
         parent::__construct($context, $data);
     }
-    
+
     /**
      * @return ProductAttributeCollectionCollection
      */
-    public function getCollection() {
+    public function getCollection()
+    {
         $this->attributeCollection->addVisibleFilter()->setPageSize($this->limit)
                                   ->setCurPage($this->page);
         $this->attributeCollection->getSelect()
-                                  ->where('additional_table.can_configure_inheritance != 0 and additional_table.import_to_dfw != 0 or additional_table.can_configure_inheritance = 1');
+                                  ->where(
+                                      'additional_table.can_configure_inheritance != 0 
+                                      and additional_table.import_to_dfw != 0 
+                                      or additional_table.can_configure_inheritance = 1'
+                                  );
         $this->attributeCollection->setOrder('frontend_label', 'asc');
         $this->attributeCollection->load();
         
@@ -59,7 +65,8 @@ class Pager
      *
      * @return $this
      */
-    public function setPage($page) {
+    public function setPage($page)
+    {
         if (!empty($page) && is_numeric($page)) {
             $this->page = $page;
         }
@@ -70,7 +77,8 @@ class Pager
     /**
      * @return int
      */
-    public function getPage() {
+    public function getPage()
+    {
         
         return (int) $this->page;
     }
@@ -80,7 +88,8 @@ class Pager
      *
      * @return $this
      */
-    public function setLimit($limit) {
+    public function setLimit($limit)
+    {
         if (!empty($limit) && is_numeric($limit)) {
             $this->limit = $limit;
         }
@@ -91,7 +100,8 @@ class Pager
     /**
      * @return int
      */
-    public function getLimit() {
+    public function getLimit()
+    {
         
         return (int) $this->limit;
     }

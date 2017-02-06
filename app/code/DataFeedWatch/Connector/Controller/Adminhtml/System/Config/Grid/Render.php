@@ -13,13 +13,13 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class  Render
-    extends Grid
+class Render extends Grid
 {
     /**
      * @return \Magento\Backend\Model\View\Result\Page
      */
-    public function execute() {
+    public function execute()
+    {
         try {
             $page  = $this->getRequest()->getParam('page');
             $limit = $this->getRequest()->getParam('limit');

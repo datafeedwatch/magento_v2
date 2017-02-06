@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
-class Restore
-    extends Field
+class Restore extends Field
 {
     /**
      * @param AbstractElement $element
@@ -22,7 +21,8 @@ class Restore
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getElementHtml(AbstractElement $element) {
+    protected function _getElementHtml(AbstractElement $element)
+    {
         $url     = $this->getUrl('datafeedwatch/system_config_button/restore');
         $onclick = sprintf("setLocation('%s')", $url);
         $html    = $this->getLayout()

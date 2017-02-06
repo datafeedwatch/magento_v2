@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Model\ResourceModel;
 
 use Magento\Catalog\Model\ResourceModel\Product as coreProduct;
 
-class Product
-    extends coreProduct
+class Product extends coreProduct
 {
     
 }

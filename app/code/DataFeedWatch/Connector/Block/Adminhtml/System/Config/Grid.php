@@ -13,34 +13,37 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
-class Grid
-    extends Field
+class Grid extends Field
 {
     /**
      * @return string
      */
-    public function getActionUrl() {
+    public function getActionUrl()
+    {
         return $this->getUrl('datafeedwatch/system_config_grid/render');
     }
     
     /**
      * @return string
      */
-    public function getSaveInheritanceActionUrl() {
+    public function getSaveInheritanceActionUrl()
+    {
         return $this->getUrl('datafeedwatch/system_config_grid/saveInheritance');
     }
     
     /**
      * @return string
      */
-    public function getSaveImportActionUrl() {
+    public function getSaveImportActionUrl()
+    {
         return $this->getUrl('datafeedwatch/system_config_grid/saveImport');
     }
     
     /**
      * @return $this
      */
-    protected function _prepareLayout() {
+    protected function _prepareLayout()
+    {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
             $this->setTemplate('system/config/grid.phtml');
@@ -54,7 +57,8 @@ class Grid
      *
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element) {
+    protected function _getElementHtml(AbstractElement $element)
+    {
         
         return $this->_toHtml();
     }

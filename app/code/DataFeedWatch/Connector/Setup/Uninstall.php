@@ -16,8 +16,7 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
 use Magento\TestFramework\Inspection\Exception;
 
-class Uninstall
-    implements UninstallInterface
+class Uninstall implements UninstallInterface
 {
     /** @var \DataFeedWatch\Connector\Model\Api\User */
     private $apiUser;
@@ -29,8 +28,10 @@ class Uninstall
      * @param \Magento\Eav\Setup\EavSetup             $eavSetup
      * @param \DataFeedWatch\Connector\Model\Api\User $apiUser
      */
-    public function __construct(\Magento\Eav\Setup\EavSetup $eavSetup,
-                                \DataFeedWatch\Connector\Model\Api\User $apiUser) {
+    public function __construct(
+        \Magento\Eav\Setup\EavSetup $eavSetup,
+        \DataFeedWatch\Connector\Model\Api\User $apiUser
+    ) {
         $this->apiUser  = $apiUser;
         $this->eavSetup = $eavSetup;
     }
@@ -39,8 +40,10 @@ class Uninstall
      * @param SchemaSetupInterface   $setup
      * @param ModuleContextInterface $context
      */
-    public function uninstall(SchemaSetupInterface $setup,
-                              ModuleContextInterface $context) {
+    public function uninstall(
+        SchemaSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
         $connection = $setup->getConnection();
         
         $this->apiUser->deleteUserAndRole();

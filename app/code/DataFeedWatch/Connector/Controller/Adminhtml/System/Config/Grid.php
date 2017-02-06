@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 
-abstract class Grid
-    extends Action
+abstract class Grid extends Action
 {
     /**
      * Authorization level of a basic admin session

@@ -26,8 +26,7 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 /**
  * @codeCoverageIgnore
  */
-class InstallData
-    implements InstallDataInterface
+class InstallData implements InstallDataInterface
 {
     /** @var EavSetupFactory */
     private $eavSetupFactory;
@@ -63,14 +62,16 @@ class InstallData
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurable
      * @param ModuleDataSetupInterface                                                   $setup
      */
-    public function __construct(EavSetupFactory $eavSetupFactory,
-                                AttributeRepositoryInterface $attributeRepository,
-                                DataHelper $dataHelper,
-                                \DataFeedWatch\Connector\Model\Api\User $apiUser,
-                                \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron,
-                                \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
-                                \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurable,
-                                ModuleDataSetupInterface $setup) {
+    public function __construct(
+        EavSetupFactory $eavSetupFactory,
+        AttributeRepositoryInterface $attributeRepository,
+        DataHelper $dataHelper,
+        \DataFeedWatch\Connector\Model\Api\User $apiUser,
+        \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
+        \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurable,
+        ModuleDataSetupInterface $setup
+    ) {
         $this->eavSetupFactory     = $eavSetupFactory;
         $this->attributeRepository = $attributeRepository;
         $this->dataHelper          = $dataHelper;
@@ -85,7 +86,8 @@ class InstallData
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface   $context
      */
-    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context) {
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    {
         $this->setup = $setup;
         
         $this->installApiUser();
@@ -94,17 +96,20 @@ class InstallData
         $this->cron->execute();
     }
     
-    protected function installApiUser() {
+    protected function installApiUser()
+    {
         $this->apiUser->loadDfwUser();
         $this->apiUser->createDfwUser();
     }
     
-    protected function installAttributes() {
+    protected function installAttributes()
+    {
         $this->installIgnoreDataFeedAttribute();
         $this->installDfwParentIdsAttribute();
     }
     
-    protected function installIgnoreDataFeedAttribute() {
+    protected function installIgnoreDataFeedAttribute()
+    {
         $properties = [
             'type'                     => 'int',
             'label'                    => 'Ignore In DataFeedWatch',
@@ -131,7 +136,8 @@ class InstallData
         $this->createAttribute('ignore_datafeedwatch', $properties);
     }
     
-    protected function installDfwParentIdsAttribute() {
+    protected function installDfwParentIdsAttribute()
+    {
         $properties = [
             'type'                     => 'varchar',
             'label'                    => 'dfw_parent_ids',
@@ -171,7 +177,8 @@ class InstallData
      * @param array  $attributeProperties
      * @param string $entityType
      */
-    protected function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY) {
+    protected function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY)
+    {
         $this->setup->startSetup();
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->setup]);

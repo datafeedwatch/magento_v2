@@ -26,7 +26,7 @@ interface ConnectorInterface
      * @api
      * @return int
      */
-    public function gmt_offset();
+    public function gmtOffset();
 
     /**
      * Retrieve stores
@@ -49,7 +49,7 @@ interface ConnectorInterface
      *
      * @return string[]
      */
-    public function products($store = null, $type = array(), $status = null, $perPage = 100, $page = 1);
+    public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1);
 
     /**
      * Retrieve product count
@@ -64,7 +64,7 @@ interface ConnectorInterface
      *
      * @return int
      */
-    public function product_count($store = null, $type = array(), $status = null, $perPage = 100, $page = 1);
+    public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1);
 
     /**
      * Retrieve products based on last update
@@ -81,7 +81,15 @@ interface ConnectorInterface
      *
      * @return string[]
      */
-    public function updated_products($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1);
+    public function updatedProducts(
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
+        $page = 1
+    );
 
     /**
      * Retrieve product count based on last update
@@ -98,7 +106,15 @@ interface ConnectorInterface
      *
      * @return int
      */
-    public function updated_product_count($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1);
+    public function updatedProductCount(
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
+        $page = 1
+    );
 
     /**
      * Retrieve Product Ids
@@ -115,7 +131,15 @@ interface ConnectorInterface
      *
      * @return string[]
      */
-    public function product_ids($store = null, $type = array(), $status = null, $timezone = null, $fromDate = null, $perPage = 100, $page = 1);
+    public function productIds(
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
+        $page = 1
+    );
 
     /**
      * revoke DFW admin user
@@ -126,5 +150,5 @@ interface ConnectorInterface
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function revoke_access_token($token = null);
+    public function revokeAccessToken($token = null);
 }

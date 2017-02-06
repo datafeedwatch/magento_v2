@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
-class Inheritance
-    implements ArrayInterface
+class Inheritance implements ArrayInterface
 {
     const CHILD_OPTION_ID                = 1;
     const CHILD_OPTION_LABEL             = 'Child';
@@ -27,7 +26,8 @@ class Inheritance
      *
      * @return array
      */
-    public function toOptionArray() {
+    public function toOptionArray()
+    {
         return [
             [
                 'value' => self::CHILD_OPTION_ID,
@@ -49,7 +49,8 @@ class Inheritance
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         return [
             self::CHILD_OPTION_ID             => __(self::CHILD_OPTION_LABEL),
             self::PARENT_OPTION_ID            => __(self::PARENT_OPTION_LABEL),

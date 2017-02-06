@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Logger;
 
 use Monolog\Logger;
 
-class Api
-    extends Logger
+class Api extends Logger
 {
     
 }

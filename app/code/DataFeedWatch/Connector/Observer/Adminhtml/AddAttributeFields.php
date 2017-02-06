@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Observer\Adminhtml;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
-class AddAttributeFields
-    implements ObserverInterface
+class AddAttributeFields implements ObserverInterface
 {
     /** @var \Magento\Config\Model\Config\Source\YesnoFactory */
     private $yesNoFactory;
@@ -28,9 +27,11 @@ class AddAttributeFields
      * @param \Magento\Framework\Registry                                     $registry
      * @param \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance $inheritance
      */
-    public function __construct(\Magento\Config\Model\Config\Source\YesnoFactory $yesnoFactory,
-                                \Magento\Framework\Registry $registry,
-                                \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance $inheritance) {
+    public function __construct(
+        \Magento\Config\Model\Config\Source\YesnoFactory $yesnoFactory,
+        \Magento\Framework\Registry $registry,
+        \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance $inheritance
+    ) {
         
         $this->yesNoFactory = $yesnoFactory;
         $this->registry     = $registry;
@@ -40,7 +41,8 @@ class AddAttributeFields
     /**
      * @param EventObserver $observer
      */
-    public function execute(EventObserver $observer) {
+    public function execute(EventObserver $observer)
+    {
         /** @var \Magento\Framework\Data\Form $form */
         $form      = $observer->getForm();
         $fieldSet  = $form->getElement('base_fieldset');

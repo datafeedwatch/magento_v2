@@ -13,13 +13,13 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class  SaveImport
-    extends Grid
+class SaveImport extends Grid
 {
     /**
      * @return \Magento\Backend\Model\View\Result\Page
      */
-    public function execute() {
+    public function execute()
+    {
         try {
             $attributeCode = $this->getRequest()->getParam('attribute_code');
             $value         = $this->getRequest()->getParam('value');

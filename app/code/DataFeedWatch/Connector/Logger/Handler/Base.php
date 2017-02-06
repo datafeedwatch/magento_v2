@@ -15,8 +15,7 @@ use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Logger\Handler\Base as BaseHandler;
 use Monolog\Logger;
 
-abstract class Base
-    extends BaseHandler
+abstract class Base extends BaseHandler
 {
     /** @var DataHelper */
     private $dataHelper;
@@ -50,7 +49,8 @@ abstract class Base
         parent::__construct($filesystem, $filePath);
     }
     
-    public function write(array $record) {
+    public function write(array $record)
+    {
         if ($this->dataHelper->isDebugModeEnabled()) {
             parent::write($record);
         }

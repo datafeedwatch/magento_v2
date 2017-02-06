@@ -14,12 +14,11 @@ use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Model\Api\User as ApiUser;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Refresh
-    extends Button
+class Refresh extends Button
 {
-    public function execute() {
+    public function execute()
+    {
         try {
-            
             $apiUser = $this->apiUser;
             $apiUser->loadDfwUser();
             $apiUser->createDfwUser();

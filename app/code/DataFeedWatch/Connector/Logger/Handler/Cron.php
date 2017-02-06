@@ -10,8 +10,7 @@
 
 namespace DataFeedWatch\Connector\Logger\Handler;
 
-class Cron
-    extends Base
+class Cron extends Base
 {
     /** @var string */
     protected $dirName = 'cron';

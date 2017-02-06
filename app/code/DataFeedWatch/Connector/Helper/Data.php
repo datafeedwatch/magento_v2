@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Helper;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
 use Magento\Framework\App\Helper\AbstractHelper;
 
-class Data
-    extends AbstractHelper
+class Data extends AbstractHelper
 {
     const MY_DATA_FEED_WATCH_URL               = 'https://my.datafeedwatch.com/';
     const DEBUG_XPATH                          = 'datafeedwatch_connector/general/debug';
@@ -42,12 +41,13 @@ class Data
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface                  $appConfig
      * @param \Magento\Framework\App\Cache\Frontend\Pool                               $cacheFrontendPool
      */
-    public function __construct(\Magento\Framework\App\Helper\Context $context,
-                                \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $collectionFactory,
-                                \Magento\Config\Model\ResourceModel\Config $resourceConfig,
-                                \Magento\Framework\App\Config\ReinitableConfigInterface $appConfig,
-                                \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool)
-    {
+    public function __construct(
+        \Magento\Framework\App\Helper\Context $context,
+        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $collectionFactory,
+        \Magento\Config\Model\ResourceModel\Config $resourceConfig,
+        \Magento\Framework\App\Config\ReinitableConfigInterface $appConfig,
+        \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
+    ) {
         $this->collectionFactory = $collectionFactory;
         $this->resourceConfig    = $resourceConfig;
         $this->appConfig         = $appConfig;

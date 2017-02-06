@@ -10,13 +10,14 @@
 
 namespace DataFeedWatch\Connector\Model;
 
+use DataFeedWatch\Connector\Helper\Registry;
+use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance;
 use Magento\Catalog\Model\Product as coreProduct;
 
-class Product
-    extends coreProduct
+class Product extends coreProduct
 {
     /** @var array $importData */
-    protected $importData = array();
+    protected $importData = [];
     protected $dataHelper;
     protected $registryHelper;
     protected $priceCurrency;
@@ -58,7 +59,7 @@ class Product
         \Magento\Framework\Api\DataObjectHelper $dataObjectHelper,
         \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
-        \DataFeedWatch\Connector\Helper\Registry $registryHelper,
+        Registry $registryHelper,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Catalog\Helper\Data $catalogHelper,
         array $data = []
@@ -106,7 +107,8 @@ class Product
         );
     }
 
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('DataFeedWatch\Connector\Model\ResourceModel\Product');
     }
 
@@ -120,6 +122,7 @@ class Product
         if ($this->registryHelper->isStatusAttributeInheritable()) {
             $this->setStatus($this->getFilterStatus());
         }
+        /** @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface $date */
         $date = $this->getRuleDate();
         $date = new \DateTime($date);
         $this->setUpdatedAt($date->format('Y-m-d H:i:s'));
@@ -177,16 +180,18 @@ class Product
         return $this->importData;
     }
 
-    public function isConfigurable() {
+    public function isConfigurable()
+    {
         return $this->getTypeId() === \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE;
     }
 
     /**
      * @return $this
      */
-    protected function fillAllAttributesData() {
+    protected function fillAllAttributesData()
+    {
         $productAttributes = array_keys($this->getAttributes());
-        $attributeCollection = $this->_registry->registry(\DataFeedWatch\Connector\Helper\Registry::ALL_IMPORTABLE_ATTRIBUTES_KEY);
+        $attributeCollection = $this->_registry->registry(Registry::ALL_IMPORTABLE_ATTRIBUTES_KEY);
         foreach ($attributeCollection as $attribute) {
             $attributeCode = $attribute->getAttributeCode();
             if (empty($attributeCode) || !in_array($attributeCode, $productAttributes)) {
@@ -209,7 +214,8 @@ class Product
      * @param bool $withTax
      * @return float
      */
-    protected function getImportPrice($withTax = false) {
+    protected function getImportPrice($withTax = false)
+    {
         $price = round($this->priceCurrency->convert($this->getFinalPrice()), 2);
         return $this->catalogHelper->getTaxPrice($this, $price, $withTax);
     }
@@ -218,18 +224,19 @@ class Product
      * @param bool $withTax
      * @return float
      */
-    protected function getImportSpecialPrice($withTax = false) {
+    protected function getImportSpecialPrice($withTax = false)
+    {
         return $this->catalogHelper->getTaxPrice($this, $this->getSpecialPrice(), $withTax);
     }
 
     /**
      * @return string|null
      */
-    protected function getBaseImageUrl() {
+    protected function getBaseImageUrl()
+    {
         $this->load('image');
         $image = $this->getImage();
         if ($image !== 'no_selection' && !empty($image)) {
-
             return $this->getMediaConfig()->getMediaUrl($image);
         }
 
@@ -239,12 +246,13 @@ class Product
     /**
      * @return $this
      */
-    protected function getCategoryPathToImport() {
+    protected function getCategoryPathToImport()
+    {
         $index = '';
-        $categoriesCollection = $this->_registry->registry(\DataFeedWatch\Connector\Helper\Registry::ALL_CATEGORIES_ARRAY_KEY);
+        $categoriesCollection = $this->_registry->registry(Registry::ALL_CATEGORIES_ARRAY_KEY);
         foreach ($this->getCategoryCollection()->addNameToResult() as $category) {
 
-            $categoryName = array();
+            $categoryName = [];
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
                 if (isset($categoriesCollection[$categoryId])) {
@@ -265,9 +273,10 @@ class Product
      * @param bool $isParent
      * @return array
      */
-    protected function getCategoriesNameToImport($isParent = false) {
+    protected function getCategoriesNameToImport($isParent = false)
+    {
         $index = '';
-        $names = array();
+        $names = [];
         foreach ($this->getCategoryCollection()->addNameToResult() as $category) {
             $key            = $isParent ? 'category_parent_name' : 'category_name';
             $key            .= $index++;
@@ -280,7 +289,8 @@ class Product
     /**
      * @param array $data
      */
-    protected function setDataToImport($data) {
+    protected function setDataToImport($data)
+    {
         foreach ($data as $key => $value) {
             $this->importData[$key] = $value;
         }
@@ -290,7 +300,8 @@ class Product
      * @param bool $withTax
      * @return float
      */
-    protected function getVariantSpacPrice($withTax = false) {
+    protected function getVariantSpacPrice($withTax = false)
+    {
 
         $finalPrice = $this->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
 
@@ -300,13 +311,14 @@ class Product
     /**
      * @return $this
      */
-    protected function getDfwDefaultVariant() {
+    protected function getDfwDefaultVariant()
+    {
         $parent = $this->getParent();
         if (empty($parent)) {
             return $this;
         }
 
-        $superAttributes = $this->_registry->registry(\DataFeedWatch\Connector\Helper\Registry::ALL_SUPER_ATTRIBUTES_KEY);
+        $superAttributes = $this->_registry->registry(Registry::ALL_SUPER_ATTRIBUTES_KEY);
         $parentSuperAttributes                      = $parent->getData('super_attribute_ids');
         $parentSuperAttributes                      = explode(',', $parentSuperAttributes);
         $this->importData['dfw_default_variant']    = 1;
@@ -329,15 +341,17 @@ class Product
     /**
      * @return $this
      */
-    protected function getExcludedImages() {
+    protected function getExcludedImages()
+    {
         $this->load('media_gallery');
         $gallery    = $this->getMediaGallery('images');
         $index      = 1;
         foreach ($gallery as $image) {
             if ($image['disabled']) {
                 $imageUrl               = $this->getMediaConfig()->getMediaUrl($image['file']);
-                $key                    = 'image_url_excluded' . $index++;
+                $key                    = 'image_url_excluded' . $index;
                 $this->importData[$key] = $imageUrl;
+                $index++;
             }
         }
 
@@ -349,7 +363,8 @@ class Product
      * @param bool $isParent
      * @return array
      */
-    protected function getAdditionalImages($importedBaseImage = null, $isParent = false) {
+    protected function getAdditionalImages($importedBaseImage = null, $isParent = false)
+    {
         if (empty($importedBaseImage)) {
             $importedBaseImage = $this->getBaseImageUrl();
         }
@@ -357,7 +372,7 @@ class Product
         $gallery            = $this->getMediaGalleryImages();
 
         $index              = 1;
-        $additionalImages   = array();
+        $additionalImages   = [];
         foreach ($gallery as $image) {
             $imageUrl = $image->getUrl();
             if ($imageUrl !== $importedBaseImage && $imageUrl !== 'no_selection' && !empty($imageUrl)) {
@@ -370,8 +385,6 @@ class Product
         return $additionalImages;
     }
 
-
-
     /**
      * @return $this
      */
@@ -379,24 +392,21 @@ class Product
     {
         $parent = $this->getParent();
         if (empty($parent)) {
-
             return $this;
         }
-        $allAttributes = $this->_registry->registry(\DataFeedWatch\Connector\Helper\Registry::ALL_ATTRIBUTE_COLLECTION_KEY);
+        $allAttributes = $this->_registry->registry(Registry::ALL_ATTRIBUTE_COLLECTION_KEY);
         foreach ($allAttributes as $attribute) {
             $attributeCode = $attribute->getAttributeCode();
             switch ($attribute->getInheritance()) {
-                case (string) \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::CHILD_THEN_PARENT_OPTION_ID:
+                case (string) Inheritance::CHILD_THEN_PARENT_OPTION_ID:
                     $productData = $this->getData($attributeCode);
                     if (empty($productData) || $this->shouldChangeVisibilityForProduct($attribute)) {
                         $parentData = $parent->getData($attributeCode);
                         $this->setData($attributeCode, $parentData);
                     }
                     break;
-                case (string) \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::PARENT_OPTION_ID:
+                case (string) Inheritance::PARENT_OPTION_ID:
                     $parentData = $parent->getData($attributeCode);
-                    if ($attributeCode === 'meta_title') {
-                    }
                     $this->setData($attributeCode, $parentData);
                     break;
             }
@@ -414,6 +424,6 @@ class Product
         $attributeCode = $attribute->getAttributeCode();
 
         return $attributeCode === 'visibility'
-               && (int)$this->getData($attributeCode) === \Magento\Catalog\Model\Product\Visibility::VISIBILITY_NOT_VISIBLE;
+               && (int)$this->getData($attributeCode) === coreProduct\Visibility::VISIBILITY_NOT_VISIBLE;
     }
 }

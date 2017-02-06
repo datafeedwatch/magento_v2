@@ -15,8 +15,7 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
-class ChangeProductUpdatedAtPlugin
-    implements ObserverInterface
+class ChangeProductUpdatedAtPlugin implements ObserverInterface
 {
     /** @var DataHelper */
     protected $dataHelper;
@@ -28,8 +27,10 @@ class ChangeProductUpdatedAtPlugin
      * @param DataHelper                                $dataHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      */
-    public function __construct(DataHelper $dataHelper,
-                                \Magento\Framework\App\ResourceConnection $resource) {
+    public function __construct(
+        DataHelper $dataHelper,
+        \Magento\Framework\App\ResourceConnection $resource
+    ) {
 
         $this->dataHelper = $dataHelper;
         $this->resource   = $resource;
@@ -38,11 +39,15 @@ class ChangeProductUpdatedAtPlugin
     /**
      * @param EventObserver $observer
      */
-    public function execute(EventObserver $observer) {
+    public function execute(EventObserver $observer)
+    {
         /** @var \Magento\Catalog\Model\Product $category */
         $product    = $observer->getProduct();
-        $sql = sprintf('UPDATE %s SET `updated_at` = \'%s\' WHERE `entity_id` = %s',
-            $product->getResource()->getEntityTable(), gmdate('Y-m-d H:i:s'), $product->getId());
+        $sql = sprintf(
+            'UPDATE %s SET `updated_at` = \'%s\' WHERE `entity_id` = %s',
+            $product->getResource()->getEntityTable(),
+            gmdate('Y-m-d H:i:s'), $product->getId()
+        );
         $product->getResource()->getConnection()->query($sql);
     }
 }

@@ -13,12 +13,11 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Restore
-    extends Button
+class Restore extends Button
 {
-    public function execute() {
+    public function execute()
+    {
         try {
-            
             $this->dataHelper->restoreOriginalAttributesConfig();
             
             $this->messageManager->addSuccessMessage(__('Original inheritance configuration has been restored'));

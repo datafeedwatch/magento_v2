@@ -10,7 +10,7 @@
     </route>
 
     <route url="/V1/datafeedwatch/gmt_offset" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="gmt_offset"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="gmtOffset"/>
         <resources>
             <resource ref="DataFeedWatch_Connector::config"/>
         </resources>
@@ -31,35 +31,35 @@
     </route>
 
     <route url="/V1/datafeedwatch/product_count" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="product_count"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productCount"/>
         <resources>
             <resource ref="DataFeedWatch_Connector::config"/>
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/updated_products" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updated_products"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProducts"/>
         <resources>
             <resource ref="DataFeedWatch_Connector::config"/>
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/updated_product_count" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updated_product_count"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProductCount"/>
         <resources>
             <resource ref="DataFeedWatch_Connector::config"/>
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/product_ids" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="product_ids"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productIds"/>
         <resources>
             <resource ref="DataFeedWatch_Connector::config"/>
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/revoke_access_token" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="revoke_access_token"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="revokeAccessToken"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>

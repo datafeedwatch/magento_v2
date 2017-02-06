@@ -13,10 +13,10 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Extort
-    extends Button
+class Extort extends Button
 {
-    public function execute() {
+    public function execute()
+    {
         try {
             $this->dataHelper->updateLastInheritanceUpdateDate();
             $this->messageManager->addSuccessMessage(__('All product data will be imported with next download'));

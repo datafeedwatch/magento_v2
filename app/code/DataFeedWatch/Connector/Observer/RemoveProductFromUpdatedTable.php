@@ -15,8 +15,7 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
-class RemoveProductFromUpdatedTable
-    implements ObserverInterface
+class RemoveProductFromUpdatedTable implements ObserverInterface
 {
     /** @var DataHelper */
     protected $dataHelper;
@@ -28,8 +27,10 @@ class RemoveProductFromUpdatedTable
      * @param DataHelper                                $dataHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      */
-    public function __construct(DataHelper $dataHelper,
-                                \Magento\Framework\App\ResourceConnection $resource) {
+    public function __construct(
+        DataHelper $dataHelper,
+        \Magento\Framework\App\ResourceConnection $resource
+    ) {
         
         $this->dataHelper = $dataHelper;
         $this->resource   = $resource;
@@ -38,11 +39,14 @@ class RemoveProductFromUpdatedTable
     /**
      * @param EventObserver $observer
      */
-    public function execute(EventObserver $observer) {
+    public function execute(EventObserver $observer)
+    {
         /** @var \Magento\Catalog\Model\Product $category */
         $product    = $observer->getProduct();
         $connection = $this->resource->getConnection(\Magento\Framework\App\ResourceConnection::DEFAULT_CONNECTION);
-        $connection->delete($this->resource->getTableName('datafeedwatch_updated_products'),
-            sprintf('dfw_prod_id = %s', $product->getId()));
+        $connection->delete(
+            $this->resource->getTableName('datafeedwatch_updated_products'),
+            sprintf('dfw_prod_id = %s', $product->getId())
+        );
     }
 }

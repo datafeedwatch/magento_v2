@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 
-abstract class Button
-    extends Action
+abstract class Button extends Action
 {
     /**
      * Authorization level of a basic admin session

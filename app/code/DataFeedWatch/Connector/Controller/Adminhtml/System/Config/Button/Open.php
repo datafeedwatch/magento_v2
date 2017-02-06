@@ -13,16 +13,15 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Open
-    extends Button
+class Open extends Button
 {
-    public function execute() {
+    public function execute()
+    {
         try {
             $apiUser = $this->apiUser;
             $apiUser->loadDfwUser();
             
             if (!$apiUser->isObjectNew()) {
-                
                 return $this->getResponse()->setRedirect($this->dataHelper->getDataFeedWatchUrl());
             }
             

@@ -29,7 +29,8 @@ class ConfigPlugin
         $this->dataHelper = $dataHelper;
     }
     
-    public function beforeSave(\Magento\Config\Model\Config $config) {
+    public function beforeSave(\Magento\Config\Model\Config $config)
+    {
         $productUrlXpath = DataHelper::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH;
         $imageUrlXpath   = DataHelper::IMAGE_URL_CUSTOM_INHERITANCE_XPATH;
         
@@ -46,7 +47,8 @@ class ConfigPlugin
      *
      * @return bool
      */
-    protected function hasConfigDataChanged($config, $xpath) {
+    protected function hasConfigDataChanged($config, $xpath)
+    {
         
         return $config->getConfigDataValue($xpath) !== $this->getConfigDataFromXpath($config, $xpath);
     }
@@ -57,7 +59,8 @@ class ConfigPlugin
      *
      * @return mixed|null
      */
-    protected function getConfigDataFromXpath($config, $xpath) {
+    protected function getConfigDataFromXpath($config, $xpath)
+    {
         $xpath = explode('/', $xpath);
         if (!is_array($xpath)) {
             

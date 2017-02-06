@@ -10,8 +10,7 @@
 
 namespace DataFeedWatch\Connector\Logger\Handler;
 
-class Sql
-    extends Base
+class Sql extends Base
 {
     /** @var string */
     protected $dirName = 'sql';

@@ -12,8 +12,7 @@ namespace DataFeedWatch\Connector\Logger;
 
 use Monolog\Logger;
 
-class Cron
-    extends Logger
+class Cron extends Logger
 {
     
 }

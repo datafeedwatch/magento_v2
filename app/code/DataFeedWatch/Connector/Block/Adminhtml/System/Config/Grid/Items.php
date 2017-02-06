@@ -12,15 +12,15 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid;
 
 use Magento\Framework\View\Element\Template;
 
-class Items
-    extends Template
+class Items extends Template
 {
     /**
      * @param \Magento\Catalog\Model\ResourceModel\Eav\Attribute $attribute
      *
      * @return string
      */
-    public function getItemRow($attribute) {
+    public function getItemRow($attribute)
+    {
         
         return $this->getLayout()->getBlock('datafeed.grid.items.row')->setAttributeItem($attribute)->toHtml();
     }
@@ -30,7 +30,8 @@ class Items
      *
      * @return $this
      */
-    public function setPage($page) {
+    public function setPage($page)
+    {
         if (!empty($page)) {
             $this->getPager()->setPage($page);
         }
@@ -41,7 +42,8 @@ class Items
     /**
      * @return \DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Pager
      */
-    public function getPager() {
+    public function getPager()
+    {
         
         return $this->getLayout()->getBlock('datafeed.grid.pager');
     }
@@ -51,7 +53,8 @@ class Items
      *
      * @return $this
      */
-    public function setLimit($limit) {
+    public function setLimit($limit)
+    {
         if (!empty($limit)) {
             $this->getPager()->setLimit($limit);
         }
@@ -62,7 +65,8 @@ class Items
     /**
      * @return string
      */
-    public function getPagerHtml() {
+    public function getPagerHtml()
+    {
         
         return $this->getPager()->toHtml();
     }
@@ -70,7 +74,8 @@ class Items
     /**
      * @return \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
      */
-    public function getCollection() {
+    public function getCollection()
+    {
         
         return $this->getPager()->getCollection();
     }

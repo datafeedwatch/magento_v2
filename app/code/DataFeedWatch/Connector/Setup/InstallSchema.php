@@ -16,8 +16,7 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 /**
  * @codeCoverageIgnore
  */
-class InstallSchema
-    implements InstallSchemaInterface
+class InstallSchema implements InstallSchemaInterface
 {
     /** @var \Magento\Framework\Setup\SchemaSetupInterface */
     protected $setup;
@@ -29,8 +28,10 @@ class InstallSchema
      * @param \Magento\Framework\Setup\SchemaSetupInterface   $setup
      * @param \Magento\Framework\Setup\ModuleContextInterface $context
      */
-    public function install(\Magento\Framework\Setup\SchemaSetupInterface $setup,
-                            \Magento\Framework\Setup\ModuleContextInterface $context) {
+    public function install(
+        \Magento\Framework\Setup\SchemaSetupInterface $setup,
+        \Magento\Framework\Setup\ModuleContextInterface $context
+    ) {
         $this->setup      = $setup;
         $this->connection = $this->setup->getConnection();
         
@@ -38,7 +39,8 @@ class InstallSchema
         $this->createUpdatedProductsTable();
     }
     
-    protected function extendsCatalogEavAttributeTable() {
+    protected function extendsCatalogEavAttributeTable()
+    {
         $table = $this->setup->getTable('catalog_eav_attribute');
         
         $this->createCanConfigureInheritanceColumn($table);
@@ -50,7 +52,8 @@ class InstallSchema
     /**
      * @param string $table
      */
-    protected function createCanConfigureInheritanceColumn($table) {
+    protected function createCanConfigureInheritanceColumn($table)
+    {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
             'unsigned' => true,
@@ -66,7 +69,8 @@ class InstallSchema
      * @param       $columnName
      * @param array $properties
      */
-    protected function addColumn($table, $columnName, array $properties) {
+    protected function addColumn($table, $columnName, array $properties)
+    {
         if (!$this->connection->tableColumnExists($table, $columnName)) {
             $this->setup->startSetup();
             $this->connection->addColumn($table, $columnName, $properties);
@@ -77,7 +81,8 @@ class InstallSchema
     /**
      * @param string $table
      */
-    protected function createInheritanceColumn($table) {
+    protected function createInheritanceColumn($table)
+    {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
             'unsigned' => true,
@@ -91,7 +96,8 @@ class InstallSchema
     /**
      * @param string $table
      */
-    protected function createCanConfigureImportColumn($table) {
+    protected function createCanConfigureImportColumn($table)
+    {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
             'unsigned' => true,
@@ -105,7 +111,8 @@ class InstallSchema
     /**
      * @param string $table
      */
-    protected function createImportToDfwColumn($table) {
+    protected function createImportToDfwColumn($table)
+    {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
             'unsigned' => true,
@@ -116,7 +123,8 @@ class InstallSchema
         $this->addColumn($table, 'import_to_dfw', $properties);
     }
     
-    protected function createUpdatedProductsTable() {
+    protected function createUpdatedProductsTable()
+    {
         $table = $this->setup->getTable('datafeedwatch_updated_products');
         if (!$this->connection->isTableExists($table)) {
             $this->setup->startSetup();

@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Model\Api;
 use Magento\Authorization\Model\UserContextInterface;
 use Magento\User\Model\User as MagentoUser;
 
-class User
-    extends MagentoUser
+class User extends MagentoUser
 {
     const API_KEY_SHUFFLE_STRING = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const API_KEY_LENGTH         = 32;
@@ -34,7 +33,7 @@ class User
     /** @var \Magento\Authorization\Model\RoleFactory */
     protected $roleFactory;
     /** @var \Magento\Authorization\Model\RulesFactory */
-    protected $_rulesFactory;
+    protected $rulesFactory;
     /** @var string $decodedApiKey */
     private $decodedApiKey;
     private $oauthToken;
@@ -85,12 +84,25 @@ class User
     ) {
         
         $this->dataHelper           = $dataHelper;
-        $this->_rulesFactory        = $rulesFactory;
+        $this->rulesFactory         = $rulesFactory;
         $this->oauthToken           = $oauthToken;
         $this->adminTokenService    = $adminTokenService;
         $this->tokenModel           = $tokenModel;
-        parent::__construct($context, $registry, $userData, $config, $validatorObjectFactory, $roleFactory,
-            $transportBuilder, $encryptor, $storeManager, $validationRules, $resource, $resourceCollection, $data);
+        parent::__construct(
+            $context,
+            $registry,
+            $userData,
+            $config,
+            $validatorObjectFactory,
+            $roleFactory,
+            $transportBuilder,
+            $encryptor,
+            $storeManager,
+            $validationRules,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
     
     public function createDfwUser()
@@ -101,7 +113,7 @@ class User
         $this->setRoleId($role->getId());
         $this->save();
 
-        $resource = array(
+        $resource = [
             'Magento_Catalog::config_catalog',
             'Magento_Backend::stores_attributes',
             'Magento_Catalog::attributes_attributes',
@@ -114,9 +126,10 @@ class User
             'Magento_CatalogRule::promo_catalog',
             'DataFeedWatch_Connector::config',
             'Magento_Sales::sales',
-        );
+        ];
 
-        $this->_rulesFactory->create()->setRoleId($role->getId())->setUserId($this->getId())->setResources($resource)->saveRel();
+        $this->rulesFactory->create()->setRoleId($role->getId())
+            ->setUserId($this->getId())->setResources($resource)->saveRel();
         $this->sendNewApiKeyToDfw();
     }
     
@@ -140,7 +153,11 @@ class User
     
     protected function generateApiKey()
     {
-        $this->decodedApiKey = sha1(time() . substr(str_shuffle(self::API_KEY_SHUFFLE_STRING), 0, self::API_KEY_LENGTH));
+        $this->decodedApiKey = sha1(time() . substr(
+                str_shuffle(self::API_KEY_SHUFFLE_STRING),
+                0,
+                self::API_KEY_LENGTH
+            ));
     }
     
     protected function addUserData()
@@ -175,8 +192,10 @@ class User
      */
     public function getRegisterUrl()
     {
-        $registerUrl = sprintf('%splatforms/magento/sessions/finalize',
-            $this->dataHelper->getDataFeedWatchUrl());
+        $registerUrl = sprintf(
+            '%splatforms/magento/sessions/finalize',
+            $this->dataHelper->getDataFeedWatchUrl()
+        );
         
         return $registerUrl . '?shop=' . $this->_storeManager->getStore()->getBaseUrl() . '&token='
                . $this->getDecodedApiKey() . '&version=2';
@@ -184,7 +203,10 @@ class User
 
     public function resetOauth()
     {
-        $this->oauthToken->resetFailuresCount(self::USER_NAME, \Magento\Integration\Model\Oauth\Token\RequestThrottler::USER_TYPE_ADMIN);
+        $this->oauthToken->resetFailuresCount(
+            self::USER_NAME,
+            \Magento\Integration\Model\Oauth\Token\RequestThrottler::USER_TYPE_ADMIN
+        );
     }
 
     /**
@@ -203,7 +225,7 @@ class User
             } else {
                 return $revoke;
             }
-        } else if (is_string($token)) {
+        } elseif (is_string($token)) {
             $actualToken = $this->tokenModel->loadByToken($token);
             if ($actualToken->getId()) {
                 $actualToken->setRevoked(1)->save();

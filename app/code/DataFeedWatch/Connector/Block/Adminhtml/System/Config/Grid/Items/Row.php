@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
 use Magento\Framework\View\Element\Template;
 
-class Row
-    extends Template
+class Row extends Template
 {
     /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
     public $attributeItem;
@@ -22,7 +21,8 @@ class Row
     /**
      * @return \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance
      */
-    public function getInheritanceSource() {
+    public function getInheritanceSource()
+    {
         
         return InheritanceSource::class;
     }
@@ -30,7 +30,8 @@ class Row
     /**
      * @return string
      */
-    public function getAttributeLabel() {
+    public function getAttributeLabel()
+    {
         $attribute = $this->getAttributeItem();
         $label     = $attribute->getFrontendLabel();
         
@@ -44,7 +45,8 @@ class Row
     /**
      * @return \Magento\Catalog\Model\ResourceModel\Eav\Attribute
      */
-    public function getAttributeItem() {
+    public function getAttributeItem()
+    {
         
         return $this->attributeItem;
     }
@@ -54,7 +56,8 @@ class Row
      *
      * @return $this
      */
-    public function setAttributeItem($attribute) {
+    public function setAttributeItem($attribute)
+    {
         $this->attributeItem = $attribute;
         
         return $this;
@@ -63,7 +66,8 @@ class Row
     /**
      * @return string
      */
-    public function getAttributeLink() {
+    public function getAttributeLink()
+    {
         $attribute = $this->getAttributeItem();
         
         return $this->getUrl('catalog/product_attribute/edit', [

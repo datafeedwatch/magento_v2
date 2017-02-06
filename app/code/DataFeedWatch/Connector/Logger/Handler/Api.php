@@ -10,8 +10,7 @@
 
 namespace DataFeedWatch\Connector\Logger\Handler;
 
-class Api
-    extends Base
+class Api extends Base
 {
     /** @var string */
     protected $dirName = 'api';

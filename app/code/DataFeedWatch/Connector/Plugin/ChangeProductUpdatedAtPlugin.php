@@ -16,8 +16,10 @@ class ChangeProductUpdatedAtPlugin
      * @param \Magento\Catalog\Model\ResourceModel\Product $product
      * @param \Magento\Framework\Model\AbstractModel       $object
      */
-    public function beforeSave(\Magento\Catalog\Model\ResourceModel\Product $product,
-                               \Magento\Framework\Model\AbstractModel $object) {
+    public function beforeSave(
+        \Magento\Catalog\Model\ResourceModel\Product $product,
+        \Magento\Framework\Model\AbstractModel $object
+    ) {
         $sql = sprintf('UPDATE %s SET `updated_at` = \'%s\' WHERE `entity_id` = %s',
             $product->getEntityTable(), gmdate('Y-m-d H:i:s'), $object->getId());
         $product->getConnection()->query($sql);

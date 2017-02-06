@@ -12,6 +12,7 @@ namespace DataFeedWatch\Connector\Cron;
 
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 use Magento\Customer\Model\GroupManagement;
+use Magento\Framework\App\ResourceConnection;
 
 class FillUpdatedAtTable
 {
@@ -36,23 +37,24 @@ class FillUpdatedAtTable
     public function __construct(
         \DataFeedWatch\Connector\Logger\Cron $logger,
         DataHelper $dataHelper,
-        \Magento\Framework\App\ResourceConnection $resource
+        ResourceConnection $resource
     ) {
         $this->logger     = $logger;
         $this->dataHelper = $dataHelper;
         $this->resource   = $resource;
     }
     
-    public function execute() {
+    public function execute()
+    {
         $date            = date('Y-m-d H:i:s');
         $lastPriceId     = $this->dataHelper->getLastCatalogRulePriceId();
-        $writeConnection = $this->resource->getConnection(\Magento\Framework\App\ResourceConnection::DEFAULT_CONNECTION);
+        $writeConnection = $this->resource->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $select          = $this->resource->getConnection()->select();
         
         $select->from(
-            array(
+            [
                 self::CATALOGRULE_DATE_TABLE_ALIAS => $this->resource->getTableName('catalogrule_product_price'),
-            )
+            ]
         );
         
         if (!empty($lastPriceId)) {
@@ -63,7 +65,6 @@ class FillUpdatedAtTable
         
         $priceData = $select->query()->fetchAll();
         if (count($priceData) < 1) {
-            
             return $this;
         }
         
@@ -72,11 +73,11 @@ class FillUpdatedAtTable
         
         $updatedDataTable = $this->resource->getTableName('datafeedwatch_updated_products');
         foreach ($priceData as $data) {
-            $insertedData = array(
+            $insertedData = [
                 'dfw_prod_id' => $data['product_id'],
                 'updated_at'  => $date,
-            );
-            $writeConnection->insertOnDuplicate($updatedDataTable, $insertedData, array('updated_at'));
+            ];
+            $writeConnection->insertOnDuplicate($updatedDataTable, $insertedData, ['updated_at']);
         }
         
         if (!empty($priceData)) {

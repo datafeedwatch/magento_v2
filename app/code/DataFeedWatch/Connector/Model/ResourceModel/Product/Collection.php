@@ -12,17 +12,18 @@ namespace DataFeedWatch\Connector\Model\ResourceModel\Product;
 
 use DataFeedWatch\Connector\Model\ResourceModel\Product\Collection\Db;
 
-class Collection
-    extends Db
+class Collection extends Db
 {
     /**
      * @return bool
      */
-    public function isEnabledFlat() {
+    public function isEnabledFlat()
+    {
         return false;
     }
 
-    protected function _construct() {
+    protected function _construct()
+    {
         $this->_init('DataFeedWatch\Connector\Model\Product', 'DataFeedWatch\Connector\Model\ResourceModel\Product');
         $this->_initTables();
     }
@@ -43,7 +44,8 @@ class Collection
      * @param array $options
      * @return $this
      */
-    public function applyFiltersOnCollection($options) {
+    public function applyFiltersOnCollection($options)
+    {
         $this->apiLogger->debug($options);
         $this->optionsFilters = $options;
         $this->setFlag('has_stock_status_filter', true);
@@ -63,7 +65,7 @@ class Collection
         $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
         $this->addAttributeToSelect('ignore_datafeedwatch');
-        $this->addAttributeToFilter('ignore_datafeedwatch', array(array('null' => true), array('neq' => 1)), 'left');
+        $this->addAttributeToFilter('ignore_datafeedwatch', [['null' => true], ['neq' => 1]], 'left');
 
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
         $this->sqlLogger->debug($this->getSelect()->__toString());
@@ -74,7 +76,8 @@ class Collection
     /**
      * @return $this
      */
-    protected function applyStoreFilter() {
+    protected function applyStoreFilter()
+    {
         if (isset($this->optionsFilters['store'])) {
             $store          = $this->_storeManager->getStore($this->optionsFilters['store']);
             $StoreColumn    = sprintf('IFNULL(null, %s) as store_id', $store->getId());
@@ -89,9 +92,9 @@ class Collection
     /**
      * @return $this
      */
-    protected function applyStatusFilter() {
+    protected function applyStatusFilter()
+    {
         if (!isset($this->optionsFilters['status'])) {
-
             return $this;
         }
 
@@ -109,11 +112,12 @@ class Collection
         return $this;
     }
 
-    public function fillParentIds() {
+    public function fillParentIds()
+    {
         $this->storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
 
         $collection = clone $this->productCollection;
-        foreach($collection as $product) {
+        foreach ($collection as $product) {
             $parentIds = $this->typeConfigurable->getParentIdsByChild($product->getId());
             if (!empty($parentIds)) {
                 $product->setDfwParentIds(current($parentIds));
@@ -128,9 +132,10 @@ class Collection
     /**
      * @return $this
      */
-    protected function applyTypeFilter() {
+    protected function applyTypeFilter()
+    {
         if (isset($this->optionsFilters['type'])) {
-            $this->addAttributeToFilter('type_id', array('in' => $this->optionsFilters['type']));
+            $this->addAttributeToFilter('type_id', ['in' => $this->optionsFilters['type']]);
         }
 
         return $this;
@@ -139,9 +144,9 @@ class Collection
     /**
      * @return $this
      */
-    protected function applyUpdatedAtFilter() {
+    protected function applyUpdatedAtFilter()
+    {
         if (!isset($this->optionsFilters['from_date'])) {
-
             return $this;
         }
 
@@ -153,7 +158,8 @@ class Collection
     /**
      * @return $this
      */
-    public function applyInheritanceLogic() {
+    public function applyInheritanceLogic()
+    {
         $this->addParentData();
         foreach ($this->getItems() as $product) {
             $parent = $product->getParent();
@@ -168,7 +174,8 @@ class Collection
     /**
      * @return $this
      */
-    protected function addParentData() {
+    protected function addParentData()
+    {
         $parentCollection = $this->getParentProductsCollection();
         $parentCollection = $parentCollection->getItems();
         foreach ($this->getItems() as $product) {
@@ -190,7 +197,8 @@ class Collection
     /**
      * @return mixed
      */
-    protected function getParentProductsCollection() {
+    protected function getParentProductsCollection()
+    {
         $parentCollection = clone $this;
         $parentCollection->_reset();
         $parentCollection->addAttributeToSelect('*')
@@ -203,19 +211,21 @@ class Collection
         $parentCollection->addStoreFilter($store);
         $parentCollection->getSelect()->columns($StoreColumn);
         $parentCollection->getSelect()->joinLeft(
-            array(self::PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS =>
-                      $this->_resource->getTableName('catalog_product_super_attribute'),
-            ),
+            [
+                self::PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS =>
+                    $this->_resource->getTableName('catalog_product_super_attribute'),
+            ],
             sprintf('%s.product_id = e.entity_id', self::PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS),
-            array('super_attribute_ids' =>
-                      sprintf('GROUP_CONCAT(DISTINCT %s.attribute_id)', self::PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS),
-            )
+            [
+                'super_attribute_ids' =>
+                    sprintf('GROUP_CONCAT(DISTINCT %s.attribute_id)', self::PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS),
+            ]
         );
 
         $parentCollection->getSelect()->joinRight(
-            array(self::PARENT_RELATIONS_TABLE_ALIAS => $this->_resource->getTableName('catalog_product_relation')),
+            [self::PARENT_RELATIONS_TABLE_ALIAS => $this->_resource->getTableName('catalog_product_relation')],
             sprintf('%s.parent_id = e.entity_id', self::PARENT_RELATIONS_TABLE_ALIAS),
-            array('parent_id' => sprintf('%s.parent_id', self::PARENT_RELATIONS_TABLE_ALIAS))
+            ['parent_id' => sprintf('%s.parent_id', self::PARENT_RELATIONS_TABLE_ALIAS)]
         )->group('e.entity_id');
 
         return $parentCollection;

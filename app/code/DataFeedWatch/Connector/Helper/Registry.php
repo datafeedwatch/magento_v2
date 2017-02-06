@@ -13,8 +13,7 @@ namespace DataFeedWatch\Connector\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductAttributeCollectionCollection;
 
-class Registry
-    extends AbstractHelper
+class Registry extends AbstractHelper
 {
     const ALL_CATEGORIES_ARRAY_KEY      = 'all_categories_array';
     const ALL_SUPER_ATTRIBUTES_KEY      = 'all_super_attributes_array';
@@ -29,10 +28,12 @@ class Registry
     protected $categoryCollection;
     protected $attributeCollection;
 
-    public function __construct(\Magento\Framework\App\Helper\Context $context,
-                                \Magento\Framework\Registry $registry,
-                                \Magento\Catalog\Model\ResourceModel\Category\Collection $categoryCollection,
-                                ProductAttributeCollectionCollection $attributeCollection) {
+    public function __construct(
+        \Magento\Framework\App\Helper\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Catalog\Model\ResourceModel\Category\Collection $categoryCollection,
+        ProductAttributeCollectionCollection $attributeCollection
+    ) {
         $this->registry             = $registry;
         $this->categoryCollection   = $categoryCollection;
         $this->attributeCollection  = $attributeCollection;
@@ -42,7 +43,8 @@ class Registry
     /**
      * @param string $storeId
      */
-    public function initImportRegistry($storeId) {
+    public function initImportRegistry($storeId)
+    {
         $this->registerCategories($storeId);
         $this->registerStatusAttribute();
         $this->registerUpdatedAtAttribute();
@@ -56,20 +58,22 @@ class Registry
     /**
      * @param string $storeId
      */
-    protected function registerCategories($storeId) {
+    protected function registerCategories($storeId)
+    {
         $registry = $this->registry->registry(self::ALL_CATEGORIES_ARRAY_KEY);
         if (empty($registry)) {
             $categories = $this->categoryCollection
                               ->addNameToResult()
                               ->setStoreId($storeId)
-                              ->addFieldToFilter('level', array('gt' => 1))
+                              ->addFieldToFilter('level', ['gt' => 1])
                               ->getItems();
 
             $this->registry->register(self::ALL_CATEGORIES_ARRAY_KEY, $categories);
         }
     }
 
-    protected function registerStatusAttribute() {
+    protected function registerStatusAttribute()
+    {
         $registry = $this->registry->registry(self::DFW_STATUS_ATTRIBUTE_KEY);
         if (empty($registry)) {
             $statusAttribute = clone $this->attributeCollection;
@@ -78,7 +82,8 @@ class Registry
         }
     }
 
-    protected function registerUpdatedAtAttribute() {
+    protected function registerUpdatedAtAttribute()
+    {
         $registry = $this->registry->registry(self::DFW_UPDATED_AT_ATTRIBUTE_KEY);
         if (empty($registry)) {
             $updatedAtAttribute = clone $this->attributeCollection;
@@ -87,16 +92,19 @@ class Registry
         }
     }
 
-    protected function registerVisibilityAttribute() {
+    protected function registerVisibilityAttribute()
+    {
         $registry = $this->registry->registry(self::DFW_VISIBILITY_ATTRIBUTE_KEY);
         if (empty($registry)) {
             $visibilityAttribute = clone $this->attributeCollection;
-            $visibilityAttribute = $visibilityAttribute->addFieldToFilter('attribute_code', 'visibility')->getFirstItem();
+            $visibilityAttribute = $visibilityAttribute->addFieldToFilter('attribute_code', 'visibility');
+            $visibilityAttribute = $visibilityAttribute->getFirstItem();
             $this->registry->register(self::DFW_VISIBILITY_ATTRIBUTE_KEY, $visibilityAttribute);
         }
     }
 
-    protected function registerParentIdAttribute() {
+    protected function registerParentIdAttribute()
+    {
         $registry = $this->registry->registry(self::DFW_PARENT_ID_ATTRIBUTE_KEY);
         if (empty($registry)) {
             $attribute = clone $this->attributeCollection;
@@ -105,7 +113,8 @@ class Registry
         }
     }
 
-    protected function registerSuperAttributes() {
+    protected function registerSuperAttributes()
+    {
         $registry = $this->registry->registry(self::ALL_SUPER_ATTRIBUTES_KEY);
         if (empty($registry)) {
             $superAttributes = clone $this->attributeCollection;
@@ -114,7 +123,8 @@ class Registry
         }
     }
 
-    protected function registerInheritableAttributes() {
+    protected function registerInheritableAttributes()
+    {
         $registry = $this->registry->registry(self::ALL_IMPORTABLE_ATTRIBUTES_KEY);
         if (empty($registry)) {
             $importableAttributes = clone $this->attributeCollection;
@@ -123,7 +133,8 @@ class Registry
         }
     }
 
-    protected function registerAttributeCollection() {
+    protected function registerAttributeCollection()
+    {
         $registry = $this->registry->registry(self::ALL_ATTRIBUTE_COLLECTION_KEY);
         if (empty($registry)) {
             $attributeCollection = clone $this->attributeCollection;
@@ -140,14 +151,16 @@ class Registry
     /**
      * @return bool
      */
-    public function isStatusAttributeInheritable() {
+    public function isStatusAttributeInheritable()
+    {
         return $this->isAttributeInheritable($this->registry->registry(self::DFW_STATUS_ATTRIBUTE_KEY));
     }
 
     /**
      * @return bool
      */
-    public function isUpdatedAtAttributeInheritable() {
+    public function isUpdatedAtAttributeInheritable()
+    {
         return $this->isAttributeInheritable($this->registry->registry(self::DFW_UPDATED_AT_ATTRIBUTE_KEY));
     }
 
@@ -155,12 +168,14 @@ class Registry
      * @param $attribute
      * @return bool
      */
-    public function isAttributeInheritable($attribute) {
-        return in_array($attribute->getInheritance(),
-            array(
+    public function isAttributeInheritable($attribute)
+    {
+        return in_array(
+            $attribute->getInheritance(),
+            [
                 (string) \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::PARENT_OPTION_ID,
                 (string) \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::CHILD_THEN_PARENT_OPTION_ID,
-            )
+            ]
         );
     }
 
@@ -168,7 +183,8 @@ class Registry
      * @param $attribute
      * @return bool
      */
-    public function isAttributeImportable($attribute) {
+    public function isAttributeImportable($attribute)
+    {
         return (int)$attribute->getImportToDfw() === 1;
     }
 }

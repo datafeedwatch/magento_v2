@@ -1,55 +1,68 @@
 <?php
 /** @var \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance $inheritanceModel */
 /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute $attribute */
-/** @var \DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items\Row $this */
+/** @var \DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items\Row $block */
 
-$attribute         = $this->getAttributeItem();
-$inheritanceModel  = $this->getInheritanceSource();
+$attribute         = $block->getAttributeItem();
+$inheritanceModel  = $block->getInheritanceSource();
 $inheritance       = (int) $attribute->getInheritance();
 $import            = (int) $attribute->getImportToDfw();
 $inheritanceStatus = $attribute->getCanConfigureInheritance() === '0' ? ' disabled ' : '';
 ?>
 <div class="attribute_item">
     <div class="attribute_name">
-        <a href="<?php echo $this->getAttributeLink() ?>" target="_blank">
-            <?php echo $this->getAttributeLabel() ?>
+        <a href="<?php /* @noEscape */ echo $block->getAttributeLink() ?>" target="_blank">
+            <?php /* @noEscape */ echo $block->getAttributeLabel() ?>
         </a>
     </div>
     <div class="attribute_import">
         <select name="import_<?php echo $attribute->getId() ?>"
-            <?php echo $attribute->getCanConfigureImport() === '0' ? ' disabled ' : '' ?>
-                onchange="DataFeedWatchGrid.saveImport('<?php echo $attribute->getAttributeCode() ?>', this.value)">
-            <option value="1" <?php echo $import === 1 ? 'selected' : '' ?>>
-                <?php echo __('Yes') ?>
+            <?php /* @noEscape */ echo $attribute->getCanConfigureImport() === '0' ? ' disabled ' : '' ?>
+                onchange="DataFeedWatchGrid.saveImport(
+                    '<?php /* @noEscape */ echo $attribute->getAttributeCode() ?>',
+                    this.value
+                    )">
+            <option value="1" <?php /* @noEscape */ echo $import === 1 ? 'selected' : '' ?>>
+                <?php /* @noEscape */ echo __('Yes') ?>
             </option>
-            <option value="0" <?php echo $import === 0 ? 'selected' : '' ?>>
-                <?php echo __('No') ?>
+            <option value="0" <?php /* @noEscape */ echo $import === 0 ? 'selected' : '' ?>>
+                <?php /* @noEscape */ echo __('No') ?>
             </option>
         </select>
     </div>
     <div class="attribute_inheritance">
         <div class="inheritance_child">
-            <input type="radio" name="inheritance_<?php echo $attribute->getId() ?>"
-                <?php echo $inheritanceStatus ?>
-                <?php echo $inheritanceModel::CHILD_OPTION_ID === $inheritance ? ' checked ' : '' ?>
-                   value="<?php echo $inheritanceModel::CHILD_OPTION_ID ?>"
-                   onchange="DataFeedWatchGrid.saveInheritance('<?php echo $attribute->getAttributeCode() ?>', this.value)
+            <input type="radio" name="inheritance_<?php /* @noEscape */ echo $attribute->getId() ?>"
+                <?php /* @noEscape */ echo $inheritanceStatus ?>
+                <?php /* @noEscape */ echo $inheritanceModel::CHILD_OPTION_ID === $inheritance ? ' checked ' : '' ?>
+                   value="<?php /* @noEscape */ echo $inheritanceModel::CHILD_OPTION_ID ?>"
+                   onchange="DataFeedWatchGrid.saveInheritance(
+                       '<?php /* @noEscape */ echo $attribute->getAttributeCode() ?>',
+                       this.value
+                       )
                        "/>
         </div>
         <div class="inheritance_parent">
-            <input type="radio" name="inheritance_<?php echo $attribute->getId() ?>"
-                <?php echo $inheritanceStatus ?>
-                <?php echo $inheritanceModel::PARENT_OPTION_ID === $inheritance ? ' checked ' : '' ?>
-                   value="<?php echo $inheritanceModel::PARENT_OPTION_ID ?>"
-                   onchange="DataFeedWatchGrid.saveInheritance('<?php echo $attribute->getAttributeCode() ?>', this.value)
+            <input type="radio" name="inheritance_<?php /* @noEscape */ echo $attribute->getId() ?>"
+                <?php /* @noEscape */ echo $inheritanceStatus ?>
+                <?php /* @noEscape */ echo $inheritanceModel::PARENT_OPTION_ID === $inheritance ? ' checked ' : '' ?>
+                   value="<?php /* @noEscape */ echo $inheritanceModel::PARENT_OPTION_ID ?>"
+                   onchange="DataFeedWatchGrid.saveInheritance(
+                       '<?php /* @noEscape */ echo $attribute->getAttributeCode() ?>',
+                       this.value
+                       )
                        "/>
         </div>
         <div class="inheritance_child_then_parent">
-            <input type="radio" name="inheritance_<?php echo $attribute->getId() ?>"
-                <?php echo $inheritanceStatus ?>
-                <?php echo $inheritanceModel::CHILD_THEN_PARENT_OPTION_ID === $inheritance ? ' checked ' : '' ?>
-                   value="<?php echo $inheritanceModel::CHILD_THEN_PARENT_OPTION_ID ?>"
-                   onchange="DataFeedWatchGrid.saveInheritance('<?php echo $attribute->getAttributeCode() ?>', this.value)
+            <input type="radio" name="inheritance_<?php /* @noEscape */ echo $attribute->getId() ?>"
+                <?php /* @noEscape */ echo $inheritanceStatus ?>
+                <?php /* @noEscape */ echo
+                $inheritanceModel::CHILD_THEN_PARENT_OPTION_ID === $inheritance ? ' checked ' : '' ?>
+                   value="<?php /* @noEscape */ echo $inheritanceModel::CHILD_THEN_PARENT_OPTION_ID ?>"
+                   onchange="DataFeedWatchGrid.saveInheritance(
+                       '<?php /* @noEscape */ echo $attribute->getAttributeCode() ?>',
+                       this.value
+                       )
                        "/>
         </div>
     </div>

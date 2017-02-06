@@ -17,11 +17,13 @@ class CategoryTreePlugin
     /** @var DataHelper */
     protected $dataHelper;
     
-    public function __construct(DataHelper $dataHelper) {
+    public function __construct(DataHelper $dataHelper)
+    {
         $this->dataHelper = $dataHelper;
     }
     
-    public function afterMove(\Magento\Catalog\Model\Category $category) {
+    public function afterMove(\Magento\Catalog\Model\Category $category)
+    {
         $this->dataHelper->updateLastInheritanceUpdateDate();
     }
 }
