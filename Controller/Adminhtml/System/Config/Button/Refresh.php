@@ -23,11 +23,11 @@ class Refresh extends Button
             $apiUser->loadDfwUser();
             $apiUser->createDfwUser();
             
-            $this->messageManager->addSuccessMessage(__('%1 user has been refreshed', ApiUser::USER_NAME));
+            $this->getMessageManager()->addSuccessMessage(__('%1 user has been refreshed', ApiUser::USER_NAME));
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         } catch (Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $this->getMessageManager()->addErrorMessage($e->getMessage());
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         }

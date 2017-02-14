@@ -24,7 +24,7 @@ class Add extends Button
             
             return $this->getResponse()->setRedirect($apiUser->getRegisterUrl());
         } catch (Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $this->getMessageManager()->addErrorMessage($e->getMessage());
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         }

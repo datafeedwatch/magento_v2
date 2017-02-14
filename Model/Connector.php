@@ -18,8 +18,8 @@ class Connector implements ConnectorInterface
     
     protected $moduleList;
     protected $logger;
-    protected $scopeConfig;
     protected $storeManager;
+    protected $scopeConfig;
     protected $productCollection;
     protected $dataHelper;
     protected $dfwApiUser;
@@ -30,7 +30,6 @@ class Connector implements ConnectorInterface
      * @param \Magento\Framework\App\Helper\Context              $context
      * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
      * @param \DataFeedWatch\Connector\Logger\Api                $logger
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
      * @param ResourceModel\Product\Collection                   $productCollection
      * @param \DataFeedWatch\Connector\Helper\Data               $dataHelper
@@ -40,7 +39,6 @@ class Connector implements ConnectorInterface
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \DataFeedWatch\Connector\Logger\Api $logger,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $productCollection,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
@@ -49,7 +47,7 @@ class Connector implements ConnectorInterface
 
         $this->moduleList           = $moduleList;
         $this->logger               = $logger;
-        $this->scopeConfig          = $scopeConfig;
+        $this->scopeConfig          = $context->getScopeConfig();
         $this->storeManager         = $storeManager;
         $this->productCollection    = $productCollection;
         $this->dataHelper           = $dataHelper;

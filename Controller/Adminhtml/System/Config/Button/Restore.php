@@ -20,11 +20,11 @@ class Restore extends Button
         try {
             $this->dataHelper->restoreOriginalAttributesConfig();
             
-            $this->messageManager->addSuccessMessage(__('Original inheritance configuration has been restored'));
+            $this->getMessageManager()->addSuccessMessage(__('Original inheritance configuration has been restored'));
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         } catch (Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $this->getMessageManager()->addErrorMessage($e->getMessage());
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         }

@@ -19,11 +19,11 @@ class Extort extends Button
     {
         try {
             $this->dataHelper->updateLastInheritanceUpdateDate();
-            $this->messageManager->addSuccessMessage(__('All product data will be imported with next download'));
+            $this->getMessageManager()->addSuccessMessage(__('All product data will be imported with next download'));
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         } catch (Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
+            $this->getMessageManager()->addErrorMessage($e->getMessage());
             
             return $this->getResponse()->setRedirect($this->_redirect->getRefererUrl());
         }

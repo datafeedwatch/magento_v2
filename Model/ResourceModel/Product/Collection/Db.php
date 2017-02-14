@@ -49,33 +49,34 @@ class Db extends Collection
     protected $cron;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context                        $context
-     * @param \DataFeedWatch\Connector\Logger\Api                          $apiLogger
-     * @param \DataFeedWatch\Connector\Logger\Sql                          $sqlLogger
-     * @param \Magento\Framework\Data\Collection\EntityFactory             $entityFactory
-     * @param \Psr\Log\LoggerInterface                                     $logger
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \DataFeedWatch\Connector\Logger\Api $apiLogger
+     * @param \DataFeedWatch\Connector\Logger\Sql $sqlLogger
+     * @param \Magento\Framework\Data\Collection\EntityFactory $entityFactory
+     * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface                    $eventManager
-     * @param \Magento\Eav\Model\Config                                    $eavConfig
-     * @param \Magento\Framework\App\ResourceConnection                    $resource
-     * @param \Magento\Eav\Model\EntityFactory                             $eavEntityFactory
-     * @param \Magento\Catalog\Model\ResourceModel\Helper                  $resourceHelper
-     * @param \Magento\Framework\Validator\UniversalFactory                $universalFactory
-     * @param \Magento\Store\Model\StoreManagerInterface                   $storeManager
-     * @param \Magento\Framework\Module\Manager                            $moduleManager
-     * @param \Magento\Catalog\Model\Indexer\Product\Flat\State            $catalogProductFlatState
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
-     * @param \Magento\Catalog\Model\Product\OptionFactory                 $productOptionFactory
-     * @param \Magento\Catalog\Model\ResourceModel\Url                     $catalogUrl
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface         $localeDate
-     * @param \Magento\Framework\Stdlib\DateTime                           $dateTime
-     * @param \Magento\Customer\Api\GroupManagementInterface               $groupManagement
-     * @param Registry                     $registryHelper
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Store\Model\StoreManagerInterface                   $storeManager
-     * @param Collection                                                   $productCollection
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Magento\Eav\Model\Config $eavConfig
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Eav\Model\EntityFactory $eavEntityFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Helper $resourceHelper
+     * @param \Magento\Framework\Validator\UniversalFactory $universalFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param \Magento\Catalog\Model\Indexer\Product\Flat\State $catalogProductFlatState
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Url $catalogUrl
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Magento\Customer\Api\GroupManagementInterface $groupManagement
+     * @param Registry $registryHelper
+     * @param \Magento\Framework\Registry $registry
+     * @param Collection $productCollection
      * @param \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeConfigurable
-     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null          $connection
+     * @param \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -97,6 +98,7 @@ class Db extends Collection
         \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory,
         \Magento\Catalog\Model\ResourceModel\Url $catalogUrl,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
+        \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Customer\Api\GroupManagementInterface $groupManagement,
         Registry $registryHelper,
@@ -133,6 +135,7 @@ class Db extends Collection
             $productOptionFactory,
             $catalogUrl,
             $localeDate,
+            $customerSession,
             $dateTime,
             $groupManagement,
             $connection
