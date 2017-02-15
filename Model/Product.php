@@ -132,8 +132,10 @@ class Product extends coreProduct
         $this->importData['product_type']               = $this->getTypeId();
         $this->importData['quantity']                   = (int) $this->getQty();
         $this->importData['currency_code']              = $this->getStore()->getCurrentCurrencyCode();
+        $this->importData['base_price']                 = $this->getImportFinalPrice(false);
+        $this->importData['base_price_with_tax']        = $this->getImportPrice(true);
         $this->importData['price']                      = $this->getImportPrice(false);
-        $this->importData['price_with_tax']             = $this->getImportPrice(true);
+        $this->importData['price_with_tax']             = $this->getImportFinalPrice(true);
         $this->importData['special_price']              = $this->getImportSpecialPrice(false);
         $this->importData['special_price_with_tax']     = $this->getImportSpecialPrice(true);
         $this->importData['special_from_date']          = $this->getSpecialFromDate();
@@ -148,8 +150,10 @@ class Product extends coreProduct
         if (!empty($parent)) {
             $this->importData['parent_id']                      = $parent->getId();
             $this->importData['parent_sku']                     = $parent->getSku();
-            $this->importData['parent_price']                   = $parent->getImportPrice(false);
-            $this->importData['parent_price_with_tax']          = $parent->getImportPrice(true);
+            $this->importData['parent_base_price']              = $parent->getImportPrice(false);
+            $this->importData['parent_base_price_with_tax']     = $parent->getImportPrice(true);
+            $this->importData['parent_price']                   = $parent->getImportFinalPrice(false);
+            $this->importData['parent_price_with_tax']          = $parent->getImportFinalPrice(true);
             $this->importData['parent_special_price']           = $parent->getImportSpecialPrice(false);
             $this->importData['parent_special_price_with_tax']  = $parent->getImportSpecialPrice(true);
             $this->importData['parent_special_from_date']       = $parent->getSpecialFromDate();
@@ -214,9 +218,19 @@ class Product extends coreProduct
      * @param bool $withTax
      * @return float
      */
-    protected function getImportPrice($withTax = false)
+    protected function getImportFinalPrice($withTax = false)
     {
         $price = round($this->priceCurrency->convert($this->getFinalPrice()), 2);
+        return $this->catalogHelper->getTaxPrice($this, $price, $withTax);
+    }
+
+    /**
+     * @param bool $withTax
+     * @return float
+     */
+    protected function getImportPrice($withTax = false)
+    {
+        $price = round($this->priceCurrency->convert($this->getPrice()), 2);
         return $this->catalogHelper->getTaxPrice($this, $price, $withTax);
     }
 
