@@ -53,18 +53,14 @@ class Db extends Collection
      * @param \DataFeedWatch\Connector\Logger\Api $apiLogger
      * @param \DataFeedWatch\Connector\Logger\Sql $sqlLogger
      * @param \Magento\Framework\Data\Collection\EntityFactory $entityFactory
-     * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Eav\Model\Config $eavConfig
      * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Eav\Model\EntityFactory $eavEntityFactory
      * @param \Magento\Catalog\Model\ResourceModel\Helper $resourceHelper
      * @param \Magento\Framework\Validator\UniversalFactory $universalFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\Module\Manager $moduleManager
      * @param \Magento\Catalog\Model\Indexer\Product\Flat\State $catalogProductFlatState
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory
      * @param \Magento\Catalog\Model\ResourceModel\Url $catalogUrl
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
@@ -83,18 +79,14 @@ class Db extends Collection
         \DataFeedWatch\Connector\Logger\Api $apiLogger,
         \DataFeedWatch\Connector\Logger\Sql $sqlLogger,
         \Magento\Framework\Data\Collection\EntityFactory $entityFactory,
-        \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
         \Magento\Eav\Model\Config $eavConfig,
         \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Eav\Model\EntityFactory $eavEntityFactory,
         \Magento\Catalog\Model\ResourceModel\Helper $resourceHelper,
         \Magento\Framework\Validator\UniversalFactory $universalFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Module\Manager $moduleManager,
         \Magento\Catalog\Model\Indexer\Product\Flat\State $catalogProductFlatState,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory,
         \Magento\Catalog\Model\ResourceModel\Url $catalogUrl,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
@@ -120,18 +112,18 @@ class Db extends Collection
 
         parent::__construct(
             $entityFactory,
-            $logger,
+            $context->getLogger(),
             $fetchStrategy,
-            $eventManager,
+            $context->getEventManager(),
             $eavConfig,
             $resource,
             $eavEntityFactory,
             $resourceHelper,
             $universalFactory,
             $storeManager,
-            $moduleManager,
+            $context->getModuleManager(),
             $catalogProductFlatState,
-            $scopeConfig,
+            $context->getScopeConfig(),
             $productOptionFactory,
             $catalogUrl,
             $localeDate,
