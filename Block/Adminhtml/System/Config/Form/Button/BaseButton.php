@@ -1,21 +1,21 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 22.08.16
+ * Date: 27.02.18
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
  * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
  */
 
-namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config;
+namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 
-class Grid extends Field
+abstract class BaseButton extends Field implements ButtonInterface
 {
     /** @var DataHelper */
     private $dataHelper;
@@ -28,53 +28,21 @@ class Grid extends Field
         $this->dataHelper = $dataHelper;
         parent::__construct($context, $data);
     }
-
-    /**
-     * @return string
-     */
-    public function getActionUrl()
-    {
-        return $this->getUrl('datafeedwatch/system_config_grid/render');
-    }
-    
-    /**
-     * @return string
-     */
-    public function getSaveInheritanceActionUrl()
-    {
-        return $this->getUrl('datafeedwatch/system_config_grid/saveInheritance');
-    }
-    
-    /**
-     * @return string
-     */
-    public function getSaveImportActionUrl()
-    {
-        return $this->getUrl('datafeedwatch/system_config_grid/saveImport');
-    }
-    
-    /**
-     * @return $this
-     */
-    protected function _prepareLayout()
-    {
-        parent::_prepareLayout();
-        if (!$this->getTemplate()) {
-            $this->setTemplate('system/config/grid.phtml');
-        }
-        
-        return $this;
-    }
-    
     /**
      * @param AbstractElement $element
      *
-     * @return string
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _getElementHtml(AbstractElement $element)
     {
-        $this->setHtmlId($element->getData('html_id'));
-        return $this->_toHtml();
+        return $this->getLayout()
+                    ->createBlock('Magento\Backend\Block\Widget\Button')
+                    ->setType('button')
+                    ->setClass('scalable')
+                    ->setLabel($this->getButtonLabel())
+                    ->setOnClick($this->getButtonOnClick())
+                    ->toHtml();
     }
 
     /**

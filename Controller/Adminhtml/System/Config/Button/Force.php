@@ -13,7 +13,7 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
-class Extort extends Button
+class Force extends Button
 {
     public function execute()
     {

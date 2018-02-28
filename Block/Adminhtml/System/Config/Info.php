@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 22.08.16
+ * Date: 28.02.18
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
@@ -14,61 +14,50 @@ use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
+use Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory as ScheduleCollection;
 
-class Grid extends Field
+class Info extends Field
 {
     /** @var DataHelper */
     private $dataHelper;
 
+    /** @var ScheduleCollection */
+    private $scheduleCollection;
+
     public function __construct(
         Context $context,
         DataHelper $dataHelper,
+        ScheduleCollection $scheduleCollection,
         array $data = []
     ) {
         $this->dataHelper = $dataHelper;
+        $this->scheduleCollection = $scheduleCollection;
         parent::__construct($context, $data);
     }
 
     /**
+     * @param AbstractElement $element
      * @return string
      */
-    public function getActionUrl()
+    public function render(AbstractElement $element)
     {
-        return $this->getUrl('datafeedwatch/system_config_grid/render');
+        return $this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
     }
-    
-    /**
-     * @return string
-     */
-    public function getSaveInheritanceActionUrl()
-    {
-        return $this->getUrl('datafeedwatch/system_config_grid/saveInheritance');
-    }
-    
-    /**
-     * @return string
-     */
-    public function getSaveImportActionUrl()
-    {
-        return $this->getUrl('datafeedwatch/system_config_grid/saveImport');
-    }
-    
+
     /**
      * @return $this
      */
     protected function _prepareLayout()
     {
-        parent::_prepareLayout();
         if (!$this->getTemplate()) {
-            $this->setTemplate('system/config/grid.phtml');
+            $this->setTemplate('system/config/info.phtml');
         }
-        
-        return $this;
+
+        return parent::_prepareLayout();
     }
-    
+
     /**
      * @param AbstractElement $element
-     *
      * @return string
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -78,11 +67,14 @@ class Grid extends Field
     }
 
     /**
-     * @param AbstractElement $element
-     * @return string
+     * @return mixed
      */
-    public function render(AbstractElement $element)
+    public function getScheduledTasks()
     {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
+        $collection = $this->scheduleCollection->create();
+        $collection->addFieldToFilter('job_code', 'datafeedwatch_connector_installer');
+        $collection->addFieldToFilter('status', ['in' => ['pending', 'running']]);
+
+        return $collection;
     }
 }

@@ -18,9 +18,6 @@ class FillUpdatedAtTable
 {
     const CATALOGRULE_DATE_TABLE_ALIAS = 'catalogrule_product_price_date';
     
-    /** @var \DataFeedWatch\Connector\Logger\Cron */
-    protected $logger;
-    
     /** @var DataHelper */
     private $dataHelper;
     
@@ -30,16 +27,13 @@ class FillUpdatedAtTable
     /**
      * FillUpdatedAtTable constructor.
      *
-     * @param \DataFeedWatch\Connector\Logger\Cron      $logger
      * @param DataHelper                                $dataHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      */
     public function __construct(
-        \DataFeedWatch\Connector\Logger\Cron $logger,
         DataHelper $dataHelper,
         ResourceConnection $resource
     ) {
-        $this->logger     = $logger;
         $this->dataHelper = $dataHelper;
         $this->resource   = $resource;
     }
@@ -67,9 +61,6 @@ class FillUpdatedAtTable
         if (count($priceData) < 1) {
             return $this;
         }
-        
-        $this->logger->info($select->__toString());
-        $this->logger->info(count($priceData));
         
         $updatedDataTable = $this->resource->getTableName('datafeedwatch_updated_products');
         foreach ($priceData as $data) {

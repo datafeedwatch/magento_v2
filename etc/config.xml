@@ -3,9 +3,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <datafeedwatch_connector>
-            <general>
-                <debug>0</debug>
-            </general>
             <custom_inheritance>
                 <product_url>1</product_url>
                 <image_url>0</image_url>
