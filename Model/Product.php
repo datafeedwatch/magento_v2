@@ -12,7 +12,10 @@ namespace DataFeedWatch\Connector\Model;
 
 use DataFeedWatch\Connector\Helper\Registry;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product as coreProduct;
+use Magento\Catalog\Model\Product\Attribute\Backend\Media\EntryConverterPool;
+use Magento\Framework\Api\AttributeValueFactory;
 
 class Product extends coreProduct
 {
@@ -23,40 +26,70 @@ class Product extends coreProduct
     protected $priceCurrency;
     protected $catalogHelper;
 
+    /**
+     * Product constructor.
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataService
+     * @param coreProduct\Url $url
+     * @param coreProduct\Link $productLink
+     * @param coreProduct\Configuration\Item\OptionFactory $itemOptionFactory
+     * @param \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $stockItemFactory
+     * @param coreProduct\OptionFactory $catalogProductOptionFactory
+     * @param coreProduct\Visibility $catalogProductVisibility
+     * @param coreProduct\Attribute\Source\Status $catalogProductStatus
+     * @param coreProduct\Media\Config $catalogProductMediaConfig
+     * @param coreProduct\Type $catalogProductType
+     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param \Magento\Catalog\Helper\Product $catalogProduct
+     * @param ResourceModel\Product $resource
+     * @param ResourceModel\Product\Collection $resourceCollection
+     * @param \Magento\Framework\Data\CollectionFactory $collectionFactory
+     * @param \Magento\Framework\Filesystem $filesystem
+     * @param \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry
+     * @param \Magento\Catalog\Model\Indexer\Product\Flat\Processor $productFlatIndexerProcessor
+     * @param \Magento\Catalog\Model\Indexer\Product\Price\Processor $productPriceIndexerProcessor
+     * @param \Magento\Catalog\Model\Indexer\Product\Eav\Processor $productEavIndexerProcessor
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param coreProduct\Image\CacheFactory $imageCacheFactory
+     * @param \Magento\Catalog\Model\ProductLink\CollectionProvider $entityCollectionProvider
+     * @param coreProduct\LinkTypeProvider $linkTypeProvider
+     * @param \Magento\Catalog\Api\Data\ProductLinkInterfaceFactory $productLinkFactory
+     * @param \Magento\Catalog\Api\Data\ProductLinkExtensionFactory $productLinkExtensionFactory
+     * @param EntryConverterPool $mediaGalleryEntryConverterPool
+     * @param \Magento\Framework\Api\DataObjectHelper $dataObjectHelper
+     * @param \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
+     * @param Registry $registryHelper
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Catalog\Helper\Data $catalogHelper
+     * @param array $data
+     */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Model\Context $context, \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataService,
-        \Magento\Catalog\Model\Product\Url $url,
-        \Magento\Catalog\Model\Product\Link $productLink,
-        \Magento\Catalog\Model\Product\Configuration\Item\OptionFactory $itemOptionFactory,
+        AttributeValueFactory $customAttributeFactory, \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataService, \Magento\Catalog\Model\Product\Url $url,
+        \Magento\Catalog\Model\Product\Link $productLink, \Magento\Catalog\Model\Product\Configuration\Item\OptionFactory $itemOptionFactory,
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $stockItemFactory,
-        \Magento\Catalog\Model\Product\OptionFactory $catalogProductOptionFactory,
-        \Magento\Catalog\Model\Product\Visibility $catalogProductVisibility,
-        \Magento\Catalog\Model\Product\Attribute\Source\Status $catalogProductStatus,
-        \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig,
-        \Magento\Catalog\Model\Product\Type $catalogProductType,
-        \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Catalog\Helper\Product $catalogProduct,
-        \Magento\Catalog\Model\ResourceModel\Product $resource,
-        \Magento\Catalog\Model\ResourceModel\Product\Collection $resourceCollection,
-        \Magento\Framework\Data\CollectionFactory $collectionFactory,
-        \Magento\Framework\Filesystem $filesystem,
+        \Magento\Catalog\Model\Product\OptionFactory $catalogProductOptionFactory, \Magento\Catalog\Model\Product\Visibility $catalogProductVisibility,
+        \Magento\Catalog\Model\Product\Attribute\Source\Status $catalogProductStatus, \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig,
+        \Magento\Catalog\Model\Product\Type $catalogProductType, \Magento\Framework\Module\Manager $moduleManager,
+        \Magento\Catalog\Helper\Product $catalogProduct, ResourceModel\Product $resource,
+        ResourceModel\Product\Collection $resourceCollection,
+        \Magento\Framework\Data\CollectionFactory $collectionFactory, \Magento\Framework\Filesystem $filesystem,
         \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry,
         \Magento\Catalog\Model\Indexer\Product\Flat\Processor $productFlatIndexerProcessor,
         \Magento\Catalog\Model\Indexer\Product\Price\Processor $productPriceIndexerProcessor,
-        \Magento\Catalog\Model\Indexer\Product\Eav\Processor $productEavIndexerProcessor,
-        \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository,
-        \Magento\Catalog\Model\Product\Image\CacheFactory $imageCacheFactory,
-        \Magento\Catalog\Model\ProductLink\CollectionProvider $entityCollectionProvider,
+        \Magento\Catalog\Model\Indexer\Product\Eav\Processor $productEavIndexerProcessor, CategoryRepositoryInterface $categoryRepository,
+        \Magento\Catalog\Model\Product\Image\CacheFactory $imageCacheFactory, \Magento\Catalog\Model\ProductLink\CollectionProvider $entityCollectionProvider,
         \Magento\Catalog\Model\Product\LinkTypeProvider $linkTypeProvider,
         \Magento\Catalog\Api\Data\ProductLinkInterfaceFactory $productLinkFactory,
         \Magento\Catalog\Api\Data\ProductLinkExtensionFactory $productLinkExtensionFactory,
-        \Magento\Catalog\Model\Product\Attribute\Backend\Media\EntryConverterPool $mediaGalleryEntryConverterPool,
-        \Magento\Framework\Api\DataObjectHelper $dataObjectHelper,
+        EntryConverterPool $mediaGalleryEntryConverterPool, \Magento\Framework\Api\DataObjectHelper $dataObjectHelper,
         \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
         Registry $registryHelper,
@@ -64,10 +97,10 @@ class Product extends coreProduct
         \Magento\Catalog\Helper\Data $catalogHelper,
         array $data = []
     ) {
-        $this->dataHelper                   = $dataHelper;
-        $this->registryHelper               = $registryHelper;
-        $this->priceCurrency                = $priceCurrency;
-        $this->catalogHelper                = $catalogHelper;
+        $this->dataHelper       = $dataHelper;
+        $this->registryHelper   = $registryHelper;
+        $this->priceCurrency    = $priceCurrency;
+        $this->catalogHelper    = $catalogHelper;
         parent::__construct(
             $context,
             $registry,

@@ -16,7 +16,8 @@ use Magento\Framework\App\Helper\AbstractHelper;
 class Data extends AbstractHelper
 {
     const MY_DATA_FEED_WATCH_URL               = 'https://my.datafeedwatch.com/';
-    const DEBUG_XPATH                          = 'datafeedwatch_connector/general/debug';
+    const INSTALLATION_COMPLETE                = 'datafeedwatch_connector/general/installation_complete';
+    const RUN_CRON_INSTALLER                   = 'datafeedwatch_connector/general/run_cron_installer';
     const PRODUCT_URL_CUSTOM_INHERITANCE_XPATH = 'datafeedwatch_connector/custom_inheritance/product_url';
     const IMAGE_URL_CUSTOM_INHERITANCE_XPATH   = 'datafeedwatch_connector/custom_inheritance/image_url';
     const LAST_CATALOGRULE_PRICE_ID_XPATH      = 'datafeedwatch_connector/custom_inheritance/last_catalogrule_price_id';
@@ -54,14 +55,22 @@ class Data extends AbstractHelper
         $this->cacheFrontendPool = $cacheFrontendPool;
         parent::__construct($context);
     }
-    
-    /**
-     * @return bool
-     */
-    public function isDebugModeEnabled()
+
+    public function setInstallationIncomplete()
     {
-        
-        return $this->scopeConfig->isSetFlag(self::DEBUG_XPATH);
+        $this->resourceConfig->saveConfig(self::INSTALLATION_COMPLETE, 0, 'default', 0);
+        $this->resourceConfig->saveConfig(self::RUN_CRON_INSTALLER, '* * * * *', 'default', 0);
+    }
+
+    public function setInstallationComplete()
+    {
+        $this->resourceConfig->saveConfig(self::INSTALLATION_COMPLETE, 1, 'default', 0);
+        $this->resourceConfig->saveConfig(self::RUN_CRON_INSTALLER, '0 0 5 31 2 ?', 'default', 0);
+    }
+
+    public function getInstallationComplete()
+    {
+        return $this->scopeConfig->isSetFlag(self::INSTALLATION_COMPLETE);
     }
     
     /**
@@ -69,7 +78,6 @@ class Data extends AbstractHelper
      */
     public function isProductUrlInherited()
     {
-        
         return $this->scopeConfig->isSetFlag(self::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH);
     }
     
@@ -78,7 +86,6 @@ class Data extends AbstractHelper
      */
     public function isImageUrlInherited()
     {
-        
         return $this->scopeConfig->isSetFlag(self::IMAGE_URL_CUSTOM_INHERITANCE_XPATH);
     }
     
@@ -87,7 +94,6 @@ class Data extends AbstractHelper
      */
     public function getLastCatalogRulePriceId()
     {
-        
         return $this->scopeConfig->getValue(self::LAST_CATALOGRULE_PRICE_ID_XPATH);
     }
     
@@ -96,7 +102,6 @@ class Data extends AbstractHelper
      */
     public function setLastCatalogRulePriceId($id)
     {
-        
         $this->resourceConfig->saveConfig(self::LAST_CATALOGRULE_PRICE_ID_XPATH, $id, 'default', 0);
     }
     
@@ -105,7 +110,6 @@ class Data extends AbstractHelper
      */
     public function getLastInheritanceUpdateDate()
     {
-        
         return $this->scopeConfig->getValue(self::LAST_INHERITANCE_UPDATE_XPATH);
     }
     
@@ -128,7 +132,6 @@ class Data extends AbstractHelper
      */
     public function getDataFeedWatchUrl()
     {
-        
         return self::MY_DATA_FEED_WATCH_URL;
     }
     

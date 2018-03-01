@@ -10,29 +10,21 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-
-class Add extends Field
+class Add extends BaseButton
 {
     /**
-     * @param AbstractElement $element
-     *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return \Magento\Framework\Phrase
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function getButtonLabel()
     {
-        $url     = $this->getUrl('datafeedwatch/system_config_button/add');
-        $onclick = sprintf("window.open('%s', '_blank')", $url);
-        $html    = $this->getLayout()
-                        ->createBlock('Magento\Backend\Block\Widget\Button')
-                        ->setType('button')
-                        ->setClass('scalable')
-                        ->setLabel(__('Add Store'))
-                        ->setOnClick($onclick)
-                        ->toHtml();
-        
-        return $html;
+        return __('Add Store');
+    }
+
+    /**
+     * @return string
+     */
+    public function getButtonOnClick()
+    {
+        return sprintf("window.open('%s', '_blank')", $this->getUrl('datafeedwatch/system_config_button/add'));
     }
 }

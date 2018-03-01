@@ -68,3 +68,6 @@
     display: block;
     margin: 0 auto;
 }
+
+#dfw_info {color: red; width: 500px;}
+#time_info {color: grey; }

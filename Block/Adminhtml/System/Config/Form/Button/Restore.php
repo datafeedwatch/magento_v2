@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 30.08.16
+ * Date: 29.08.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
@@ -10,29 +10,21 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
-
-class Restore extends Field
+class Restore extends BaseButton
 {
     /**
-     * @param AbstractElement $element
-     *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return \Magento\Framework\Phrase
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function getButtonLabel()
     {
-        $url     = $this->getUrl('datafeedwatch/system_config_button/restore');
-        $onclick = sprintf("setLocation('%s')", $url);
-        $html    = $this->getLayout()
-                        ->createBlock('Magento\Backend\Block\Widget\Button')
-                        ->setType('button')
-                        ->setClass('scalable')
-                        ->setLabel(__('Restore'))
-                        ->setOnClick($onclick)
-                        ->toHtml();
-        
-        return $html;
+        return __('Restore');
+    }
+
+    /**
+     * @return string
+     */
+    public function getButtonOnClick()
+    {
+        return sprintf("setLocation('%s')", $this->getUrl('datafeedwatch/system_config_button/restore'));
     }
 }

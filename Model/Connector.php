@@ -17,10 +17,9 @@ class Connector implements ConnectorInterface
     const MODULE_NAME = 'DataFeedWatch_Connector';
     
     protected $moduleList;
-    protected $logger;
     protected $storeManager;
     protected $scopeConfig;
-    protected $productCollection;
+    protected $productCollectionFactory;
     protected $dataHelper;
     protected $dfwApiUser;
 
@@ -29,29 +28,26 @@ class Connector implements ConnectorInterface
      *
      * @param \Magento\Framework\App\Helper\Context              $context
      * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
-     * @param \DataFeedWatch\Connector\Logger\Api                $logger
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
-     * @param ResourceModel\Product\Collection                   $productCollection
+     * @param ResourceModel\Product\CollectionFactory            $productCollectionFactory
      * @param \DataFeedWatch\Connector\Helper\Data               $dataHelper
      * @param Api\User                                           $dfwApiUser
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \DataFeedWatch\Connector\Logger\Api $logger,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $productCollection,
+        \DataFeedWatch\Connector\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
         \DataFeedWatch\Connector\Model\Api\User $dfwApiUser
     ) {
 
-        $this->moduleList           = $moduleList;
-        $this->logger               = $logger;
-        $this->scopeConfig          = $context->getScopeConfig();
-        $this->storeManager         = $storeManager;
-        $this->productCollection    = $productCollection;
-        $this->dataHelper           = $dataHelper;
-        $this->dfwApiUser           = $dfwApiUser;
+        $this->moduleList               = $moduleList;
+        $this->scopeConfig              = $context->getScopeConfig();
+        $this->storeManager             = $storeManager;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->dataHelper               = $dataHelper;
+        $this->dfwApiUser               = $dfwApiUser;
     }
     
     /**
@@ -59,11 +55,7 @@ class Connector implements ConnectorInterface
      */
     public function version()
     {
-        $this->logger->debug('datafeedwatch.version');
-        $version = $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
-        $this->logger->debug($version);
-        
-        return $version;
+        return $this->moduleList->getOne(self::MODULE_NAME)['setup_version'];
     }
 
     /**
@@ -71,12 +63,10 @@ class Connector implements ConnectorInterface
      */
     public function gmtOffset()
     {
-        $this->logger->debug('datafeedwatch.gmtOffset');
         $timeZone = $this->scopeConfig->getValue('general/locale/timezone');
         $timeZone = new \DateTimeZone($timeZone);
         $time     = new \DateTime('now', $timeZone);
         $offset   = (int)($timeZone->getOffset($time) / 3600);
-        $this->logger->debug($offset);
 
         return $offset;
     }
@@ -86,9 +76,7 @@ class Connector implements ConnectorInterface
      */
     public function stores()
     {
-        $this->logger->debug('datafeedwatch.stores');
         $storeViews = $this->getStoresArray();
-        $this->logger->debug($storeViews);
 
         return [$storeViews];
     }
@@ -98,9 +86,11 @@ class Connector implements ConnectorInterface
      */
     public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
-        $this->logger->debug('datafeedwatch.products');
         $options = [];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
+        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
+            $options['fillParentIds'] = true;
+        }
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
 
@@ -112,12 +102,10 @@ class Connector implements ConnectorInterface
      */
     public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
-        $this->logger->debug('datafeedwatch.productCount');
-        $options = [];
+        $options = ['fillParentIds' => false];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
         $collection = $this->getProductCollection($options);
         $amount     = (int) $collection->getSize();
-        $this->logger->debug(sprintf('datafeedwatch.productCount %d', $amount));
 
         return $amount;
     }
@@ -134,16 +122,17 @@ class Connector implements ConnectorInterface
         $perPage = 100, 
         $page = 1
     ) {
-        $this->logger->debug('datafeedwatch.updatedProducts');
         $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
+        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
+            $options['fillParentIds'] = true;
+        }
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $collection->applyInheritanceLogic();
 
             return $this->processProducts($collection);
         } else {
-            $this->logger->debug('datafeedwatch.updatedProducts -> datafeedwatch.products');
 
             return $this->products($options);
         }
@@ -161,15 +150,12 @@ class Connector implements ConnectorInterface
         $perPage = 100, 
         $page = 1
     ) {
-        $this->logger->debug('datafeedwatch.updatedProductCount');
-        $options = [];
+        $options = ['fillParentIds' => false];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
-            $this->logger->debug(sprintf('datafeedwatch.updatedProductCount %d', $amount));
         } else {
-            $this->logger->debug('datafeedwatch.updatedProductCount -> datafeedwatch.productCount');
             $amount = $this->productCount($options);
         }
 
@@ -188,8 +174,7 @@ class Connector implements ConnectorInterface
         $perPage = 100, 
         $page = 1
     ) {
-        $options = [];
-        $this->logger->debug('datafeedwatch.productIds');
+        $options = ['fillParentIds' => false];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         $collection = $this->getProductCollection($options);
 
@@ -232,7 +217,8 @@ class Connector implements ConnectorInterface
     public function getProductCollection($options)
     {
         /** @var \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $collection */
-        $collection = $this->productCollection->addAttributeToSelect('*');
+        $collection = $this->productCollectionFactory->create();
+        $collection->addAttributeToSelect('*');
         $collection->applyFiltersOnCollection($options);
         return $collection;
     }
@@ -275,8 +261,6 @@ class Connector implements ConnectorInterface
         $options['per_page'] = (int)$perPage;
         $options['page'] = (int)$page;
 
-        $this->logger->debug($options);
-
         $this->filterStoreOption($options);
 
         if (isset($options['type'])) {
@@ -303,12 +287,8 @@ class Connector implements ConnectorInterface
     {
         $existingStoreViews = array_keys($this->getStoresArray());
         if (isset($options['store']) && !in_array($options['store'], $existingStoreViews)) {
-            $message = 'The store view %s does not exist. Default store will be applied';
-            $this->logger->debug(sprintf($message, $options['store']));
             $options['store'] = $this->storeManager->getStore()->getCode();
         } elseif (!isset($options['store'])) {
-            $message = 'The store not specified. Default store has been applied';
-            $this->logger->debug($message);
             $options['store'] = $this->storeManager->getStore()->getCode();
         }
         $this->storeManager->setCurrentStore($options['store']);
@@ -333,8 +313,6 @@ class Connector implements ConnectorInterface
         if (!empty($types)) {
             $options['type'] = $types;
         } else {
-            $this->logger->debug('The type below does not exist');
-            $this->logger->debug($options['type']);
             unset($options['type']);
         }
     }
@@ -350,8 +328,6 @@ class Connector implements ConnectorInterface
         } elseif ($status === '1') {
             $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
         } else {
-            $message = 'The status %s does not exist';
-            $this->logger->debug(sprintf($message, $options['status']));
             unset($options['status']);
         }
     }
@@ -364,7 +340,6 @@ class Connector implements ConnectorInterface
         try {
             $options['timezone'] = new \DateTimeZone($options['timezone']);
         } catch (\Exception $e) {
-            $this->logger->debug(sprintf('%s timezone is wrong', $options['timezone']));
             $options['timezone'] = null;
         }
     }
@@ -406,24 +381,9 @@ class Connector implements ConnectorInterface
      */
     protected function isFromDateEarlierThanConfigDate($options)
     {
-        $this->logger->debug('START: Model/Api.php->isFromDateEarlierThanConfigDate()');
         if (!isset($options['from_date'])) {
-            $this->logger->debug('$options[\'from_date\'] is not set');
-            $this->logger->debug('END: Model/Api.php->isFromDateEarlierThanConfigDate()');
-
             return false;
         }
-        $this->logger->debug('$options[\'from_date\']');
-        $this->logger->debug($options['from_date']);
-        $this->logger->debug('$this->dataHelper->getLastInheritanceUpdateDate()');
-        $this->logger->debug($this->dataHelper->getLastInheritanceUpdateDate());
-        $this->logger->debug('result');
-        if ($options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate()) {
-            $this->logger->debug('$options[\'from_date\'] < $this->dataHelper->getLastInheritanceUpdateDate()');
-        } else {
-            $this->logger->debug('From date is equal or greater');
-        }
-        $this->logger->debug('END: Model/Api.php->isFromDateEarlierThanConfigDate()');
 
         return $options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate();
     }

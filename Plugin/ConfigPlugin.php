@@ -15,17 +15,12 @@ use Magento\TestFramework\Inspection\Exception;
 
 class ConfigPlugin
 {
-    /** @var \DataFeedWatch\Connector\Logger\Api */
-    protected $logger;
-    
     /** @var DataHelper */
     protected $dataHelper;
     
     public function __construct(
-        \DataFeedWatch\Connector\Logger\Api $logger,
         DataHelper $dataHelper
     ) {
-        $this->logger     = $logger;
         $this->dataHelper = $dataHelper;
     }
     
@@ -102,8 +97,6 @@ class ConfigPlugin
                 return null;
             }
         } catch (Exception $e) {
-            $this->logger->info($e->getMessage());
-            
             return null;
         }
     }

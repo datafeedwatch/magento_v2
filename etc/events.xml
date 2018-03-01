@@ -3,30 +3,30 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="catalog_category_save_after">
         <observer name="datafeedwatch_connector_catalog_category_save_after"
-                  instance="\DataFeedWatch\Connector\Observer\CategorySaveAfter"/>
+                  instance="\DataFeedWatch\Connector\Observer\CategorySaveAfter" />
     </event>
     <event name="catalog_category_delete_before">
         <observer name="datafeedwatch_connector_catalog_category_delete_before"
-                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate"/>
+                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate" />
     </event>
     <event name="catalog_category_change_products">
         <observer name="datafeedwatch_connector_catalog_category_change_products"
-                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate"/>
+                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate" />
     </event>
     <event name="catalog_product_delete_before">
         <observer name="datafeedwatch_connector_catalog_product_delete_before"
-                  instance="\DataFeedWatch\Connector\Observer\RemoveProductFromUpdatedTable"/>
+                  instance="\DataFeedWatch\Connector\Observer\RemoveProductFromUpdatedTable" />
     </event>
     <event name="catalog_product_save_after">
         <observer name="datafeedwatch_connector_catalog_product_save_after"
-                  instance="\DataFeedWatch\Connector\Observer\ChangeProductUpdatedAtPlugin"/>
+                  instance="\DataFeedWatch\Connector\Observer\ChangeProductUpdatedAtPlugin" />
     </event>
     <event name="catalog_entity_attribute_save_before">
         <observer name="datafeedwatch_connector_catalog_entity_attribute_save_before"
-                  instance="\DataFeedWatch\Connector\Observer\CheckAndUpdateAttributeInheritance"/>
+                  instance="\DataFeedWatch\Connector\Observer\CheckAndUpdateAttributeInheritance" />
     </event>
     <event name="catalog_entity_attribute_delete_before">
         <observer name="datafeedwatch_connector_catalog_entity_attribute_delete_before"
-                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate"/>
+                  instance="\DataFeedWatch\Connector\Observer\UpdateLastInheritanceUpdateDate" />
     </event>
 </config>

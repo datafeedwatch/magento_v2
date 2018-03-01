@@ -10,14 +10,14 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
-class Refresh extends BaseButton
+class Force extends BaseButton
 {
     /**
      * @return \Magento\Framework\Phrase
      */
     public function getButtonLabel()
     {
-        return __('Refresh');
+        return __('Get All');
     }
 
     /**
@@ -25,6 +25,6 @@ class Refresh extends BaseButton
      */
     public function getButtonOnClick()
     {
-        return sprintf("setLocation('%s')", $this->getUrl('datafeedwatch/system_config_button/refresh'));
+        return sprintf("setLocation('%s')", $this->getUrl('datafeedwatch/system_config_button/force'));
     }
 }

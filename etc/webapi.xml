@@ -3,65 +3,65 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
 
     <route url="/V1/datafeedwatch/version" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="version"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="version" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/gmt_offset" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="gmtOffset"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="gmtOffset" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/stores" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="stores"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="stores" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/products" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="products"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="products" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/product_count" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productCount"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productCount" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/updated_products" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProducts"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProducts" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/updated_product_count" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProductCount"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="updatedProductCount" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/product_ids" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productIds"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="productIds" />
         <resources>
-            <resource ref="DataFeedWatch_Connector::config"/>
+            <resource ref="DataFeedWatch_Connector::config" />
         </resources>
     </route>
 
     <route url="/V1/datafeedwatch/revoke_access_token" method="POST">
-        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="revokeAccessToken"/>
+        <service class="DataFeedWatch\Connector\Api\ConnectorInterface" method="revokeAccessToken" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
         </resources>
     </route>
 </routes>
