@@ -75,26 +75,28 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        $this->setup = $setup;
+        if ($context instanceof ModuleContextInterface) {
+            $this->setup = $setup;
 
-        $this->installAttributes();
-        $this->scheduleDataInstall();
-        $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
+            $this->installAttributes();
+            $this->scheduleDataInstall();
+            $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
+        }
     }
 
-    protected function installAttributes()
+    public function installAttributes()
     {
         $this->installIgnoreDataFeedAttribute();
         $this->installDfwParentIdsAttribute();
     }
 
-    protected function installIgnoreDataFeedAttribute()
+    public function installIgnoreDataFeedAttribute()
     {
         $properties = [
             'type'                     => 'int',
             'label'                    => 'Ignore In DataFeedWatch',
             'input'                    => 'select',
-            'source'                   => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'source'                   => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
             'sort_order'               => 100,
             'global'                   => ScopedAttributeInterface::SCOPE_GLOBAL,
             'group'                    => 'General Information',
@@ -121,7 +123,7 @@ class InstallData implements InstallDataInterface
      * @param array $attributeProperties
      * @param string $entityType
      */
-    protected function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY)
+    public function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY)
     {
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->setup]);
@@ -137,7 +139,7 @@ class InstallData implements InstallDataInterface
         }
     }
 
-    protected function installDfwParentIdsAttribute()
+    public function installDfwParentIdsAttribute()
     {
         $properties = [
             'type'                     => 'varchar',
@@ -163,7 +165,7 @@ class InstallData implements InstallDataInterface
         $this->createAttribute('dfw_parent_ids', $properties);
     }
 
-    protected function scheduleDataInstall()
+    public function scheduleDataInstall()
     {
         $currentTimestamp = time();
         $createdAt        = strftime('%Y-%m-%d %H:%M:00', $currentTimestamp);

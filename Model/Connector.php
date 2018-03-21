@@ -16,22 +16,25 @@ class Connector implements ConnectorInterface
 {
     const MODULE_NAME = 'DataFeedWatch_Connector';
     
-    protected $moduleList;
-    protected $storeManager;
-    protected $scopeConfig;
-    protected $productCollectionFactory;
-    protected $dataHelper;
-    protected $dfwApiUser;
+    public $moduleList;
+    public $storeManager;
+    public $scopeConfig;
+    public $productCollectionFactory;
+    public $dataHelper;
+    public $dfwApiUser;
+    public $dateTime;
+    public $timeZone;
 
     /**
      * Connector constructor.
-     *
-     * @param \Magento\Framework\App\Helper\Context              $context
-     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
-     * @param ResourceModel\Product\CollectionFactory            $productCollectionFactory
-     * @param \DataFeedWatch\Connector\Helper\Data               $dataHelper
-     * @param Api\User                                           $dfwApiUser
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param ResourceModel\Product\CollectionFactory $productCollectionFactory
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Framework\Stdlib\DateTime\Timezone $timeZone
+     * @param Api\User $dfwApiUser
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -39,10 +42,14 @@ class Connector implements ConnectorInterface
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \DataFeedWatch\Connector\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Magento\Framework\Stdlib\DateTime\Timezone $timeZone,
         \DataFeedWatch\Connector\Model\Api\User $dfwApiUser
     ) {
 
         $this->moduleList               = $moduleList;
+        $this->dateTime                 = $dateTime;
+        $this->timeZone                 = $timeZone;
         $this->scopeConfig              = $context->getScopeConfig();
         $this->storeManager             = $storeManager;
         $this->productCollectionFactory = $productCollectionFactory;
@@ -63,12 +70,7 @@ class Connector implements ConnectorInterface
      */
     public function gmtOffset()
     {
-        $timeZone = $this->scopeConfig->getValue('general/locale/timezone');
-        $timeZone = new \DateTimeZone($timeZone);
-        $time     = new \DateTime('now', $timeZone);
-        $offset   = (int)($timeZone->getOffset($time) / 3600);
-
-        return $offset;
+        return $this->dateTime->getGmtOffset('hours');
     }
 
     /**
@@ -114,12 +116,12 @@ class Connector implements ConnectorInterface
      * {@inheritdoc}
      */
     public function updatedProducts(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
         $page = 1
     ) {
         $options = [];
@@ -130,10 +132,8 @@ class Connector implements ConnectorInterface
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $collection->applyInheritanceLogic();
-
             return $this->processProducts($collection);
         } else {
-
             return $this->products($options);
         }
     }
@@ -142,12 +142,12 @@ class Connector implements ConnectorInterface
      * {@inheritdoc}
      */
     public function updatedProductCount(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
         $page = 1
     ) {
         $options = ['fillParentIds' => false];
@@ -166,12 +166,12 @@ class Connector implements ConnectorInterface
      * {@inheritdoc}
      */
     public function productIds(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
         $page = 1
     ) {
         $options = ['fillParentIds' => false];
@@ -192,7 +192,7 @@ class Connector implements ConnectorInterface
     /**
      * @return array
      */
-    protected function getStoresArray()
+    public function getStoresArray()
     {
         $storeViews = [];
         foreach ($this->storeManager->getWebsites() as $website) {
@@ -234,13 +234,13 @@ class Connector implements ConnectorInterface
      * @param int  $page
      */
     public function filterOptions(
-        &$options, 
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        &$options,
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $fromDate = null,
+        $perPage = 100,
         $page = 1
     ) {
         if ($store !== null && is_string($store)) {
@@ -269,10 +269,6 @@ class Connector implements ConnectorInterface
 
         if (isset($options['status'])) {
             $this->filterStatusOption($options);
-        }
-
-        if (isset($options['timezone'])) {
-            $this->filterTimeZoneOption($options);
         }
 
         if (isset($options['from_date'])) {
@@ -335,29 +331,12 @@ class Connector implements ConnectorInterface
     /**
      * @param array $options
      */
-    public function filterTimeZoneOption(&$options)
-    {
-        try {
-            $options['timezone'] = new \DateTimeZone($options['timezone']);
-        } catch (\Exception $e) {
-            $options['timezone'] = null;
-        }
-    }
-
-    /**
-     * @param array $options
-     */
     public function filterFromDateOption(&$options)
     {
         if (!isset($options['timezone'])) {
             $options['timezone'] = null;
         }
-        try {
-            $options['from_date'] = new \DateTime($options['from_date'], $options['timezone']);
-        } catch (\Exception $e) {
-            $options['from_date'] = new \DateTime();
-        }
-        $options['from_date'] = $options['from_date']->format('Y-m-d H:i:s');
+        $options['from_date'] = $this->dateTime->date(null, $options['from_date']);
     }
 
     /**
@@ -365,7 +344,7 @@ class Connector implements ConnectorInterface
      *
      * @return array
      */
-    protected function processProducts($collection)
+    public function processProducts($collection)
     {
         $products = [];
         foreach ($collection as $product) {
@@ -379,7 +358,7 @@ class Connector implements ConnectorInterface
      * @param array $options
      * @return bool
      */
-    protected function isFromDateEarlierThanConfigDate($options)
+    public function isFromDateEarlierThanConfigDate($options)
     {
         if (!isset($options['from_date'])) {
             return false;

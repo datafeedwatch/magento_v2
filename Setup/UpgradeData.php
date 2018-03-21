@@ -44,9 +44,9 @@ class UpgradeData implements UpgradeDataInterface
         Config $config,
         Cache $cache
     ) {
-        $this->dataHelper = $dataHelper;
-        $this->config = $config;
-        $this->cache      = $cache;
+        $this->dataHelper   = $dataHelper;
+        $this->config       = $config;
+        $this->cache        = $cache;
     }
 
     /**
@@ -57,15 +57,14 @@ class UpgradeData implements UpgradeDataInterface
     {
         $this->setup = $setup;
         if (version_compare($context->getVersion(), '0.1.0') === 0) {
-            $this->version_0_1_0_To_1_0_0();
+            $this->version010To100();
         }
     }
 
-    protected function version_0_1_0_To_1_0_0()
+    public function version010To100()
     {
         $this->dataHelper->setInstallationComplete();
         $this->config->deleteConfig('datafeedwatch_connector/general/debug', 'default', 0);
         $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
     }
 }
-

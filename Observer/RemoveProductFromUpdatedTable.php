@@ -18,10 +18,10 @@ use Magento\Framework\Event\ObserverInterface;
 class RemoveProductFromUpdatedTable implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     /** @var \Magento\Framework\App\ResourceConnection */
-    protected $resource;
+    public $resource;
     
     /**
      * @param DataHelper                                $dataHelper

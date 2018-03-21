@@ -31,15 +31,15 @@ class Inheritance implements ArrayInterface
         return [
             [
                 'value' => self::CHILD_OPTION_ID,
-                'label' => __(self::CHILD_OPTION_LABEL),
+                'label' => __('Child'),
             ],
             [
                 'value' => self::PARENT_OPTION_ID,
-                'label' => __(self::PARENT_OPTION_LABEL),
+                'label' => __('Parent'),
             ],
             [
                 'value' => self::CHILD_THEN_PARENT_OPTION_ID,
-                'label' => __(self::CHILD_THEN_PARENT_OPTION_LABEL),
+                'label' => __('Child Then Parent'),
             ],
         ];
     }
@@ -52,9 +52,9 @@ class Inheritance implements ArrayInterface
     public function toArray()
     {
         return [
-            self::CHILD_OPTION_ID             => __(self::CHILD_OPTION_LABEL),
-            self::PARENT_OPTION_ID            => __(self::PARENT_OPTION_LABEL),
-            self::CHILD_THEN_PARENT_OPTION_ID => __(self::CHILD_THEN_PARENT_OPTION_LABEL),
+            self::CHILD_OPTION_ID             => __('Child'),
+            self::PARENT_OPTION_ID            => __('Parent'),
+            self::CHILD_THEN_PARENT_OPTION_ID => __('Child Then Parent'),
         ];
     }
 }

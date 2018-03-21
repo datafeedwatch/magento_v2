@@ -16,7 +16,7 @@ use Magento\TestFramework\Inspection\Exception;
 class ConfigPlugin
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     public function __construct(
         DataHelper $dataHelper
@@ -42,7 +42,7 @@ class ConfigPlugin
      *
      * @return bool
      */
-    protected function hasConfigDataChanged($config, $xpath)
+    private function hasConfigDataChanged($config, $xpath)
     {
         
         return $config->getConfigDataValue($xpath) !== $this->getConfigDataFromXpath($config, $xpath);
@@ -54,11 +54,10 @@ class ConfigPlugin
      *
      * @return mixed|null
      */
-    protected function getConfigDataFromXpath($config, $xpath)
+    private function getConfigDataFromXpath($config, $xpath)
     {
         $xpath = explode('/', $xpath);
         if (!is_array($xpath)) {
-            
             return null;
         }
         
@@ -73,27 +72,22 @@ class ConfigPlugin
             if (is_array($configPath) && array_key_exists($group, $configPath)) {
                 $configPath = $configPath[$group];
             } else {
-                
                 return null;
             }
             if (is_array($configPath) && array_key_exists('fields', $configPath)) {
                 $configPath = $configPath['fields'];
             } else {
-                
                 return null;
             }
             if (is_array($configPath) && array_key_exists($field, $configPath)) {
                 $configPath = $configPath[$field];
             } else {
-                
                 return null;
             }
             
             if (is_array($configPath) && array_key_exists('value', $configPath)) {
-                
                 return $configPath['value'];
             } else {
-                
                 return null;
             }
         } catch (Exception $e) {

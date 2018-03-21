@@ -35,18 +35,18 @@ class Db extends Collection
     const CATALOGRULE_DATE_COLUMN_ALIAS              = 'rule_date';
 
     /** @var string $filterStatusCondition */
-    protected $filterStatusCondition;
+    public $filterStatusCondition;
     /** @var array $optionsFilters */
-    protected $optionsFilters;
+    public $optionsFilters;
     /** @var  string $ruleDateSelect */
-    protected $ruleDateSelect;
+    public $ruleDateSelect;
 
-    protected $registryHelper;
-    protected $registry;
-    protected $storeManager;
-    protected $productCollectionFactory;
-    protected $typeConfigurable;
-    protected $cron;
+    public $registryHelper;
+    public $registry;
+    public $storeManager;
+    public $productCollectionFactory;
+    public $typeConfigurable;
+    public $cron;
 
     /**
      * Db constructor.
@@ -84,19 +84,24 @@ class Db extends Collection
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeConfigurable,
         \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron,
-        \Magento\Framework\Data\Collection\EntityFactory $entityFactory, \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\Data\Collection\EntityFactory $entityFactory,
+        \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
-        \Magento\Framework\Event\ManagerInterface $eventManager, \Magento\Eav\Model\Config $eavConfig,
-        \Magento\Framework\App\ResourceConnection $resource, \Magento\Eav\Model\EntityFactory $eavEntityFactory,
+        \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Magento\Eav\Model\Config $eavConfig,
+        \Magento\Framework\App\ResourceConnection $resource,
+        \Magento\Eav\Model\EntityFactory $eavEntityFactory,
         \Magento\Catalog\Model\ResourceModel\Helper $resourceHelper,
         \Magento\Framework\Validator\UniversalFactory $universalFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Framework\Module\Manager $moduleManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Module\Manager $moduleManager,
         \Magento\Catalog\Model\Indexer\Product\Flat\State $catalogProductFlatState,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Catalog\Model\Product\OptionFactory $productOptionFactory,
         \Magento\Catalog\Model\ResourceModel\Url $catalogUrl,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
-        \Magento\Customer\Model\Session $customerSession, \Magento\Framework\Stdlib\DateTime $dateTime,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Framework\Stdlib\DateTime $dateTime,
         GroupManagementInterface $groupManagement,
         $connection = null,
         $productLimitationFactory = null,
@@ -134,7 +139,7 @@ class Db extends Collection
         );
     }
 
-    protected function buildFilterStatusCondition()
+    public function buildFilterStatusCondition()
     {
         $childString     = 'IFNULL(%1$s.value, %3$s.value)';
         $parentString    = 'IFNULL(%2$s.value, %4$s.value)';
@@ -169,7 +174,7 @@ class Db extends Collection
      * @param string $storeId
      * @return $this
      */
-    protected function joinVisibilityTable($tableAlias = self::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
+    public function joinVisibilityTable($tableAlias = self::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
     {
         if ($this->isTableAliasAdded($tableAlias)) {
             return $this;
@@ -190,19 +195,18 @@ class Db extends Collection
      * @return bool
      * @throws \Zend_Db_Select_Exception
      */
-    protected function isTableAliasAdded($tableAlias)
+    public function isTableAliasAdded($tableAlias)
     {
         $tables         = $this->getSelect()->getPart(\Zend_Db_Select::FROM);
         $currentAliases = array_keys($tables);
 
         return in_array($tableAlias, $currentAliases);
-
     }
 
     /**
      * @return mixed
      */
-    protected function getVisibilityTable()
+    public function getVisibilityTable()
     {
         return $this->registry->registry(Registry::DFW_STATUS_ATTRIBUTE_KEY)
                               ->getBackend()->getTable();
@@ -213,7 +217,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinVisibilityTableStatement($tableAlias, $storeId)
+    public function getJoinVisibilityTableStatement($tableAlias, $storeId)
     {
         return sprintf(
             '%1$s.entity_id = e.entity_id and %2$s',
@@ -227,7 +231,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinVisibilityAttributeStatement($tableAlias, $storeId = '0')
+    public function getJoinVisibilityAttributeStatement($tableAlias, $storeId = '0')
     {
         $visibilityAttribute = $this->registry->registry(Registry::DFW_VISIBILITY_ATTRIBUTE_KEY);
         return sprintf(
@@ -243,7 +247,7 @@ class Db extends Collection
      * @param string $storeId
      * @return $this
      */
-    protected function joinParentIdsTable($tableAlias = self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
+    public function joinParentIdsTable($tableAlias = self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
     {
         if ($this->isTableAliasAdded($tableAlias)) {
             return $this;
@@ -268,7 +272,7 @@ class Db extends Collection
     /**
      * @return mixed
      */
-    protected function getParentIdsTable()
+    public function getParentIdsTable()
     {
         return $this->registry->registry(Registry::DFW_PARENT_ID_ATTRIBUTE_KEY)
                               ->getBackend()->getTable();
@@ -279,7 +283,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinParentIdsTableStatement($tableAlias, $storeId)
+    public function getJoinParentIdsTableStatement($tableAlias, $storeId)
     {
         return sprintf(
             '%1$s.entity_id = e.entity_id and %2$s',
@@ -293,7 +297,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinParentIdsAttributeStatement($tableAlias, $storeId = '0')
+    public function getJoinParentIdsAttributeStatement($tableAlias, $storeId = '0')
     {
         $attribute = $this->registry->registry(Registry::DFW_PARENT_ID_ATTRIBUTE_KEY);
         return sprintf(
@@ -307,7 +311,7 @@ class Db extends Collection
     /**
      * @return $this
      */
-    protected function addRuleDate()
+    public function addRuleDate()
     {
         /** @var \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron */
         $cron = $this->cron;
@@ -335,7 +339,7 @@ class Db extends Collection
     /**
      * @return string
      */
-    protected function getUpdatedAtCondition()
+    public function getUpdatedAtCondition()
     {
         $condition = '(IFNULL(%3$s.value, %4$s.value) IS NOT NULL 
         AND %1$s.dfw_prod_id IN (IFNULL(%3$s.value, %4$s.value)) 
@@ -355,7 +359,7 @@ class Db extends Collection
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function joinQty()
+    public function joinQty()
     {
         $this->joinField(
             'qty',
@@ -382,7 +386,7 @@ class Db extends Collection
      * @param string $storeId
      * @return $this
      */
-    protected function joinInheritedStatusTable($tableAlias = self::INHERITED_STATUS_TABLE_ALIAS, $storeId = '0')
+    public function joinInheritedStatusTable($tableAlias = self::INHERITED_STATUS_TABLE_ALIAS, $storeId = '0')
     {
         if ($this->isTableAliasAdded($tableAlias)) {
             return $this;
@@ -400,7 +404,7 @@ class Db extends Collection
     /**
      * @return mixed
      */
-    protected function getStatusTable()
+    public function getStatusTable()
     {
         return $this->registry->registry(Registry::DFW_STATUS_ATTRIBUTE_KEY)->getBackend()->getTable();
     }
@@ -410,7 +414,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinInheritedStatusTableStatement($tableAlias, $storeId)
+    public function getJoinInheritedStatusTableStatement($tableAlias, $storeId)
     {
         return sprintf(
             '%1$s.entity_id IN (IFNULL(%2$s.value, %3$s.value)) and %4$s',
@@ -426,7 +430,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinStatusAttributeStatement($tableAlias, $storeId = '0')
+    public function getJoinStatusAttributeStatement($tableAlias, $storeId = '0')
     {
         $statusAttribute = $this->registry->registry(Registry::DFW_STATUS_ATTRIBUTE_KEY);
         return sprintf(
@@ -442,7 +446,7 @@ class Db extends Collection
      * @param string $storeId
      * @return $this
      */
-    protected function joinOriginalStatusTable($tableAlias = self::ORIGINAL_STATUS_TABLE_ALIAS, $storeId = '0')
+    public function joinOriginalStatusTable($tableAlias = self::ORIGINAL_STATUS_TABLE_ALIAS, $storeId = '0')
     {
         if ($this->isTableAliasAdded($tableAlias)) {
             return $this;
@@ -462,7 +466,7 @@ class Db extends Collection
      * @param string $storeId
      * @return string
      */
-    protected function getJoinOriginalStatusTableStatement($tableAlias, $storeId)
+    public function getJoinOriginalStatusTableStatement($tableAlias, $storeId)
     {
         return sprintf(
             '%1$s.entity_id = e.entity_id and %2$s',

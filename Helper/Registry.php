@@ -24,9 +24,9 @@ class Registry extends AbstractHelper
     const DFW_VISIBILITY_ATTRIBUTE_KEY  = 'dfw_visibility_at_attribute';
     const DFW_PARENT_ID_ATTRIBUTE_KEY   = 'dfw_parent_id_attribute';
 
-    protected $registry;
-    protected $categoryCollection;
-    protected $attributeCollection;
+    public $registry;
+    public $categoryCollection;
+    public $attributeCollection;
 
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -58,7 +58,7 @@ class Registry extends AbstractHelper
     /**
      * @param string $storeId
      */
-    protected function registerCategories($storeId)
+    public function registerCategories($storeId)
     {
         $registry = $this->registry->registry(self::ALL_CATEGORIES_ARRAY_KEY);
         if (empty($registry)) {
@@ -72,7 +72,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerStatusAttribute()
+    public function registerStatusAttribute()
     {
         $registry = $this->registry->registry(self::DFW_STATUS_ATTRIBUTE_KEY);
         if (empty($registry)) {
@@ -82,7 +82,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerUpdatedAtAttribute()
+    public function registerUpdatedAtAttribute()
     {
         $registry = $this->registry->registry(self::DFW_UPDATED_AT_ATTRIBUTE_KEY);
         if (empty($registry)) {
@@ -92,7 +92,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerVisibilityAttribute()
+    public function registerVisibilityAttribute()
     {
         $registry = $this->registry->registry(self::DFW_VISIBILITY_ATTRIBUTE_KEY);
         if (empty($registry)) {
@@ -103,7 +103,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerParentIdAttribute()
+    public function registerParentIdAttribute()
     {
         $registry = $this->registry->registry(self::DFW_PARENT_ID_ATTRIBUTE_KEY);
         if (empty($registry)) {
@@ -113,7 +113,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerSuperAttributes()
+    public function registerSuperAttributes()
     {
         $registry = $this->registry->registry(self::ALL_SUPER_ATTRIBUTES_KEY);
         if (empty($registry)) {
@@ -123,7 +123,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerInheritableAttributes()
+    public function registerInheritableAttributes()
     {
         $registry = $this->registry->registry(self::ALL_IMPORTABLE_ATTRIBUTES_KEY);
         if (empty($registry)) {
@@ -133,7 +133,7 @@ class Registry extends AbstractHelper
         }
     }
 
-    protected function registerAttributeCollection()
+    public function registerAttributeCollection()
     {
         $registry = $this->registry->registry(self::ALL_ATTRIBUTE_COLLECTION_KEY);
         if (empty($registry)) {

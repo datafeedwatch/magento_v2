@@ -46,14 +46,12 @@ class Pager extends Template
      */
     public function getCollection()
     {
-        $this->attributeCollection->addVisibleFilter()->setPageSize($this->limit)
-                                  ->setCurPage($this->page);
-        $this->attributeCollection->getSelect()
-                                  ->where(
-                                      'additional_table.can_configure_inheritance != 0 
-                                      and additional_table.import_to_dfw != 0 
-                                      or additional_table.can_configure_inheritance = 1'
-                                  );
+        $this->attributeCollection->addVisibleFilter()
+            ->addFieldToFilter('additional_table.can_configure_inheritance', ['neq' => 0])
+            ->addFieldToFilter('additional_table.import_to_dfw', ['neq' => 0])
+            ->addFieldToFilter('additional_table.can_configure_inheritance', 1)
+            ->setPageSize($this->limit)
+            ->setCurPage($this->page);
         $this->attributeCollection->setOrder('frontend_label', 'asc');
         $this->attributeCollection->load();
         

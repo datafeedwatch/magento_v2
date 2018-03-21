@@ -22,12 +22,11 @@ abstract class Button extends Action
     const ADMIN_RESOURCE = 'DataFeedWatch_Connector::config';
     
     /** @var \DataFeedWatch\Connector\Helper\Data */
-    protected $dataHelper;
+    public $dataHelper;
     
     /** @var \DataFeedWatch\Connector\Model\Api\User */
-    protected $apiUser;
-    
-    
+    public $apiUser;
+
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,

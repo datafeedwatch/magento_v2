@@ -44,47 +44,49 @@ class Uninstall implements UninstallInterface
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
-        $connection = $setup->getConnection();
-        
-        $this->apiUser->deleteUserAndRole();
-        
-        $attributeCode = 'ignore_datafeedwatch';
-        $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
-        
-        $attributeCode = 'dfw_parent_ids';
-        $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
-        
-        $table      = $setup->getTable('catalog_eav_attribute');
-        $columnName = 'can_configure_inheritance';
-        if ($connection->tableColumnExists($table, $columnName)) {
-            $setup->startSetup();
-            $connection->dropColumn($table, $columnName);
-            $setup->endSetup();
-        }
-        $columnName = 'inheritance';
-        if ($connection->tableColumnExists($table, $columnName)) {
-            $setup->startSetup();
-            $connection->dropColumn($table, $columnName);
-            $setup->endSetup();
-        }
-        $columnName = 'can_configure_import';
-        if ($connection->tableColumnExists($table, $columnName)) {
-            $setup->startSetup();
-            $connection->dropColumn($table, $columnName);
-            $setup->endSetup();
-        }
-        $columnName = 'import_to_dfw';
-        if ($connection->tableColumnExists($table, $columnName)) {
-            $setup->startSetup();
-            $connection->dropColumn($table, $columnName);
-            $setup->endSetup();
-        }
-        
-        $table = $setup->getTable('datafeedwatch_updated_products');
-        if ($connection->isTableExists($table)) {
-            $setup->startSetup();
-            $connection->dropTable($table);
-            $setup->endSetup();
+        if ($context instanceof ModuleContextInterface) {
+            $connection = $setup->getConnection();
+
+            $this->apiUser->deleteUserAndRole();
+
+            $attributeCode = 'ignore_datafeedwatch';
+            $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
+
+            $attributeCode = 'dfw_parent_ids';
+            $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
+
+            $table      = $setup->getTable('catalog_eav_attribute');
+            $columnName = 'can_configure_inheritance';
+            if ($connection->tableColumnExists($table, $columnName)) {
+                $setup->startSetup();
+                $connection->dropColumn($table, $columnName);
+                $setup->endSetup();
+            }
+            $columnName = 'inheritance';
+            if ($connection->tableColumnExists($table, $columnName)) {
+                $setup->startSetup();
+                $connection->dropColumn($table, $columnName);
+                $setup->endSetup();
+            }
+            $columnName = 'can_configure_import';
+            if ($connection->tableColumnExists($table, $columnName)) {
+                $setup->startSetup();
+                $connection->dropColumn($table, $columnName);
+                $setup->endSetup();
+            }
+            $columnName = 'import_to_dfw';
+            if ($connection->tableColumnExists($table, $columnName)) {
+                $setup->startSetup();
+                $connection->dropColumn($table, $columnName);
+                $setup->endSetup();
+            }
+
+            $table = $setup->getTable('datafeedwatch_updated_products');
+            if ($connection->isTableExists($table)) {
+                $setup->startSetup();
+                $connection->dropTable($table);
+                $setup->endSetup();
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ use Magento\Framework\Event\ObserverInterface;
 class CategorySaveAfter implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     /**
      * @param DataHelper $dataHelper

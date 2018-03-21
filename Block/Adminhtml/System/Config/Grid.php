@@ -56,7 +56,7 @@ class Grid extends Field
     /**
      * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -71,7 +71,7 @@ class Grid extends Field
      *
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
         $this->setHtmlId($element->getData('html_id'));
         return $this->_toHtml();

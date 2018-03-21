@@ -20,11 +20,12 @@ use Magento\Framework\Api\AttributeValueFactory;
 class Product extends coreProduct
 {
     /** @var array $importData */
-    protected $importData = [];
-    protected $dataHelper;
-    protected $registryHelper;
-    protected $priceCurrency;
-    protected $catalogHelper;
+    public $importData = [];
+    public $dataHelper;
+    public $registryHelper;
+    public $priceCurrency;
+    public $catalogHelper;
+    public $timezone;
 
     /**
      * Product constructor.
@@ -45,7 +46,7 @@ class Product extends coreProduct
      * @param coreProduct\Type $catalogProductType
      * @param \Magento\Framework\Module\Manager $moduleManager
      * @param \Magento\Catalog\Helper\Product $catalogProduct
-     * @param ResourceModel\Product $resource
+     * @param \Magento\Catalog\Model\ResourceModel\Product $resource
      * @param ResourceModel\Product\Collection $resourceCollection
      * @param \Magento\Framework\Data\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Filesystem $filesystem
@@ -63,41 +64,56 @@ class Product extends coreProduct
      * @param \Magento\Framework\Api\DataObjectHelper $dataObjectHelper
      * @param \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor
      * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param Registry $registryHelper
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Catalog\Helper\Data $catalogHelper
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context, \Magento\Framework\Registry $registry,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        AttributeValueFactory $customAttributeFactory, \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataService, \Magento\Catalog\Model\Product\Url $url,
-        \Magento\Catalog\Model\Product\Link $productLink, \Magento\Catalog\Model\Product\Configuration\Item\OptionFactory $itemOptionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Catalog\Api\ProductAttributeRepositoryInterface $metadataService,
+        \Magento\Catalog\Model\Product\Url $url,
+        \Magento\Catalog\Model\Product\Link $productLink,
+        \Magento\Catalog\Model\Product\Configuration\Item\OptionFactory $itemOptionFactory,
         \Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory $stockItemFactory,
-        \Magento\Catalog\Model\Product\OptionFactory $catalogProductOptionFactory, \Magento\Catalog\Model\Product\Visibility $catalogProductVisibility,
-        \Magento\Catalog\Model\Product\Attribute\Source\Status $catalogProductStatus, \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig,
-        \Magento\Catalog\Model\Product\Type $catalogProductType, \Magento\Framework\Module\Manager $moduleManager,
-        \Magento\Catalog\Helper\Product $catalogProduct, ResourceModel\Product $resource,
+        \Magento\Catalog\Model\Product\OptionFactory $catalogProductOptionFactory,
+        \Magento\Catalog\Model\Product\Visibility $catalogProductVisibility,
+        \Magento\Catalog\Model\Product\Attribute\Source\Status $catalogProductStatus,
+        \Magento\Catalog\Model\Product\Media\Config $catalogProductMediaConfig,
+        \Magento\Catalog\Model\Product\Type $catalogProductType,
+        \Magento\Framework\Module\Manager $moduleManager,
+        \Magento\Catalog\Helper\Product $catalogProduct,
+        \Magento\Catalog\Model\ResourceModel\Product $resource,
         ResourceModel\Product\Collection $resourceCollection,
-        \Magento\Framework\Data\CollectionFactory $collectionFactory, \Magento\Framework\Filesystem $filesystem,
+        \Magento\Framework\Data\CollectionFactory $collectionFactory,
+        \Magento\Framework\Filesystem $filesystem,
         \Magento\Framework\Indexer\IndexerRegistry $indexerRegistry,
         \Magento\Catalog\Model\Indexer\Product\Flat\Processor $productFlatIndexerProcessor,
         \Magento\Catalog\Model\Indexer\Product\Price\Processor $productPriceIndexerProcessor,
-        \Magento\Catalog\Model\Indexer\Product\Eav\Processor $productEavIndexerProcessor, CategoryRepositoryInterface $categoryRepository,
-        \Magento\Catalog\Model\Product\Image\CacheFactory $imageCacheFactory, \Magento\Catalog\Model\ProductLink\CollectionProvider $entityCollectionProvider,
+        \Magento\Catalog\Model\Indexer\Product\Eav\Processor $productEavIndexerProcessor,
+        CategoryRepositoryInterface $categoryRepository,
+        \Magento\Catalog\Model\Product\Image\CacheFactory $imageCacheFactory,
+        \Magento\Catalog\Model\ProductLink\CollectionProvider $entityCollectionProvider,
         \Magento\Catalog\Model\Product\LinkTypeProvider $linkTypeProvider,
         \Magento\Catalog\Api\Data\ProductLinkInterfaceFactory $productLinkFactory,
         \Magento\Catalog\Api\Data\ProductLinkExtensionFactory $productLinkExtensionFactory,
-        EntryConverterPool $mediaGalleryEntryConverterPool, \Magento\Framework\Api\DataObjectHelper $dataObjectHelper,
+        EntryConverterPool $mediaGalleryEntryConverterPool,
+        \Magento\Framework\Api\DataObjectHelper $dataObjectHelper,
         \Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface $joinProcessor,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         Registry $registryHelper,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Catalog\Helper\Data $catalogHelper,
         array $data = []
     ) {
         $this->dataHelper       = $dataHelper;
+        $this->timezone         = $timezone;
         $this->registryHelper   = $registryHelper;
         $this->priceCurrency    = $priceCurrency;
         $this->catalogHelper    = $catalogHelper;
@@ -140,9 +156,9 @@ class Product extends coreProduct
         );
     }
 
-    protected function _construct()
+    public function _construct()
     {
-        $this->_init('DataFeedWatch\Connector\Model\ResourceModel\Product');
+        $this->_init(\Magento\Catalog\Model\ResourceModel\Product::class);
     }
 
     /**
@@ -155,10 +171,8 @@ class Product extends coreProduct
         if ($this->registryHelper->isStatusAttributeInheritable()) {
             $this->setStatus($this->getFilterStatus());
         }
-        /** @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface $date */
         $date = $this->getRuleDate();
-        $date = new \DateTime($date);
-        $this->setUpdatedAt($date->format('Y-m-d H:i:s'));
+        $this->setUpdatedAt($this->timezone->convertConfigTimeToUtc($date, 'Y-m-d H:i:s'));
         $this->fillAllAttributesData();
         $this->importData['product_id']                 = $this->getId();
         $this->importData['sku']                        = $this->getSku();
@@ -225,7 +239,7 @@ class Product extends coreProduct
     /**
      * @return $this
      */
-    protected function fillAllAttributesData()
+    public function fillAllAttributesData()
     {
         $productAttributes = array_keys($this->getAttributes());
         $attributeCollection = $this->_registry->registry(Registry::ALL_IMPORTABLE_ATTRIBUTES_KEY);
@@ -251,7 +265,7 @@ class Product extends coreProduct
      * @param bool $withTax
      * @return float
      */
-    protected function getImportFinalPrice($withTax = false)
+    public function getImportFinalPrice($withTax = false)
     {
         $price = round($this->priceCurrency->convert($this->getFinalPrice()), 2);
         return $this->catalogHelper->getTaxPrice($this, $price, $withTax);
@@ -261,7 +275,7 @@ class Product extends coreProduct
      * @param bool $withTax
      * @return float
      */
-    protected function getImportPrice($withTax = false)
+    public function getImportPrice($withTax = false)
     {
         $price = round($this->priceCurrency->convert($this->getPrice()), 2);
         return $this->catalogHelper->getTaxPrice($this, $price, $withTax);
@@ -271,7 +285,7 @@ class Product extends coreProduct
      * @param bool $withTax
      * @return float
      */
-    protected function getImportSpecialPrice($withTax = false)
+    public function getImportSpecialPrice($withTax = false)
     {
         return $this->catalogHelper->getTaxPrice($this, $this->getSpecialPrice(), $withTax);
     }
@@ -279,7 +293,7 @@ class Product extends coreProduct
     /**
      * @return string|null
      */
-    protected function getBaseImageUrl()
+    public function getBaseImageUrl()
     {
         $this->load('image');
         $image = $this->getImage();
@@ -293,12 +307,11 @@ class Product extends coreProduct
     /**
      * @return $this
      */
-    protected function getCategoryPathToImport()
+    public function getCategoryPathToImport()
     {
         $index = '';
         $categoriesCollection = $this->_registry->registry(Registry::ALL_CATEGORIES_ARRAY_KEY);
         foreach ($this->getCategoryCollection()->addNameToResult() as $category) {
-
             $categoryName = [];
             $path = $category->getPath();
             foreach (explode('/', $path) as $categoryId) {
@@ -320,7 +333,7 @@ class Product extends coreProduct
      * @param bool $isParent
      * @return array
      */
-    protected function getCategoriesNameToImport($isParent = false)
+    public function getCategoriesNameToImport($isParent = false)
     {
         $index = '';
         $names = [];
@@ -336,7 +349,7 @@ class Product extends coreProduct
     /**
      * @param array $data
      */
-    protected function setDataToImport($data)
+    public function setDataToImport($data)
     {
         foreach ($data as $key => $value) {
             $this->importData[$key] = $value;
@@ -347,7 +360,7 @@ class Product extends coreProduct
      * @param bool $withTax
      * @return float
      */
-    protected function getVariantSpacPrice($withTax = false)
+    public function getVariantSpacPrice($withTax = false)
     {
 
         $finalPrice = $this->getPriceInfo()->getPrice('final_price')->getAmount()->getBaseAmount();
@@ -358,7 +371,7 @@ class Product extends coreProduct
     /**
      * @return $this
      */
-    protected function getDfwDefaultVariant()
+    public function getDfwDefaultVariant()
     {
         $parent = $this->getParent();
         if (empty($parent)) {
@@ -388,7 +401,7 @@ class Product extends coreProduct
     /**
      * @return $this
      */
-    protected function getExcludedImages()
+    public function getExcludedImages()
     {
         $this->load('media_gallery');
         $gallery    = $this->getMediaGallery('images');
@@ -410,7 +423,7 @@ class Product extends coreProduct
      * @param bool $isParent
      * @return array
      */
-    protected function getAdditionalImages($importedBaseImage = null, $isParent = false)
+    public function getAdditionalImages($importedBaseImage = null, $isParent = false)
     {
         if (empty($importedBaseImage)) {
             $importedBaseImage = $this->getBaseImageUrl();

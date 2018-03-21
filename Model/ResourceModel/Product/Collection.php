@@ -22,9 +22,12 @@ class Collection extends Db
         return false;
     }
 
-    protected function _construct()
+    public function _construct()
     {
-        $this->_init('DataFeedWatch\Connector\Model\Product', 'DataFeedWatch\Connector\Model\ResourceModel\Product');
+        $this->_init(
+            \DataFeedWatch\Connector\Model\Product::class,
+            \Magento\Catalog\Model\ResourceModel\Product::class
+        );
         $this->_initTables();
     }
     
@@ -33,7 +36,7 @@ class Collection extends Db
      *
      * @return $this
      */
-    protected function _productLimitationPrice($joinLeft = true)
+    public function _productLimitationPrice($joinLeft = true)
     {
         parent::_productLimitationPrice($joinLeft);
         
@@ -76,7 +79,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyStoreFilter()
+    public function applyStoreFilter()
     {
         if (isset($this->optionsFilters['store'])) {
             $store          = $this->_storeManager->getStore($this->optionsFilters['store']);
@@ -92,7 +95,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyStatusFilter()
+    public function applyStatusFilter()
     {
         if (!isset($this->optionsFilters['status'])) {
             return $this;
@@ -132,7 +135,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyTypeFilter()
+    public function applyTypeFilter()
     {
         if (isset($this->optionsFilters['type'])) {
             $this->addAttributeToFilter('type_id', ['in' => $this->optionsFilters['type']]);
@@ -144,7 +147,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyUpdatedAtFilter()
+    public function applyUpdatedAtFilter()
     {
         if (!isset($this->optionsFilters['from_date'])) {
             return $this;
@@ -174,7 +177,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function addParentData()
+    public function addParentData()
     {
         $parentCollection = $this->getParentProductsCollection();
         $parentCollection = $parentCollection->getItems();
@@ -197,7 +200,7 @@ class Collection extends Db
     /**
      * @return mixed
      */
-    protected function getParentProductsCollection()
+    public function getParentProductsCollection()
     {
         $parentCollection = clone $this;
         $parentCollection->_reset();

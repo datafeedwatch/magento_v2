@@ -29,16 +29,17 @@ class User extends MagentoUser
     const RULE_PRIVILEGES        = '';
     const RULE_PERMISSION        = 'allow';
     /** @var \DataFeedWatch\Connector\Helper\Data */
-    protected $dataHelper;
+    public $dataHelper;
     /** @var \Magento\Authorization\Model\RoleFactory */
-    protected $roleFactory;
+    public $roleFactory;
     /** @var \Magento\Authorization\Model\RulesFactory */
-    protected $rulesFactory;
+    public $rulesFactory;
     /** @var string $decodedApiKey */
     private $decodedApiKey;
     private $oauthToken;
     private $adminTokenService;
     private $tokenModel;
+    private $curl;
 
     /**
      * User constructor.
@@ -78,11 +79,13 @@ class User extends MagentoUser
         \Magento\Integration\Model\ResourceModel\Oauth\Token\RequestLog $oauthToken,
         \Magento\Integration\Model\Oauth\Token $tokenModel,
         \Magento\Integration\Model\AdminTokenService $adminTokenService,
+        \Magento\Framework\HTTP\Client\Curl $curl,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         
+        $this->curl                 = $curl;
         $this->dataHelper           = $dataHelper;
         $this->rulesFactory         = $rulesFactory;
         $this->oauthToken           = $oauthToken;
@@ -133,7 +136,7 @@ class User extends MagentoUser
         $this->sendNewApiKeyToDfw();
     }
     
-    protected function createDfwUserRole()
+    public function createDfwUserRole()
     {
         $role = $this->_roleFactory->create();
         $role->load(self::ROLE_NAME, 'role_name');
@@ -151,16 +154,17 @@ class User extends MagentoUser
         return $role;
     }
     
-    protected function generateApiKey()
+    public function generateApiKey()
     {
-        $this->decodedApiKey = sha1(time() . substr(
-                str_shuffle(self::API_KEY_SHUFFLE_STRING),
-                0,
-                self::API_KEY_LENGTH
-            ));
+        $key = substr(
+            str_shuffle(self::API_KEY_SHUFFLE_STRING),
+            0,
+            self::API_KEY_LENGTH
+        );
+        $this->decodedApiKey = sha1(time() . $key);
     }
     
-    protected function addUserData()
+    public function addUserData()
     {
         $data = [
             'username'  => self::USER_NAME,
@@ -174,16 +178,13 @@ class User extends MagentoUser
         $this->addData($data);
     }
     
-    protected function sendNewApiKeyToDfw()
+    public function sendNewApiKeyToDfw()
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->getRegisterUrl());
-        curl_setopt($ch, CURLOPT_HTTPGET, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_exec($ch);
-        curl_close($ch);
+        $this->curl->setOption(CURLOPT_HTTPGET, true);
+        $this->curl->setOption(CURLOPT_RETURNTRANSFER, true);
+        $this->curl->setOption(CURLOPT_FOLLOWLOCATION, true);
+        $this->curl->setOption(CURLOPT_HEADER, true);
+        $this->curl->get($this->getRegisterUrl());
         $this->resetOauth();
     }
     

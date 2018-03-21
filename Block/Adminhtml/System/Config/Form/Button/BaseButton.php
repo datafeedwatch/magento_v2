@@ -34,10 +34,10 @@ abstract class BaseButton extends Field implements ButtonInterface
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
-        return $this->getLayout()
-                    ->createBlock('Magento\Backend\Block\Widget\Button')
+        return !$element instanceof AbstractElement ? parent::_getElementHtml($element): $this->getLayout()
+                    ->createBlock(\Magento\Backend\Block\Widget\Button::class)
                     ->setType('button')
                     ->setClass('scalable')
                     ->setLabel($this->getButtonLabel())

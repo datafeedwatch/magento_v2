@@ -22,16 +22,16 @@ abstract class Grid extends Action
     const ADMIN_RESOURCE = 'DataFeedWatch_Connector::config';
     
     /** @var \Magento\Framework\Registry */
-    protected $coreRegistry;
+    public $coreRegistry;
     
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $resultPageFactory;
+    public $resultPageFactory;
     
     /** @var \Magento\Catalog\Model\Product\Attribute\Repository */
-    protected $productAttributeRepository;
+    public $productAttributeRepository;
     
     /** @var \DataFeedWatch\Connector\Helper\Data */
-    protected $dataHelper;
+    public $dataHelper;
     
     /**
      * @param Action\Context                                      $context

@@ -237,16 +237,15 @@ class Data extends AbstractHelper
             'price_view'                => InheritanceSource::CHILD_OPTION_ID,
             'swatch_image'              => InheritanceSource::CHILD_OPTION_ID,
         ];
-        
-        $catalogAttributes = $this->collectionFactory->create();
 
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $catalogAttributes */
+        $catalogAttributes = $this->collectionFactory->create();
         foreach ($catalogAttributes as $attribute) {
             $attribute->setData('can_configure_inheritance', null);
             $attribute->setData('inheritance', null);
             $attribute->setData('can_configure_import', null);
             $attribute->setData('import_to_dfw', null);
             $attribute->setData('force_save', true);
-            $attribute->save();
             $attributeCode = $attribute->getAttributeCode();
             $inheritance   = InheritanceSource::CHILD_OPTION_ID;
             if (array_key_exists($attributeCode, $inheritanceData)) {
@@ -255,9 +254,9 @@ class Data extends AbstractHelper
             $attribute->setImportToDfw((int)in_array($attributeCode, $enableImport))
                       ->setCanConfigureImport((int)!in_array($attributeCode, $cannotConfigureImportField))
                       ->setCanConfigureInheritance((int)!in_array($attributeCode, $cannotConfigureInheritanceField))
-                      ->setInheritance($inheritance)
-                      ->save();
+                      ->setInheritance($inheritance);
         }
+        $catalogAttributes->walk('save');
         
         $this->resourceConfig->saveConfig(self::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH, 1, 'default', 0);
         $this->resourceConfig->saveConfig(self::IMAGE_URL_CUSTOM_INHERITANCE_XPATH, 0, 'default', 0);

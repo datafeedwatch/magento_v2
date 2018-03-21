@@ -19,10 +19,10 @@ use Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory as ScheduleColle
 class Info extends Field
 {
     /** @var DataHelper */
-    private $dataHelper;
+    public $dataHelper;
 
     /** @var ScheduleCollection */
-    private $scheduleCollection;
+    public $scheduleCollection;
 
     public function __construct(
         Context $context,
@@ -47,7 +47,7 @@ class Info extends Field
     /**
      * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         if (!$this->getTemplate()) {
             $this->setTemplate('system/config/info.phtml');
@@ -60,7 +60,7 @@ class Info extends Field
      * @param AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
         $this->setHtmlId($element->getData('html_id'));
         return $this->_toHtml();

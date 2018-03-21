@@ -17,7 +17,7 @@ use Magento\PageCache\Model\Cache\Type as Cache;
 class Installer
 {
     /** @var User */
-    protected $user;
+    public $user;
 
     /** @var DataHelper */
     private $dataHelper;

@@ -18,7 +18,7 @@ use Magento\Framework\Event\ObserverInterface;
 class UpdateLastInheritanceUpdateDate implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     /**
      * @param DataHelper $dataHelper
@@ -34,6 +34,8 @@ class UpdateLastInheritanceUpdateDate implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        $this->dataHelper->updateLastInheritanceUpdateDate();
+        if ($observer instanceof EventObserver) {
+            $this->dataHelper->updateLastInheritanceUpdateDate();
+        }
     }
 }
