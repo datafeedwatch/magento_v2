@@ -90,9 +90,7 @@ class Connector implements ConnectorInterface
     {
         $options = [];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
-        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
-            $options['fillParentIds'] = true;
-        }
+        $options['fillParentIds'] = $options['page'] === 1;
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
 
@@ -104,8 +102,8 @@ class Connector implements ConnectorInterface
      */
     public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
-        $options = ['fillParentIds' => false];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
+        $options = ['fillParentIds' => false];
         $collection = $this->getProductCollection($options);
         $amount     = (int) $collection->getSize();
 
@@ -126,9 +124,7 @@ class Connector implements ConnectorInterface
     ) {
         $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
-            $options['fillParentIds'] = true;
-        }
+        $options['fillParentIds'] = $options['page'] === 1;
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $collection->applyInheritanceLogic();
@@ -150,8 +146,8 @@ class Connector implements ConnectorInterface
         $perPage = 100,
         $page = 1
     ) {
-        $options = ['fillParentIds' => false];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
+        $options = ['fillParentIds' => false];
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
@@ -367,3 +363,4 @@ class Connector implements ConnectorInterface
         return $options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate();
     }
 }
+
