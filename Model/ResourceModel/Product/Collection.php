@@ -187,6 +187,7 @@ class Collection extends Db
             if (is_array($parentId)) {
                 $parentId = current($parentId);
             }
+            $parentId = !is_numeric($parentId) ? 0 : (string)$parentId;
 
             if (empty($parentId) || !isset($parentCollection[$parentId])) {
                 continue;
@@ -198,7 +199,7 @@ class Collection extends Db
     }
     
     /**
-     * @return mixed
+     * @return $this
      */
     public function getParentProductsCollection()
     {

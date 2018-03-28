@@ -89,8 +89,8 @@ class Connector implements ConnectorInterface
     public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
         $options = [];
+        $options['fillParentIds'] = $page === 1;
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
-        $options['fillParentIds'] = $options['page'] === 1;
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
 
@@ -102,12 +102,11 @@ class Connector implements ConnectorInterface
      */
     public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
-        $options = ['fillParentIds' => false];
         $collection = $this->getProductCollection($options);
-        $amount     = (int) $collection->getSize();
 
-        return $amount;
+        return (int) $collection->getSize();
     }
 
     /**
@@ -123,14 +122,20 @@ class Connector implements ConnectorInterface
         $page = 1
     ) {
         $options = [];
+        $options['fillParentIds'] = $page === 1;
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        $options['fillParentIds'] = $options['page'] === 1;
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $collection->applyInheritanceLogic();
             return $this->processProducts($collection);
         } else {
-            return $this->products($options);
+            return $this->products(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
         }
     }
 
@@ -146,13 +151,19 @@ class Connector implements ConnectorInterface
         $perPage = 100,
         $page = 1
     ) {
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        $options = ['fillParentIds' => false];
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
         } else {
-            $amount = $this->productCount($options);
+            $amount = $this->productCount(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
         }
 
         return $amount;
@@ -170,7 +181,7 @@ class Connector implements ConnectorInterface
         $perPage = 100,
         $page = 1
     ) {
-        $options = ['fillParentIds' => false];
+        $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         $collection = $this->getProductCollection($options);
 
@@ -239,6 +250,12 @@ class Connector implements ConnectorInterface
         $perPage = 100,
         $page = 1
     ) {
+        if (empty($options) || !is_array($options)) {
+            $options = [];
+        }
+        if (!array_key_exists('fillParentIds', $options)) {
+            $options['fillParentIds'] = false;
+        }
         if ($store !== null && is_string($store)) {
             $options['store'] = $store;
         }
@@ -363,4 +380,3 @@ class Connector implements ConnectorInterface
         return $options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate();
     }
 }
-
