@@ -25,7 +25,6 @@ class User extends MagentoUser
     const ROLE_NAME              = 'DataFeedWatch';
     const ROLE_TYPE              = 'G';
     const ROLE_PID               = false;
-    const RULE_RESOURCES         = ['Magento_Backend::all'];
     const RULE_PRIVILEGES        = '';
     const RULE_PERMISSION        = 'allow';
     /** @var \DataFeedWatch\Connector\Helper\Data */
