@@ -2,14 +2,18 @@
 /** @var DataFeedWatch\Connector\Block\Adminhtml\System\Config\Info $block */
 ?>
 <div id="dfw_info">
-    <?php echo __('You need to wait until installation has been completed') ?>
+    <?php echo $block->escapeHtml(__('You need to wait until installation has been completed')) ?>
     <?php $collection = $block->getScheduledTasks() ?>
-    <?php if (count($collection)): ?>
+    <?php if (!empty($collection)) : ?>
         <ul style="list-style-type: none;">
-            <?php foreach ($collection as $task): ?>
-                <li><?php echo __('Task scheduled at: %1 - status %2', $task->getScheduledAt(), $task->getStatus()) ?></li>
+            <?php foreach ($collection as $task) : ?>
+                <li><?php echo $block->escapeHtml(
+                    __('Task scheduled at: %1 - status %2', $task->getScheduledAt(), $task->getStatus())
+                ) ?></li>
             <?php endforeach; ?>
         </ul>
-        <span id="time_info"><?php echo __('Current server time: %1', strftime('%Y-%m-%d %H:%M:%S', time())) ?></span>
+        <span id="time_info"><?php echo $block->escapeHtml(
+            __('Current server time: %1', strftime('%Y-%m-%d %H:%M:%S', time()))
+        ) ?></span>
     <?php endif; ?>
 </div>

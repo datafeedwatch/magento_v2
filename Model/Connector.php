@@ -274,6 +274,11 @@ class Connector implements ConnectorInterface
         $options['per_page'] = (int)$perPage;
         $options['page'] = (int)$page;
 
+        $this->builtInFiltering($options);
+    }
+
+    public function builtInFiltering(&$options)
+    {
         $this->filterStoreOption($options);
 
         if (isset($options['type'])) {

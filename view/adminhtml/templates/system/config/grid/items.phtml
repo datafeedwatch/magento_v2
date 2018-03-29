@@ -1,5 +1,5 @@
-<?php /** @var /DataFeedWatch\Connector\Block\System\Config\Grid\Items $this */ ?>
-<?php $attributeCollection = $this->getCollection(); ?>
+<?php /** @var /DataFeedWatch\Connector\Block\System\Config\Grid\Items $block */ ?>
+<?php $attributeCollection = $block->getCollection(); ?>
 <?php foreach ($attributeCollection as $attribute) : ?>
     <?php /* @noEscape */ echo $block->getItemRow($attribute) ?>
 <?php endforeach; ?>
