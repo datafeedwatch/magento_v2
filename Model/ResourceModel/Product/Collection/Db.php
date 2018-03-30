@@ -15,7 +15,6 @@ use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
-use Magento\Catalog\Model\ResourceModel\Product\Collection\ProductLimitationFactory;
 use Magento\Customer\Api\GroupManagementInterface;
 
 class Db extends Collection
@@ -75,8 +74,6 @@ class Db extends Collection
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      * @param GroupManagementInterface $groupManagement
      * @param null $connection
-     * @param null $productLimitationFactory
-     * @param null $metadataPool
      */
     public function __construct(
         Registry $registryHelper,
@@ -103,9 +100,7 @@ class Db extends Collection
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         GroupManagementInterface $groupManagement,
-        $connection = null,
-        $productLimitationFactory = null,
-        $metadataPool = null
+        $connection = null
     ) {
 
         $this->registryHelper           = $registryHelper;
@@ -133,9 +128,7 @@ class Db extends Collection
             $customerSession,
             $dateTime,
             $groupManagement,
-            $connection,
-            $productLimitationFactory,
-            $metadataPool
+            $connection
         );
     }
 
