@@ -28,13 +28,4 @@ class Field extends \Magento\Config\Block\System\Config\Form\Field
         $this->dataHelper = $dataHelper;
         parent::__construct($context, $data);
     }
-
-    /**
-     * @param AbstractElement $element
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
-    }
 }

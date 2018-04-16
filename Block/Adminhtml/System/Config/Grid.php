@@ -76,13 +76,4 @@ class Grid extends Field
         $this->setHtmlId($element->getData('html_id'));
         return $this->_toHtml();
     }
-
-    /**
-     * @param AbstractElement $element
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
-    }
 }

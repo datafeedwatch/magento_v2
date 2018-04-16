@@ -6,9 +6,5 @@
              instance="DataFeedWatch\Connector\Cron\FillUpdatedAtTable" method="execute">
             <schedule>0 * * * *</schedule>
         </job>
-        <job name="datafeedwatch_connector_installer"
-             instance="DataFeedWatch\Connector\Cron\Installer" method="execute">
-            <config_path>datafeedwatch_connector/general/run_cron_installer</config_path>
-        </job>
     </group>
 </config>

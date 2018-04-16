@@ -44,13 +44,4 @@ abstract class BaseButton extends Field implements ButtonInterface
                     ->setOnClick($this->getButtonOnClick())
                     ->toHtml();
     }
-
-    /**
-     * @param AbstractElement $element
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
-    }
 }

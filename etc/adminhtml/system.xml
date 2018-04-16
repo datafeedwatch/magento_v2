@@ -13,68 +13,37 @@
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>General Configuration</label>
-                <field id="info" translate="label" type="text" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
-                    <label>INFO</label>
-                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Info</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">0</field>
-                    </depends>
-                </field>
                 <field id="connector_open" translate="label" type="text" sortOrder="10" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Go To My DataFeedWatch</label>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Open</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="connector_refresh" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Refresh DataFeedWatch Access</label>
                     <comment>Refresh DataFeedWatch access: SOAP user and role</comment>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Refresh</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="connector_add_store" translate="label" type="text" sortOrder="40" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Add Store To DataFeedWatch</label>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Add</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="connector_get_all" translate="label" type="text" sortOrder="50" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Get all product data with next download</label>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Force</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
             </group>
             <group id="custom_inheritance" translate="label" type="text" sortOrder="10" showInDefault="1"
                    showInWebsite="0" showInStore="0">
                 <label>Inheritance</label>
-                <field id="info" translate="label" type="text" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
-                    <label>INFO</label>
-                    <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Info</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">0</field>
-                    </depends>
-                </field>
                 <field id="product_url" translate="label comment" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Inherit Product Url In Child Products</label>
                     <comment>Please save after change</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Field</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="image_url" translate="label comment" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="0" showInStore="0">
@@ -82,26 +51,17 @@
                     <comment>Please save after change</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Field</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="restore_original_config" translate="label comment" type="text" sortOrder="20"
                        showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Restore Original Config</label>
                     <comment>Reset Inheritance Logic Configuration</comment>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button\Restore</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
                 <field id="inheritance_grid" translate="label" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Attributes</label>
                     <frontend_model>DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid</frontend_model>
-                    <depends>
-                        <field id="datafeedwatch_connector/general/installation_complete">1</field>
-                    </depends>
                 </field>
             </group>
         </section>

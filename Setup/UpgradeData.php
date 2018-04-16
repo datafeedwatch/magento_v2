@@ -37,6 +37,7 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * UpgradeData constructor.
      * @param DataHelper $dataHelper
+     * @param Config $config
      * @param Cache $cache
      */
     public function __construct(
@@ -63,7 +64,6 @@ class UpgradeData implements UpgradeDataInterface
 
     public function version010To100()
     {
-        $this->dataHelper->setInstallationComplete();
         $this->config->deleteConfig('datafeedwatch_connector/general/debug', 'default', 0);
         $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
     }
