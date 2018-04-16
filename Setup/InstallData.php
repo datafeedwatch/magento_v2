@@ -62,7 +62,7 @@ class InstallData implements InstallDataInterface
         AttributeRepositoryInterface $attributeRepository,
         Cache $cache
     ) {
-        $this->user       = $user;
+        $this->user                = $user;
         $this->dataHelper          = $dataHelper;
         $this->eavSetupFactory     = $eavSetupFactory;
         $this->attributeRepository = $attributeRepository;
