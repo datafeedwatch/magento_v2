@@ -2,7 +2,7 @@
   "name": "datafeedwatch/connector",
   "description": "DataFeedWatch enables Magento 2 shops to optimize their product data feed for Google and 1000+ other channels.",
   "type": "magento2-module",
-  "version": "100.0.0",
+  "version": "100.1.0",
   "license": [
     "OSL-3.0",
     "AFL-3.0"

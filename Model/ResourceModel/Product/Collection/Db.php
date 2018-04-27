@@ -354,20 +354,14 @@ class Db extends Collection
      */
     public function joinQty()
     {
-        $this->joinField(
-            'qty',
+        $this->joinTable(
             $this->_resource->getTableName('cataloginventory_stock_status'),
-            'qty',
             'product_id=entity_id',
-            '{{table}}.stock_id=1',
-            'left'
-        );
-        $this->joinField(
-            'stock_status',
-            $this->_resource->getTableName('cataloginventory_stock_status'),
-            'stock_status',
-            'product_id=entity_id',
-            '{{table}}.stock_id=1',
+            [
+                'qty' => 'qty',
+                'stock_status' => 'stock_status',
+            ],
+            '{{table}}.stock_id=1 and {{table}}.website_id = 0',
             'left'
         );
 
