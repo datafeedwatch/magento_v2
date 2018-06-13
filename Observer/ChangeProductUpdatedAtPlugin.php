@@ -24,7 +24,7 @@ class ChangeProductUpdatedAtPlugin implements ObserverInterface
     public $resource;
 
     /**
-     * @param DataHelper                                $dataHelper
+     * @param DataHelper $dataHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      */
     public function __construct(
@@ -41,8 +41,23 @@ class ChangeProductUpdatedAtPlugin implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        /** @var \Magento\Catalog\Model\Product $category */
-        $product    = $observer->getProduct();
-        $product->setData('updated_at', gmdate('Y-m-d H:i:s'));
+        $date = gmdate('Y-m-d H:i:s');
+        /** @var \Magento\Catalog\Model\Product $product */
+        $product = $observer->getProduct();
+        if ('configurable' === $product->getTypeId()) {
+            /** @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeInstance */
+            $typeInstance = $product->getTypeInstance();
+            $childIds     = $typeInstance->getChildrenIds($product->getId());
+            $childIds     = array_key_exists(0, $childIds) ? $childIds[0] : $childIds;
+            $childIds     = !empty($childIds) ? array_values($childIds) : [];
+            if (!empty($childIds)) {
+                $childIds   = implode(',', $childIds);
+                $connection = $this->resource->getConnection();
+                $table      = $this->resource->getTableName('catalog_product_entity');
+                $query      = "update {$table} set updated_at = '{$date}' where entity_id in ($childIds)";
+                $connection->query($query);
+            }
+        }
+        $product->setData('updated_at', $date);
     }
 }

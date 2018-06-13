@@ -337,9 +337,9 @@ class Connector implements ConnectorInterface
     public function filterStatusOption(&$options)
     {
         $status = (string) $options['status'];
-        if ($status === '0') {
+        if ($status == 0) {
             $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
-        } elseif ($status === '1') {
+        } elseif ($status == 1) {
             $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
         } else {
             unset($options['status']);
