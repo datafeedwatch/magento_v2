@@ -11,8 +11,6 @@
 namespace DataFeedWatch\Connector\Model\ResourceModel\Product\Collection;
 
 use DataFeedWatch\Connector\Helper\Registry;
-use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Customer\Api\GroupManagementInterface;
@@ -25,8 +23,6 @@ class Db extends Collection
     const ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE  = 'status_default_store';
     const ORIGINAL_VISIBILITY_TABLE_ALIAS            = 'original_visibility';
     const VISIBILITY_TABLE_ALIAS_DEFAULT_STORE       = 'visibility_default_store';
-    const PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE       = 'dfw_parent_ids_default_store';
-    const ORIGINAL_PARENT_IDS_TABLE_ALIAS            = 'original_dfw_parent_ids';
     const MIXED_STATUS_COLUMN_ALIAS                  = 'filter_status';
     const PARENT_CONFIGURABLE_ATTRIBUTES_TABLE_ALIAS = 'parent_configurable_attributes';
     const PARENT_RELATIONS_TABLE_ALIAS               = 'parent_relation';
@@ -136,20 +132,12 @@ class Db extends Collection
     {
         $childString     = 'IFNULL(%1$s.value, %3$s.value)';
         $parentString    = 'IFNULL(%2$s.value, %4$s.value)';
-        $enable          = Status::STATUS_ENABLED;
-        $statusAttribute = $this->registry->registry(Registry::DFW_STATUS_ATTRIBUTE_KEY);
-        switch ($statusAttribute->getInheritance()) {
-            case (string) Inheritance::CHILD_THEN_PARENT_OPTION_ID:
-                $inheritString          = "IFNULL({$childString}, {$parentString})";
-                $notVisibleIndividually = "IF({$childString} <> {$enable}, {$childString}, {$parentString})";
-                $string                 = 'IF(IFNULL(%5$s.value, %6$s.value) = ' . Visibility::VISIBILITY_NOT_VISIBLE
-                                          . ', ' . $notVisibleIndividually . ', ' . $inheritString . ')';
-                break;
-            case (string) Inheritance::PARENT_OPTION_ID:
-                $string = 'IFNULL(' . $parentString . ', ' . $childString . ')';
-                break;
-            default:
-                $string = $childString;
+        if ($this->registryHelper->isStatusAttributeInheritable()) {
+            $inheritString = "IFNULL({$childString}, {$parentString})";
+                $string = 'IF(IFNULL(%5$s.value, %6$s.value) = ' . Visibility::VISIBILITY_NOT_VISIBLE
+                                          . ', ' . $parentString . ', ' . $inheritString . ')';
+        } else {
+            $string = $childString;
         }
         $this->filterStatusCondition = sprintf(
             $string,
@@ -178,6 +166,16 @@ class Db extends Collection
             $this->getJoinVisibilityTableStatement($tableAlias, $storeId),
             ['value']
         );
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function joinRelationTable()
+    {
+        $this->getSelect()->columns(['parent_id' =>  $this->getParentIdSubselect()]);
 
         return $this;
     }
@@ -236,72 +234,6 @@ class Db extends Collection
     }
 
     /**
-     * @param string $tableAlias
-     * @param string $storeId
-     * @return $this
-     */
-    public function joinParentIdsTable($tableAlias = self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
-    {
-        if ($this->isTableAliasAdded($tableAlias)) {
-            return $this;
-        }
-
-        $this->getSelect()->joinLeft(
-            [$tableAlias => $this->getParentIdsTable()],
-            $this->getJoinParentIdsTableStatement($tableAlias, $storeId),
-            ['value']
-        );
-        $this->getSelect()->columns(
-            sprintf(
-                'IFNULL(%1$s.value, %2$s.value) as parent_id',
-                self::ORIGINAL_PARENT_IDS_TABLE_ALIAS,
-                self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE
-            )
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getParentIdsTable()
-    {
-        return $this->registry->registry(Registry::DFW_PARENT_ID_ATTRIBUTE_KEY)
-                              ->getBackend()->getTable();
-    }
-
-    /**
-     * @param string $tableAlias
-     * @param string $storeId
-     * @return string
-     */
-    public function getJoinParentIdsTableStatement($tableAlias, $storeId)
-    {
-        return sprintf(
-            '%1$s.entity_id = e.entity_id and %2$s',
-            $tableAlias,
-            $this->getJoinParentIdsAttributeStatement($tableAlias, $storeId)
-        );
-    }
-
-    /**
-     * @param string $tableAlias
-     * @param string $storeId
-     * @return string
-     */
-    public function getJoinParentIdsAttributeStatement($tableAlias, $storeId = '0')
-    {
-        $attribute = $this->registry->registry(Registry::DFW_PARENT_ID_ATTRIBUTE_KEY);
-        return sprintf(
-            '%1$s.attribute_id = %2$s and %1$s.store_id = %3$s',
-            $tableAlias,
-            $attribute->getId(),
-            $storeId
-        );
-    }
-
-    /**
      * @return $this
      */
     public function addRuleDate()
@@ -334,18 +266,25 @@ class Db extends Collection
      */
     public function getUpdatedAtCondition()
     {
-        $condition = '(IFNULL(%3$s.value, %4$s.value) IS NOT NULL 
-        AND %1$s.dfw_prod_id IN (IFNULL(%3$s.value, %4$s.value)) 
+        $condition = '(parent_id IS NOT NULL
+        AND %1$s.dfw_prod_id IN (parent_id)
         OR %1$s.dfw_prod_id = %2$s.entity_id)';
         $condition = sprintf(
             $condition,
             self::UPDATED_AT_TABLE_ALIAS,
-            self::MAIN_TABLE_ALIAS,
-            self::ORIGINAL_PARENT_IDS_TABLE_ALIAS,
-            self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE
+            self::MAIN_TABLE_ALIAS
         );
 
         return $condition;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParentIdSubselect()
+    {
+        return '(select GROUP_CONCAT(DISTINCT parent_id) from ' . $this->getTable('catalog_product_relation')
+               . ' where child_id = e.entity_id group by child_id)';
     }
 
     /**
@@ -404,10 +343,8 @@ class Db extends Collection
     public function getJoinInheritedStatusTableStatement($tableAlias, $storeId)
     {
         return sprintf(
-            '%1$s.entity_id IN (IFNULL(%2$s.value, %3$s.value)) and %4$s',
+            '%1$s.entity_id IN (' . $this->getParentIdSubselect() . ') and %2$s',
             $tableAlias,
-            self::ORIGINAL_PARENT_IDS_TABLE_ALIAS,
-            self::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE,
             $this->getJoinStatusAttributeStatement($tableAlias, $storeId)
         );
     }

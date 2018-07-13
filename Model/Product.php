@@ -250,7 +250,7 @@ class Product extends coreProduct
                 continue;
             }
             if ('status' === $attributeCode) {
-                $this->importData[$attributeCode] = $this->getStatus() ? 'Enabled' : 'Disabled';
+                $this->importData[$attributeCode] = $this->getStatus() == 1 ? 'Enabled' : 'Disabled';
                 continue;
             }
             if ($attribute->usesSource()) {

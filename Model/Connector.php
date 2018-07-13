@@ -11,6 +11,11 @@
 namespace DataFeedWatch\Connector\Model;
 
 use DataFeedWatch\Connector\Api\ConnectorInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
+use Magento\Downloadable\Model\Product\Type as DownloadableType;
 
 class Connector implements ConnectorInterface
 {
@@ -89,7 +94,6 @@ class Connector implements ConnectorInterface
     public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
     {
         $options = [];
-        $options['fillParentIds'] = $page === 1;
         $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
@@ -122,7 +126,6 @@ class Connector implements ConnectorInterface
         $page = 1
     ) {
         $options = [];
-        $options['fillParentIds'] = $page === 1;
         $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
@@ -253,9 +256,6 @@ class Connector implements ConnectorInterface
         if (empty($options) || !is_array($options)) {
             $options = [];
         }
-        if (!array_key_exists('fillParentIds', $options)) {
-            $options['fillParentIds'] = false;
-        }
         if ($store !== null && is_string($store)) {
             $options['store'] = $store;
         }
@@ -315,15 +315,22 @@ class Connector implements ConnectorInterface
     {
         $types          = $options['type'];
         $magentoTypes   = [
-            \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-            \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE,
-            \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
-            \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE,
-            \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
-            \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE,
+            ProductType::TYPE_SIMPLE,
+            ProductType::TYPE_BUNDLE,
+            ConfigurableType::TYPE_CODE,
+            GroupedType::TYPE_CODE,
+            ProductType::TYPE_VIRTUAL,
+            DownloadableType::TYPE_DOWNLOADABLE,
         ];
         $types = array_map('strtolower', $types);
         $types = array_intersect($types, $magentoTypes);
+        if ((
+        in_array(ProductType::TYPE_BUNDLE, $types)
+        || in_array(ConfigurableType::TYPE_CODE, $types)
+        || in_array(GroupedType::TYPE_CODE, $types)
+        ) && !in_array(ProductType::TYPE_SIMPLE, $types)) {
+            $types[] = ProductType::TYPE_SIMPLE;
+        }
         if (!empty($types)) {
             $options['type'] = $types;
         } else {
@@ -338,9 +345,9 @@ class Connector implements ConnectorInterface
     {
         $status = (string) $options['status'];
         if ($status == 0) {
-            $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
+            $options['status'] = Status::STATUS_DISABLED;
         } elseif ($status == 1) {
-            $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
+            $options['status'] = Status::STATUS_ENABLED;
         } else {
             unset($options['status']);
         }

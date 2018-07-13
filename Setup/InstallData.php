@@ -92,7 +92,6 @@ class InstallData implements InstallDataInterface
     public function installAttributes()
     {
         $this->installIgnoreDataFeedAttribute();
-        $this->installDfwParentIdsAttribute();
     }
 
     public function installIgnoreDataFeedAttribute()
@@ -142,31 +141,5 @@ class InstallData implements InstallDataInterface
             );
             $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['eav']);
         }
-    }
-
-    public function installDfwParentIdsAttribute()
-    {
-        $properties = [
-            'type'                     => 'varchar',
-            'label'                    => 'dfw_parent_ids',
-            'input'                    => 'text',
-            'sort_order'               => 110,
-            'global'                   => ScopedAttributeInterface::SCOPE_STORE,
-            'group'                    => 'General Information',
-            'visible'                  => true,
-            'required'                 => false,
-            'visible_on_front'         => false,
-            'is_html_allowed_on_front' => false,
-            'is_configurable'          => false,
-            'searchable'               => false,
-            'filterable'               => false,
-            'comparable'               => false,
-            'unique'                   => false,
-            'user_defined'             => true,
-            'default'                  => '',
-            'is_user_defined'          => false,
-            'used_in_product_listing'  => false,
-        ];
-        $this->createAttribute('dfw_parent_ids', $properties);
     }
 }

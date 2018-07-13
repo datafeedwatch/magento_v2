@@ -50,24 +50,20 @@ class Collection extends Db
     public function applyFiltersOnCollection($options)
     {
         $this->optionsFilters = $options;
+        
         $this->setFlag('has_stock_status_filter', true);
+        $this->joinRelationTable();
         $this->applyStoreFilter();
         $this->registryHelper->initImportRegistry($this->getStoreId());
         $this->joinVisibilityTable(Db::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, '0');
         $this->joinVisibilityTable(Db::ORIGINAL_VISIBILITY_TABLE_ALIAS, $this->getStoreId());
-        if ($options['fillParentIds']) {
-            $this->fillParentIds();
-        }
-        $this->addAttributeToSelect('dfw_parent_ids');
-        $this->joinParentIdsTable(Db::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE, '0');
-        $this->joinParentIdsTable(Db::ORIGINAL_PARENT_IDS_TABLE_ALIAS, $this->getStoreId());
         $this->addRuleDate();
-        $this->applyTypeFilter();
         $this->joinQty();
         $this->addFinalPrice();
         $this->addUrlRewrite();
         $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
+        $this->applyTypeFilter();
         $this->addAttributeToSelect('ignore_datafeedwatch');
         $this->addAttributeToFilter('ignore_datafeedwatch', [['null' => true], ['neq' => 1]], 'left');
 
@@ -111,23 +107,6 @@ class Collection extends Db
         } else {
             $this->addAttributeToFilter('status', $this->optionsFilters['status']);
         }
-
-        return $this;
-    }
-
-    public function fillParentIds()
-    {
-        $this->_storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
-
-        $collection = $this->productCollectionFactory->create();
-        foreach ($collection as $product) {
-            $parentIds = $this->typeConfigurable->getParentIdsByChild($product->getId());
-            if (!empty($parentIds)) {
-                $product->setDfwParentIds(current($parentIds));
-                $product->getResource()->saveAttribute($product, 'dfw_parent_ids');
-            }
-        }
-        $this->_storeManager->setCurrentStore($this->getStoreId());
 
         return $this;
     }
@@ -197,7 +176,7 @@ class Collection extends Db
 
         return $this;
     }
-    
+
     /**
      * @return $this
      */

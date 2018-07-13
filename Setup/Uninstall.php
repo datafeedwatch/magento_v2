@@ -52,9 +52,6 @@ class Uninstall implements UninstallInterface
             $attributeCode = 'ignore_datafeedwatch';
             $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
 
-            $attributeCode = 'dfw_parent_ids';
-            $this->eavSetup->removeAttribute(Product::ENTITY, $attributeCode);
-
             $table      = $setup->getTable('catalog_eav_attribute');
             $columnName = 'can_configure_inheritance';
             if ($connection->tableColumnExists($table, $columnName)) {

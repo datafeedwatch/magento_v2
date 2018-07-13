@@ -22,7 +22,6 @@ class Registry extends AbstractHelper
     const DFW_STATUS_ATTRIBUTE_KEY      = 'dfw_status_attribute';
     const DFW_UPDATED_AT_ATTRIBUTE_KEY  = 'dfw_updated_at_attribute';
     const DFW_VISIBILITY_ATTRIBUTE_KEY  = 'dfw_visibility_at_attribute';
-    const DFW_PARENT_ID_ATTRIBUTE_KEY   = 'dfw_parent_id_attribute';
 
     public $registry;
     public $categoryCollection;
@@ -49,7 +48,6 @@ class Registry extends AbstractHelper
         $this->registerStatusAttribute();
         $this->registerUpdatedAtAttribute();
         $this->registerVisibilityAttribute();
-        $this->registerParentIdAttribute();
         $this->registerSuperAttributes();
         $this->registerInheritableAttributes();
         $this->registerAttributeCollection();
@@ -100,16 +98,6 @@ class Registry extends AbstractHelper
             $visibilityAttribute = $visibilityAttribute->addFieldToFilter('attribute_code', 'visibility');
             $visibilityAttribute = $visibilityAttribute->getFirstItem();
             $this->registry->register(self::DFW_VISIBILITY_ATTRIBUTE_KEY, $visibilityAttribute);
-        }
-    }
-
-    public function registerParentIdAttribute()
-    {
-        $registry = $this->registry->registry(self::DFW_PARENT_ID_ATTRIBUTE_KEY);
-        if (empty($registry)) {
-            $attribute = clone $this->attributeCollection;
-            $attribute = $attribute->addFieldToFilter('attribute_code', 'dfw_parent_ids')->getFirstItem();
-            $this->registry->register(self::DFW_PARENT_ID_ATTRIBUTE_KEY, $attribute);
         }
     }
 
