@@ -153,25 +153,45 @@ class Collection extends Db
         return $this;
     }
 
+    private function isParentProductSet($parentProductCollection, $parentId)
+    {
+        $parentProductSet = null;
+
+        foreach ($parentProductCollection as $parentProduct) {
+            if ($parentId == $parentProduct->getId()) {
+                $parentProductSet = $parentProduct;
+                break;
+            }
+        }
+
+        return $parentProductSet;
+    }
+
     /**
      * @return $this
      */
     public function addParentData()
     {
+        /** @var  $parentCollection */
         $parentCollection = $this->getParentProductsCollection();
+        $parentCollection->setPage(1, null);
+
+        /** @var  $parentCollection */
         $parentCollection = $parentCollection->getItems();
+
         foreach ($this->getItems() as $product) {
-            $parentId = $product->getParentId();
+            $parentId = (int)$product->getParentId();
             $parentId = explode(',', $parentId);
             if (is_array($parentId)) {
                 $parentId = current($parentId);
             }
             $parentId = !is_numeric($parentId) ? 0 : (string)$parentId;
+            $parentProduct = $this->isParentProductSet($parentCollection, $parentId);
 
-            if (empty($parentId) || !isset($parentCollection[$parentId])) {
+            if (empty($parentId) || !$parentProduct) {
                 continue;
             }
-            $product->setParent($parentCollection[$parentId]);
+            $product->setParent($parentProduct);
         }
 
         return $this;

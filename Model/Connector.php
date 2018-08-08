@@ -17,6 +17,10 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableT
 use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
 use Magento\Downloadable\Model\Product\Type as DownloadableType;
 
+/**
+ * Class Connector
+ * @package DataFeedWatch\Connector\Model
+ */
 class Connector implements ConnectorInterface
 {
     const MODULE_NAME = 'DataFeedWatch_Connector';
@@ -229,6 +233,7 @@ class Connector implements ConnectorInterface
         /** @var \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*');
+        $collection->addFieldToFilter('entity_id' , ['gt' => '1577']);
         $collection->applyFiltersOnCollection($options);
         return $collection;
     }
