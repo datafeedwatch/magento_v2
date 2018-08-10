@@ -75,7 +75,7 @@ interface ConnectorInterface
      * @param string[] $type = string[]
      * @param string $status = null
      * @param string $timezone = null
-     * @param string $fromDate = null
+     * @param string $updatedAt = null
      * @param int $perPage = 100
      * @param int $page = 1
      *
@@ -86,7 +86,7 @@ interface ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
+        $updatedAt = null,
         $perPage = 100,
         $page = 1
     );

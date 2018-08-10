@@ -125,25 +125,17 @@ class Connector implements ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
+        $updatedAt = null,
         $perPage = 100,
         $page = 1
     ) {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        if (!$this->isFromDateEarlierThanConfigDate($options)) {
-            $collection = $this->getProductCollection($options);
-            $collection->applyInheritanceLogic();
-            return $this->processProducts($collection);
-        } else {
-            return $this->products(
-                $options['store'],
-                $options['type'],
-                $options['status'],
-                $options['per_page'],
-                $options['page']
-            );
-        }
+        $this->filterOptions($options, $store, $type, $status, $timezone, $updatedAt, $perPage, $page);
+
+        $collection = $this->getProductCollection($options);
+        $collection->applyInheritanceLogic();
+        return $this->processProducts($collection);
+
     }
 
     /**
@@ -243,7 +235,7 @@ class Connector implements ConnectorInterface
      * @param string[] $type
      * @param string $status
      * @param string $timezone
-     * @param string $fromDate
+     * @param string $updatedAt
      * @param int  $perPage
      * @param int  $page
      */
@@ -253,7 +245,7 @@ class Connector implements ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
+        $updatedAt = null,
         $perPage = 100,
         $page = 1
     ) {
@@ -272,8 +264,8 @@ class Connector implements ConnectorInterface
         if ($timezone !== null && is_string($timezone)) {
             $options['timezone'] = $timezone;
         }
-        if ($fromDate !== null && is_string($fromDate)) {
-            $options['from_date'] = $fromDate;
+        if ($updatedAt !== null && is_string($updatedAt)) {
+            $options['updated_at'] = $updatedAt;
         }
         $options['per_page'] = (int)$perPage;
         $options['page'] = (int)$page;
@@ -293,7 +285,7 @@ class Connector implements ConnectorInterface
             $this->filterStatusOption($options);
         }
 
-        if (isset($options['from_date'])) {
+        if (isset($options['updated_at'])) {
             $this->filterFromDateOption($options);
         }
     }
@@ -365,7 +357,7 @@ class Connector implements ConnectorInterface
         if (!isset($options['timezone'])) {
             $options['timezone'] = null;
         }
-        $options['from_date'] = $this->dateTime->date(null, $options['from_date']);
+        $options['updated_at'] = $this->dateTime->date(null, $options['updated_at']);
     }
 
     /**
@@ -389,10 +381,10 @@ class Connector implements ConnectorInterface
      */
     public function isFromDateEarlierThanConfigDate($options)
     {
-        if (!isset($options['from_date'])) {
+        if (!isset($options['updated_at'])) {
             return false;
         }
 
-        return $options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate();
+        return $options['updated_at'] < $this->dataHelper->getLastInheritanceUpdateDate();
     }
 }

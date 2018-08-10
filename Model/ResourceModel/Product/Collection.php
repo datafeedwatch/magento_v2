@@ -128,11 +128,11 @@ class Collection extends Db
      */
     public function applyUpdatedAtFilter()
     {
-        if (!isset($this->optionsFilters['from_date'])) {
+        if (!isset($this->optionsFilters['updated_at'])) {
             return $this;
         }
 
-        $this->getSelect()->where($this->ruleDateSelect . ' >= ?', $this->optionsFilters['from_date']);
+        $this->getSelect()->where($this->ruleDateSelect . ' >= ?', $this->optionsFilters['updated_at']);
 
         return $this;
     }

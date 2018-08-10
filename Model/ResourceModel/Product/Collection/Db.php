@@ -242,13 +242,13 @@ class Db extends Collection
         $cron = $this->cron;
         $cron->execute();
 
-        $condition = $this->getUpdatedAtCondition();
+//        $condition = $this->getUpdatedAtCondition();
         $select    = $this->_resource->getConnection()->select();
         $select->from(
             [self::UPDATED_AT_TABLE_ALIAS => $this->_resource->getTableName('datafeedwatch_updated_products')],
             [sprintf('COALESCE(%1$s.updated_at, 0)', self::UPDATED_AT_TABLE_ALIAS)]
         );
-        $select->where($condition);
+//        $select->where($condition);
         $select->limit(1);
 
         $this->ruleDateSelect = sprintf(
