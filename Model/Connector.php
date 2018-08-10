@@ -233,7 +233,6 @@ class Connector implements ConnectorInterface
         /** @var \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection $collection */
         $collection = $this->productCollectionFactory->create();
         $collection->addAttributeToSelect('*');
-        $collection->addFieldToFilter('entity_id' , ['gt' => '1577']);
         $collection->applyFiltersOnCollection($options);
         return $collection;
     }
