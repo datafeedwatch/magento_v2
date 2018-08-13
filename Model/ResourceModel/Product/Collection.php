@@ -12,6 +12,10 @@ namespace DataFeedWatch\Connector\Model\ResourceModel\Product;
 
 use DataFeedWatch\Connector\Model\ResourceModel\Product\Collection\Db;
 
+/**
+ * Class Collection
+ * @package DataFeedWatch\Connector\Model\ResourceModel\Product
+ */
 class Collection extends Db
 {
     /**
@@ -42,10 +46,11 @@ class Collection extends Db
         
         return $this;
     }
-    
+
     /**
-     * @param array $options
+     * @param $options
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function applyFiltersOnCollection($options)
     {
@@ -64,8 +69,15 @@ class Collection extends Db
         $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
         $this->applyTypeFilter();
-        $this->addAttributeToSelect('ignore_datafeedwatch');
-        $this->addAttributeToFilter('ignore_datafeedwatch', [['null' => true], ['neq' => 1]], 'left');
+        $this->addAttributeToSelect('price');
+        $this->addAttributeToSelect('special_price');
+        $this->addAttributeToFilter('ignore_datafeedwatch',
+            [
+                ['null' => true],
+                ['neq' => 1]
+            ],
+            'left'
+        );
 
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
         
@@ -74,6 +86,7 @@ class Collection extends Db
 
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function applyStoreFilter()
     {
@@ -136,9 +149,11 @@ class Collection extends Db
 
         return $this;
     }
-    
+
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function applyInheritanceLogic()
     {
@@ -153,6 +168,11 @@ class Collection extends Db
         return $this;
     }
 
+    /**
+     * @param $parentProductCollection
+     * @param $parentId
+     * @return null
+     */
     private function isParentProductSet($parentProductCollection, $parentId)
     {
         $parentProductSet = null;
@@ -169,6 +189,8 @@ class Collection extends Db
 
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function addParentData()
     {
@@ -198,7 +220,9 @@ class Collection extends Db
     }
 
     /**
-     * @return $this
+     * @return Collection
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getParentProductsCollection()
     {

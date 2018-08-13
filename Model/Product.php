@@ -16,7 +16,12 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Product as coreProduct;
 use Magento\Catalog\Model\Product\Attribute\Backend\Media\EntryConverterPool;
 use Magento\Framework\Api\AttributeValueFactory;
+use Magento\CatalogInventory\Api\StockStateInterface;
 
+/**
+ * Class Product
+ * @package DataFeedWatch\Connector\Model
+ */
 class Product extends coreProduct
 {
     /** @var array $importData */
@@ -26,6 +31,8 @@ class Product extends coreProduct
     public $priceCurrency;
     public $catalogHelper;
     public $timezone;
+
+    protected $stockStatusInterface;
 
     /**
      * Product constructor.
@@ -68,6 +75,7 @@ class Product extends coreProduct
      * @param Registry $registryHelper
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Catalog\Helper\Data $catalogHelper
+     * @param StockStateInterface $stockStatusInterface
      * @param array $data
      */
     public function __construct(
@@ -110,6 +118,7 @@ class Product extends coreProduct
         Registry $registryHelper,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Catalog\Helper\Data $catalogHelper,
+        StockStateInterface $stockStatusInterface,
         array $data = []
     ) {
         $this->dataHelper       = $dataHelper;
@@ -117,6 +126,7 @@ class Product extends coreProduct
         $this->registryHelper   = $registryHelper;
         $this->priceCurrency    = $priceCurrency;
         $this->catalogHelper    = $catalogHelper;
+        $this->stockStatusInterface = $stockStatusInterface;
         parent::__construct(
             $context,
             $registry,
@@ -171,6 +181,9 @@ class Product extends coreProduct
         if ($this->registryHelper->isStatusAttributeInheritable()) {
             $this->setStatus($this->getFilterStatus());
         }
+
+        $stockQty = $this->stockStatusInterface->getStockQty($this->getId(), $this->getStore()->getWebsiteId());
+
         $date = $this->getRuleDate();
         $this->setUpdatedAt($this->timezone->convertConfigTimeToUtc($date, 'Y-m-d H:i:s'));
         $this->fillAllAttributesData();
@@ -228,6 +241,7 @@ class Product extends coreProduct
             $this->setDataToImport($parent->getAdditionalImages($this->importData['image_url'], true));
         }
 
+        ksort($this->importData);
         return $this->importData;
     }
 

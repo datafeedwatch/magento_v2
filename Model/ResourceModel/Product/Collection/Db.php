@@ -294,13 +294,13 @@ class Db extends Collection
     public function joinQty()
     {
         $this->joinTable(
-            $this->_resource->getTableName('cataloginventory_stock_status'),
-            'product_id=entity_id',
+            $this->_resource->getTableName('cataloginventory_stock_item'),
+            'product_id = entity_id',
             [
                 'qty' => 'qty',
-                'stock_status' => 'stock_status',
+                'stock_status' => 'is_in_stock',
             ],
-            '{{table}}.stock_id=1 and {{table}}.website_id = 0',
+            '{{table}}.stock_id = 1',
             'left'
         );
 
@@ -311,6 +311,7 @@ class Db extends Collection
      * @param string $tableAlias
      * @param string $storeId
      * @return $this
+     * @throws \Zend_Db_Select_Exception
      */
     public function joinInheritedStatusTable($tableAlias = self::INHERITED_STATUS_TABLE_ALIAS, $storeId = '0')
     {

@@ -95,10 +95,10 @@ class Connector implements ConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    public function products($store = null, $type = [], $status = null, $per_page = 100, $page = 1)
     {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
+        $this->filterOptions($options, $store, $type, $status, null, null, $per_page, $page);
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
 
@@ -108,10 +108,10 @@ class Connector implements ConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    public function productCount($store = null, $type = [], $status = null, $per_page = 100, $page = 1)
     {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
+        $this->filterOptions($options, $store, $type, $status, null, null, $per_page, $page);
         $collection = $this->getProductCollection($options);
 
         return (int) $collection->getSize();
@@ -126,11 +126,11 @@ class Connector implements ConnectorInterface
         $status = null,
         $timezone = null,
         $updatedAt = null,
-        $perPage = 100,
+        $per_page = 100,
         $page = 1
     ) {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $updatedAt, $perPage, $page);
+        $this->filterOptions($options, $store, $type, $status, $timezone, $updatedAt, $per_page, $page);
 
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
@@ -146,24 +146,24 @@ class Connector implements ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        if (!$this->isFromDateEarlierThanConfigDate($options)) {
+        $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
+//        if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
-        } else {
-            $amount = $this->productCount(
-                $options['store'],
-                $options['type'],
-                $options['status'],
-                $options['per_page'],
-                $options['page']
-            );
-        }
+//        } else {
+//            $amount = $this->productCount(
+//                $options['store'],
+//                $options['type'],
+//                $options['status'],
+//                $options['per_page'],
+//                $options['page']
+//            );
+//        }
 
         return $amount;
     }
@@ -176,12 +176,12 @@ class Connector implements ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
+        $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
         $collection = $this->getProductCollection($options);
 
         return $collection->getColumnValues('entity_id');
@@ -235,9 +235,9 @@ class Connector implements ConnectorInterface
      * @param string[] $type
      * @param string $status
      * @param string $timezone
-     * @param string $updatedAt
-     * @param int  $perPage
-     * @param int  $page
+     * @param string $from_date
+     * @param int $per_page
+     * @param int $page
      */
     public function filterOptions(
         &$options,
@@ -245,8 +245,8 @@ class Connector implements ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $updatedAt = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
         if (empty($options) || !is_array($options)) {
@@ -264,10 +264,10 @@ class Connector implements ConnectorInterface
         if ($timezone !== null && is_string($timezone)) {
             $options['timezone'] = $timezone;
         }
-        if ($updatedAt !== null && is_string($updatedAt)) {
-            $options['updated_at'] = $updatedAt;
+        if ($from_date !== null && is_string($from_date)) {
+            $options['updated_at'] = $from_date;
         }
-        $options['per_page'] = (int)$perPage;
+        $options['per_page'] = (int)$per_page;
         $options['page'] = (int)$page;
 
         $this->builtInFiltering($options);
