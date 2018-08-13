@@ -202,6 +202,7 @@ class Product extends coreProduct
         $this->importData['special_to_date']            = $this->getSpecialToDate();
         $this->importData['image_url']                  = $this->getBaseImageUrl();
         $this->importData['product_url']                = $this->getProductUrl();
+        $this->importData['type_id']                    = $this->getTypeId();
         $this->importData['product_url_rewritten']      = $this->getProductUrl();
         $this->importData['is_in_stock']                = (int) $this->getQuantityAndStockStatus()['is_in_stock'];
         $this->getCategoryPathToImport();

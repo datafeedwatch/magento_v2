@@ -145,7 +145,7 @@ class Db extends Collection
             self::INHERITED_STATUS_TABLE_ALIAS,
             self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE,
             self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE,
-            self::ORIGINAL_VISIBILITY_TABLE_ALIAS,
+//            self::ORIGINAL_VISIBILITY_TABLE_ALIAS,
             self::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE
         );
     }

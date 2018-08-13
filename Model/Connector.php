@@ -132,9 +132,19 @@ class Connector implements ConnectorInterface
         $options = [];
         $this->filterOptions($options, $store, $type, $status, $timezone, $updatedAt, $per_page, $page);
 
-        $collection = $this->getProductCollection($options);
-        $collection->applyInheritanceLogic();
-        return $this->processProducts($collection);
+        if (!$this->isFromDateEarlierThanConfigDate($options)) {
+            $collection = $this->getProductCollection($options);
+            $collection->applyInheritanceLogic();
+            return $this->processProducts($collection);
+        } else {
+            return $this->products(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
+        }
 
     }
 
@@ -151,19 +161,20 @@ class Connector implements ConnectorInterface
         $page = 1
     ) {
         $options = [];
+
         $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
-//        if (!$this->isFromDateEarlierThanConfigDate($options)) {
+        if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $amount     = (int) $collection->getSize();
-//        } else {
-//            $amount = $this->productCount(
-//                $options['store'],
-//                $options['type'],
-//                $options['status'],
-//                $options['per_page'],
-//                $options['page']
-//            );
-//        }
+        } else {
+            $amount = $this->productCount(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
+        }
 
         return $amount;
     }
@@ -217,8 +228,11 @@ class Connector implements ConnectorInterface
     }
 
     /**
-     * @param array $options
-     * @return \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection
+     * @param $options
+     * @return ResourceModel\Product\Collection
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Zend_Db_Select_Exception
      */
     public function getProductCollection($options)
     {
@@ -258,7 +272,7 @@ class Connector implements ConnectorInterface
         if ($type !== null && is_array($type)) {
             $options['type'] = $type;
         }
-        if ($status !== null && is_string($status)) {
+        if ($status !== null && is_string($status) || is_int($status)) {
             $options['status'] = $status;
         }
         if ($timezone !== null && is_string($timezone)) {
@@ -383,6 +397,10 @@ class Connector implements ConnectorInterface
     {
         if (!isset($options['updated_at'])) {
             return false;
+        }
+
+        if ($this->dataHelper->getLastInheritanceUpdateDate() == null) {
+            return true;
         }
 
         return $options['updated_at'] < $this->dataHelper->getLastInheritanceUpdateDate();

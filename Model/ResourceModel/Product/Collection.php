@@ -51,17 +51,19 @@ class Collection extends Db
      * @param $options
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Zend_Db_Select_Exception
      */
     public function applyFiltersOnCollection($options)
     {
         $this->optionsFilters = $options;
         
         $this->setFlag('has_stock_status_filter', true);
-        $this->joinRelationTable();
+//        $this->joinRelationTable();
         $this->applyStoreFilter();
         $this->registryHelper->initImportRegistry($this->getStoreId());
-        $this->joinVisibilityTable(Db::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, '0');
-        $this->joinVisibilityTable(Db::ORIGINAL_VISIBILITY_TABLE_ALIAS, $this->getStoreId());
+//        $this->joinVisibilityTable(Db::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, '0');
+//        $this->joinVisibilityTable(Db::ORIGINAL_VISIBILITY_TABLE_ALIAS, $this->getStoreId());
         $this->addRuleDate();
         $this->joinQty();
         $this->addFinalPrice();
@@ -69,6 +71,7 @@ class Collection extends Db
         $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
         $this->applyTypeFilter();
+        $this->addAttributeToSelect('status');
         $this->addAttributeToSelect('price');
         $this->addAttributeToSelect('special_price');
         $this->addAttributeToFilter('ignore_datafeedwatch',
@@ -80,6 +83,7 @@ class Collection extends Db
         );
 
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
+        var_dump($this->getSelect()->assemble());
         
         return $this;
     }
@@ -103,23 +107,24 @@ class Collection extends Db
 
     /**
      * @return $this
+     * @throws \Zend_Db_Select_Exception
      */
     public function applyStatusFilter()
     {
         if (!isset($this->optionsFilters['status'])) {
             return $this;
         }
-
-        if ($this->registryHelper->isStatusAttributeInheritable()) {
-            $this->buildFilterStatusCondition();
-            $this->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS, $this->getStoreId())
-                 ->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0')
-                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS, $this->getStoreId())
-                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0');
-            $this->getSelect()->where($this->filterStatusCondition . ' = ?', $this->optionsFilters['status']);
-        } else {
+//
+//        if ($this->registryHelper->isStatusAttributeInheritable()) {
+//            $this->buildFilterStatusCondition();
+//            $this->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS, $this->getStoreId())
+//                 ->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0')
+//                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS, $this->getStoreId())
+//                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0');
+//            $this->getSelect()->where($this->filterStatusCondition . ' = ?', $this->optionsFilters['status']);
+//        } else {
             $this->addAttributeToFilter('status', $this->optionsFilters['status']);
-        }
+//        }
 
         return $this;
     }
