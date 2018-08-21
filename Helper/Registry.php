@@ -141,7 +141,9 @@ class Registry extends AbstractHelper
      */
     public function isStatusAttributeInheritable()
     {
-        return $this->isAttributeInheritable($this->registry->registry(self::DFW_STATUS_ATTRIBUTE_KEY));
+        $attribute = $this->registry->registry(self::DFW_STATUS_ATTRIBUTE_KEY);
+        return $attribute->getInheritance();
+
     }
 
     /**

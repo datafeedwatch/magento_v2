@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 20.09.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model\ResourceModel\Product\Collection;
@@ -128,32 +127,11 @@ class Db extends Collection
         );
     }
 
-    public function buildFilterStatusCondition()
-    {
-        $childString     = 'IFNULL(%1$s.value, %3$s.value)';
-        $parentString    = 'IFNULL(%2$s.value, %4$s.value)';
-        if ($this->registryHelper->isStatusAttributeInheritable()) {
-            $inheritString = "IFNULL({$childString}, {$parentString})";
-                $string = 'IF(IFNULL(%5$s.value, %6$s.value) = ' . Visibility::VISIBILITY_NOT_VISIBLE
-                                          . ', ' . $parentString . ', ' . $inheritString . ')';
-        } else {
-            $string = $childString;
-        }
-        $this->filterStatusCondition = sprintf(
-            $string,
-            self::ORIGINAL_STATUS_TABLE_ALIAS,
-            self::INHERITED_STATUS_TABLE_ALIAS,
-            self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE,
-            self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE,
-//            self::ORIGINAL_VISIBILITY_TABLE_ALIAS,
-            self::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE
-        );
-    }
-
     /**
      * @param string $tableAlias
      * @param string $storeId
      * @return $this
+     * @throws \Zend_Db_Select_Exception
      */
     public function joinVisibilityTable($tableAlias = self::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, $storeId = '0')
     {
@@ -175,7 +153,11 @@ class Db extends Collection
      */
     public function joinRelationTable()
     {
-        $this->getSelect()->columns(['parent_id' =>  $this->getParentIdSubselect()]);
+        $this->getSelect()->joinLeft(
+            'catalog_product_relation',
+            'catalog_product_relation.child_id = entity_id',
+            'parent_id'
+            );
 
         return $this;
     }
@@ -242,13 +224,11 @@ class Db extends Collection
         $cron = $this->cron;
         $cron->execute();
 
-//        $condition = $this->getUpdatedAtCondition();
         $select    = $this->_resource->getConnection()->select();
         $select->from(
             [self::UPDATED_AT_TABLE_ALIAS => $this->_resource->getTableName('datafeedwatch_updated_products')],
             [sprintf('COALESCE(%1$s.updated_at, 0)', self::UPDATED_AT_TABLE_ALIAS)]
         );
-//        $select->where($condition);
         $select->limit(1);
 
         $this->ruleDateSelect = sprintf(
@@ -370,6 +350,7 @@ class Db extends Collection
      * @param string $tableAlias
      * @param string $storeId
      * @return $this
+     * @throws \Zend_Db_Select_Exception
      */
     public function joinOriginalStatusTable($tableAlias = self::ORIGINAL_STATUS_TABLE_ALIAS, $storeId = '0')
     {

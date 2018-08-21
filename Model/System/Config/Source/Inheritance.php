@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 22.08.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model\System\Config\Source;

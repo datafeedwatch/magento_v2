@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 20.09.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model\ResourceModel\Product;
@@ -43,7 +42,6 @@ class Collection extends Db
     public function _productLimitationPrice($joinLeft = true)
     {
         parent::_productLimitationPrice($joinLeft);
-        
         return $this;
     }
 
@@ -52,39 +50,28 @@ class Collection extends Db
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Zend_Db_Select_Exception
      */
     public function applyFiltersOnCollection($options)
     {
         $this->optionsFilters = $options;
         
         $this->setFlag('has_stock_status_filter', true);
-//        $this->joinRelationTable();
+        $this->joinRelationTable();
         $this->applyStoreFilter();
         $this->registryHelper->initImportRegistry($this->getStoreId());
-//        $this->joinVisibilityTable(Db::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, '0');
-//        $this->joinVisibilityTable(Db::ORIGINAL_VISIBILITY_TABLE_ALIAS, $this->getStoreId());
-        $this->addRuleDate();
         $this->joinQty();
         $this->addFinalPrice();
         $this->addUrlRewrite();
-        $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
         $this->applyTypeFilter();
+//        $this->addAttributeToSelect('ignore_datafeedwatch');
         $this->addAttributeToSelect('status');
         $this->addAttributeToSelect('price');
         $this->addAttributeToSelect('special_price');
-        $this->addAttributeToFilter('ignore_datafeedwatch',
-            [
-                ['null' => true],
-                ['neq' => 1]
-            ],
-            'left'
-        );
+        $this->applyStatusFilter();
 
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
-        var_dump($this->getSelect()->assemble());
-        
+
         return $this;
     }
 
@@ -107,24 +94,36 @@ class Collection extends Db
 
     /**
      * @return $this
-     * @throws \Zend_Db_Select_Exception
      */
     public function applyStatusFilter()
     {
         if (!isset($this->optionsFilters['status'])) {
             return $this;
         }
-//
-//        if ($this->registryHelper->isStatusAttributeInheritable()) {
-//            $this->buildFilterStatusCondition();
-//            $this->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS, $this->getStoreId())
-//                 ->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0')
-//                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS, $this->getStoreId())
-//                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0');
-//            $this->getSelect()->where($this->filterStatusCondition . ' = ?', $this->optionsFilters['status']);
-//        } else {
-            $this->addAttributeToFilter('status', $this->optionsFilters['status']);
-//        }
+
+        $statusAttributeId = $this->getAttribute('status')->getId();
+
+        /** add status filter - for main entity */
+        $this->getSelect()->joinLeft(
+            ['product_status' => 'catalog_product_entity_int'],
+            'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
+            ['product_status' => 'value']
+        );
+
+        /** add status filter - parent status */
+        $this->getSelect()->joinLeft(
+            ['parent_status' => 'catalog_product_entity_int'],
+            'parent_status.entity_id = catalog_product_relation.parent_id and parent_status.attribute_id = ' . $statusAttributeId,
+            ['parent_status' => 'value']
+        );
+
+        /** apply status filter for product and its parent values **/
+        $this->getSelect()->where('
+             (type_id <> "simple" and product_status.value = "' . $this->optionsFilters['status'] .'") or 
+             (parent_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is not null) or 
+             (product_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is null)
+             '
+        );
 
         return $this;
     }

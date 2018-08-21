@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 21.09.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model;
@@ -171,21 +170,51 @@ class Product extends coreProduct
         $this->_init(\Magento\Catalog\Model\ResourceModel\Product::class);
     }
 
+    public function getStatus()
+    {
+        if (!$this->getParent()) {
+            return $this->getProductStatus();
+        } else {
+            if ($this->registryHelper->isStatusAttributeInheritable() == 2) {
+                return $this->getParentStatus();
+            } else {
+                return $this->getProductStatus();
+            }
+        }
+    }
+
     /**
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getDataToImport()
     {
         /** @var \DataFeedWatch\Connector\Model\Product $parent */
         $parent = $this->getParent();
-        if ($this->registryHelper->isStatusAttributeInheritable()) {
-            $this->setStatus($this->getFilterStatus());
+
+        if ($parent) {
+            switch ($this->registryHelper->isStatusAttributeInheritable()) {
+                case \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::PARENT_OPTION_ID:
+                    {
+                        $this->setStatus($this->getParent()->getProductStatus());
+                        break;
+                    }
+                case \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance::CHILD_THEN_PARENT_OPTION_ID:
+                    {
+                        $this->setStatus($this->getParent()->getProductStatus());
+                        break;
+                    }
+            }
+        } else {
+            $this->setStatus($this->getProductStatus());
         }
 
         $stockQty = $this->stockStatusInterface->getStockQty($this->getId(), $this->getStore()->getWebsiteId());
 
         $date = $this->getRuleDate();
         $this->setUpdatedAt($this->timezone->convertConfigTimeToUtc($date, 'Y-m-d H:i:s'));
+        $this->importData['status'] = $this->getStatus();
+
         $this->fillAllAttributesData();
         $this->importData['product_id']                 = $this->getId();
         $this->importData['sku']                        = $this->getSku();
@@ -253,6 +282,7 @@ class Product extends coreProduct
 
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function fillAllAttributesData()
     {

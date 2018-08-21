@@ -1,11 +1,10 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 18.08.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model;
@@ -101,7 +100,6 @@ class Connector implements ConnectorInterface
         $this->filterOptions($options, $store, $type, $status, null, null, $per_page, $page);
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
-
         return $this->processProducts($collection);
     }
 
@@ -160,8 +158,6 @@ class Connector implements ConnectorInterface
         $per_page = 100,
         $page = 1
     ) {
-        $options = [];
-
         $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
@@ -232,7 +228,6 @@ class Connector implements ConnectorInterface
      * @return ResourceModel\Product\Collection
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \Zend_Db_Select_Exception
      */
     public function getProductCollection($options)
     {
@@ -283,6 +278,7 @@ class Connector implements ConnectorInterface
         }
         $options['per_page'] = (int)$per_page;
         $options['page'] = (int)$page;
+        $options['status'] = $status;
 
         $this->builtInFiltering($options);
     }
@@ -305,7 +301,8 @@ class Connector implements ConnectorInterface
     }
 
     /**
-     * @param array $options
+     * @param $options
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function filterStoreOption(&$options)
     {
@@ -353,13 +350,15 @@ class Connector implements ConnectorInterface
      */
     public function filterStatusOption(&$options)
     {
-        $status = (string) $options['status'];
-        if ($status == 0) {
-            $options['status'] = Status::STATUS_DISABLED;
-        } elseif ($status == 1) {
-            $options['status'] = Status::STATUS_ENABLED;
+        $status = (int)$options['status'];
+        if ($status) {
+            if ($status == 1) {
+                $options['status'] = Status::STATUS_ENABLED;
+            } else {
+                $options['status'] = Status::STATUS_DISABLED;
+            }
         } else {
-            unset($options['status']);
+            $options['status'] = null;
         }
     }
 

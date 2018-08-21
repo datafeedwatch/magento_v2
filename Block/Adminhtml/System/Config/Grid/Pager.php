@@ -20,7 +20,7 @@ class Pager extends Template
     public $page = 1;
     
     /** @var int */
-    public $limit = 10;
+    public $limit = 20;
     
     /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection */
     public $attributeCollection;
@@ -77,7 +77,6 @@ class Pager extends Template
      */
     public function getPage()
     {
-        
         return (int) $this->page;
     }
     
