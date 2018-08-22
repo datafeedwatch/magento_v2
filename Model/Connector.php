@@ -161,8 +161,9 @@ class Connector implements ConnectorInterface
         $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
-            $amount     = (int) $collection->getSize();
+            $amount     = (int)$collection->getSize();
         } else {
+            unset($options['updated_at']);
             $amount = $this->productCount(
                 $options['store'],
                 $options['type'],
@@ -402,6 +403,7 @@ class Connector implements ConnectorInterface
             return true;
         }
 
-        return $options['updated_at'] < $this->dataHelper->getLastInheritanceUpdateDate();
+        // parse dates to timestamps
+        return strtotime($options['updated_at']) < strtotime($this->dataHelper->getLastInheritanceUpdateDate());
     }
 }

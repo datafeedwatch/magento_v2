@@ -54,7 +54,7 @@ class Collection extends Db
     public function applyFiltersOnCollection($options)
     {
         $this->optionsFilters = $options;
-        
+
         $this->setFlag('has_stock_status_filter', true);
         $this->joinRelationTable();
         $this->applyStoreFilter();
@@ -64,14 +64,11 @@ class Collection extends Db
         $this->addUrlRewrite();
         $this->applyUpdatedAtFilter();
         $this->applyTypeFilter();
-//        $this->addAttributeToSelect('ignore_datafeedwatch');
         $this->addAttributeToSelect('status');
         $this->addAttributeToSelect('price');
         $this->addAttributeToSelect('special_price');
         $this->applyStatusFilter();
-
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
-
         return $this;
     }
 
@@ -147,9 +144,9 @@ class Collection extends Db
     {
         if (!isset($this->optionsFilters['updated_at'])) {
             return $this;
+        } else {
+            $this->getSelect()->where('updated_at >= ?', $this->optionsFilters['updated_at']);
         }
-
-        $this->getSelect()->where($this->ruleDateSelect . ' >= ?', $this->optionsFilters['updated_at']);
 
         return $this;
     }

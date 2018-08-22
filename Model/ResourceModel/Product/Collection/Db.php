@@ -153,9 +153,12 @@ class Db extends Collection
      */
     public function joinRelationTable()
     {
+        // limit left join to only 1 parent item
         $this->getSelect()->joinLeft(
             'catalog_product_relation',
-            'catalog_product_relation.child_id = entity_id',
+            'catalog_product_relation.child_id = (select child_id from catalog_product_relation
+                where catalog_product_relation.child_id = `e`.entity_id
+                    limit 1)',
             'parent_id'
             );
 
@@ -213,49 +216,6 @@ class Db extends Collection
             $visibilityAttribute->getId(),
             $storeId
         );
-    }
-
-    /**
-     * @return $this
-     */
-    public function addRuleDate()
-    {
-        /** @var \DataFeedWatch\Connector\Cron\FillUpdatedAtTable $cron */
-        $cron = $this->cron;
-        $cron->execute();
-
-        $select    = $this->_resource->getConnection()->select();
-        $select->from(
-            [self::UPDATED_AT_TABLE_ALIAS => $this->_resource->getTableName('datafeedwatch_updated_products')],
-            [sprintf('COALESCE(%1$s.updated_at, 0)', self::UPDATED_AT_TABLE_ALIAS)]
-        );
-        $select->limit(1);
-
-        $this->ruleDateSelect = sprintf(
-            'GREATEST(IFNULL((%s), 0), COALESCE(%2$s.updated_at, 0))',
-            $select->__toString(),
-            self::MAIN_TABLE_ALIAS
-        );
-        $this->getSelect()->columns([self::CATALOGRULE_DATE_COLUMN_ALIAS => new \Zend_Db_Expr($this->ruleDateSelect)]);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUpdatedAtCondition()
-    {
-        $condition = '(parent_id IS NOT NULL
-        AND %1$s.dfw_prod_id IN (parent_id)
-        OR %1$s.dfw_prod_id = %2$s.entity_id)';
-        $condition = sprintf(
-            $condition,
-            self::UPDATED_AT_TABLE_ALIAS,
-            self::MAIN_TABLE_ALIAS
-        );
-
-        return $condition;
     }
 
     /**
