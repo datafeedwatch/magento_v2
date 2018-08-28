@@ -12,12 +12,16 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid;
 
 use Magento\Framework\View\Element\Template;
 
+/**
+ * Class Items
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid
+ */
 class Items extends Template
 {
     /**
-     * @param \Magento\Catalog\Model\ResourceModel\Eav\Attribute $attribute
-     *
-     * @return string
+     * @param $attribute
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getItemRow($attribute)
     {

@@ -10,6 +10,10 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
+/**
+ * Class Add
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button
+ */
 class Add extends BaseButton
 {
     /**

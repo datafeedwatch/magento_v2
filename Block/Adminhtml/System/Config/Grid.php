@@ -15,6 +15,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 
+/**
+ * Class Grid
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config
+ */
 class Grid extends Field
 {
     /** @var DataHelper */

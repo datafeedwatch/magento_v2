@@ -13,10 +13,14 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
+/**
+ * Class Render
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Grid
+ */
 class Render extends Grid
 {
     /**
-     * @return \Magento\Backend\Model\View\Result\Page
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|void
      */
     public function execute()
     {

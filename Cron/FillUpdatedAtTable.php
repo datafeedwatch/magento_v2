@@ -14,6 +14,10 @@ use DataFeedWatch\Connector\Helper\Data as DataHelper;
 use Magento\Customer\Model\GroupManagement;
 use Magento\Framework\App\ResourceConnection;
 
+/**
+ * Class FillUpdatedAtTable
+ * @package DataFeedWatch\Connector\Cron
+ */
 class FillUpdatedAtTable
 {
     const CATALOGRULE_DATE_TABLE_ALIAS = 'catalogrule_product_price_date';

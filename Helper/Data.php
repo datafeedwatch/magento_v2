@@ -13,6 +13,10 @@ namespace DataFeedWatch\Connector\Helper;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
 use Magento\Framework\App\Helper\AbstractHelper;
 
+/**
+ * Class Data
+ * @package DataFeedWatch\Connector\Helper
+ */
 class Data extends AbstractHelper
 {
     const MY_DATA_FEED_WATCH_URL               = 'https://my.datafeedwatch.com/';

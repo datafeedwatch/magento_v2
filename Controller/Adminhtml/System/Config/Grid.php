@@ -12,6 +12,10 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 
+/**
+ * Class Grid
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config
+ */
 abstract class Grid extends Action
 {
     /**

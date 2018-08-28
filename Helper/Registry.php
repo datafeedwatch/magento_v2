@@ -13,6 +13,10 @@ namespace DataFeedWatch\Connector\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductAttributeCollectionCollection;
 
+/**
+ * Class Registry
+ * @package DataFeedWatch\Connector\Helper
+ */
 class Registry extends AbstractHelper
 {
     const ALL_CATEGORIES_ARRAY_KEY      = 'all_categories_array';

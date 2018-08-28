@@ -12,6 +12,10 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 
+/**
+ * Class Button
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config
+ */
 abstract class Button extends Action
 {
     /**

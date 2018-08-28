@@ -11,6 +11,10 @@ namespace DataFeedWatch\Connector\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
+/**
+ * Class Inheritance
+ * @package DataFeedWatch\Connector\Model\System\Config\Source
+ */
 class Inheritance implements ArrayInterface
 {
     const CHILD_OPTION_ID                = 1;

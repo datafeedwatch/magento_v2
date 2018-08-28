@@ -15,6 +15,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 
+/**
+ * Class BaseButton
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button
+ */
 abstract class BaseButton extends Field implements ButtonInterface
 {
     /** @var DataHelper */

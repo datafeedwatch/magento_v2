@@ -14,6 +14,10 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductA
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
+/**
+ * Class Pager
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid
+ */
 class Pager extends Template
 {
     /** @var int */

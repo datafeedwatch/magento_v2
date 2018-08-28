@@ -13,8 +13,15 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
+/**
+ * Class Restore
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button
+ */
 class Restore extends Button
 {
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         try {

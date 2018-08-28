@@ -64,12 +64,10 @@ class Collection extends Db
         $this->addUrlRewrite();
         $this->applyUpdatedAtFilter();
         $this->applyTypeFilter();
-//        $this->addAttributeToSelect('ignore_datafeedwatch');
         $this->addAttributeToSelect('status');
         $this->addAttributeToSelect('price');
         $this->addAttributeToSelect('special_price');
         $this->applyStatusFilter();
-
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
 
         return $this;
