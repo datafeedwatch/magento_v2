@@ -40,7 +40,10 @@ class InstallSchema implements InstallSchemaInterface
             $this->createUpdatedProductsTable();
         }
     }
-    
+
+    /**
+     *
+     */
     public function extendsCatalogEavAttributeTable()
     {
         $table = $this->setup->getTable('catalog_eav_attribute');

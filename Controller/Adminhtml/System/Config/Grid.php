@@ -36,13 +36,14 @@ abstract class Grid extends Action
     
     /** @var \DataFeedWatch\Connector\Helper\Data */
     public $dataHelper;
-    
+
     /**
-     * @param Action\Context                                      $context
-     * @param \Magento\Framework\Registry                         $coreRegistry
-     * @param \Magento\Framework\View\Result\PageFactory          $resultPageFactory
+     * Grid constructor.
+     * @param Action\Context $context
+     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Repository $productAttributeRepository
-     * @param \DataFeedWatch\Connector\Helper\Data                $dataHelper
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,

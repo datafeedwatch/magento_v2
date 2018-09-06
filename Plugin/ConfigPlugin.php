@@ -13,17 +13,28 @@ namespace DataFeedWatch\Connector\Plugin;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 use Magento\TestFramework\Inspection\Exception;
 
+/**
+ * Class ConfigPlugin
+ * @package DataFeedWatch\Connector\Plugin
+ */
 class ConfigPlugin
 {
     /** @var DataHelper */
     public $dataHelper;
-    
+
+    /**
+     * ConfigPlugin constructor.
+     * @param DataHelper $dataHelper
+     */
     public function __construct(
         DataHelper $dataHelper
     ) {
         $this->dataHelper = $dataHelper;
     }
-    
+
+    /**
+     * @param \Magento\Config\Model\Config $config
+     */
     public function beforeSave(\Magento\Config\Model\Config $config)
     {
         $productUrlXpath = DataHelper::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH;
@@ -47,11 +58,10 @@ class ConfigPlugin
         
         return $config->getConfigDataValue($xpath) !== $this->getConfigDataFromXpath($config, $xpath);
     }
-    
+
     /**
-     * @param \Magento\Config\Model\Config $config
-     * @param string                       $xpath
-     *
+     * @param $config
+     * @param $xpath
      * @return mixed|null
      */
     private function getConfigDataFromXpath($config, $xpath)
@@ -90,7 +100,7 @@ class ConfigPlugin
             } else {
                 return null;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }

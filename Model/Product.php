@@ -25,12 +25,23 @@ class Product extends coreProduct
 {
     /** @var array $importData */
     public $importData = [];
+
+    /** @var \DataFeedWatch\Connector\Helper\Data  */
     public $dataHelper;
+
+    /** @var Registry  */
     public $registryHelper;
+
+    /** @var \Magento\Framework\Pricing\PriceCurrencyInterface  */
     public $priceCurrency;
+
+    /** @var \Magento\Catalog\Helper\Data  */
     public $catalogHelper;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface  */
     public $timezone;
 
+    /** @var StockStateInterface  */
     protected $stockStatusInterface;
 
     /**
@@ -170,6 +181,9 @@ class Product extends coreProduct
         $this->_init(\Magento\Catalog\Model\ResourceModel\Product::class);
     }
 
+    /**
+     * @return int
+     */
     public function getStatus()
     {
         if (!$this->getParent()) {

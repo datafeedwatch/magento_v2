@@ -15,6 +15,10 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class UpdateLastInheritanceUpdateDate
+ * @package DataFeedWatch\Connector\Observer
+ */
 class UpdateLastInheritanceUpdateDate implements ObserverInterface
 {
     /** @var DataHelper */

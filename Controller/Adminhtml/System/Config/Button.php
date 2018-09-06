@@ -31,6 +31,12 @@ abstract class Button extends Action
     /** @var \DataFeedWatch\Connector\Model\Api\User */
     public $apiUser;
 
+    /**
+     * Button constructor.
+     * @param Action\Context $context
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
+     * @param \DataFeedWatch\Connector\Model\Api\User $apiUser
+     */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,

@@ -27,10 +27,22 @@ class Registry extends AbstractHelper
     const DFW_UPDATED_AT_ATTRIBUTE_KEY  = 'dfw_updated_at_attribute';
     const DFW_VISIBILITY_ATTRIBUTE_KEY  = 'dfw_visibility_at_attribute';
 
+    /** @var \Magento\Framework\Registry  */
     public $registry;
+
+    /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection  */
     public $categoryCollection;
+
+    /** @var ProductAttributeCollectionCollection  */
     public $attributeCollection;
 
+    /**
+     * Registry constructor.
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Catalog\Model\ResourceModel\Category\Collection $categoryCollection
+     * @param ProductAttributeCollectionCollection $attributeCollection
+     */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Registry $registry,

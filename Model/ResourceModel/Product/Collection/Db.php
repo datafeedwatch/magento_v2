@@ -14,6 +14,10 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Magento\Customer\Api\GroupManagementInterface;
 
+/**
+ * Class Db
+ * @package DataFeedWatch\Connector\Model\ResourceModel\Product\Collection
+ */
 class Db extends Collection
 {
     const INHERITED_STATUS_TABLE_ALIAS               = 'inherited_status';
@@ -35,11 +39,19 @@ class Db extends Collection
     /** @var  string $ruleDateSelect */
     public $ruleDateSelect;
 
+    /** @var Registry  */
     public $registryHelper;
+
+    /** @var \Magento\Framework\Registry  */
     public $registry;
-    public $storeManager;
+
+    /** @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory  */
     public $productCollectionFactory;
+
+    /** @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable  */
     public $typeConfigurable;
+
+    /** @var \DataFeedWatch\Connector\Cron\FillUpdatedAtTable  */
     public $cron;
 
     /**

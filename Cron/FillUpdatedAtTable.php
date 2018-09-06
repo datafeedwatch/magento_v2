@@ -41,7 +41,10 @@ class FillUpdatedAtTable
         $this->dataHelper = $dataHelper;
         $this->resource   = $resource;
     }
-    
+
+    /**
+     * @return $this
+     */
     public function execute()
     {
         $date            = date('Y-m-d H:i:s');

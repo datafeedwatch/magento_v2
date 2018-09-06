@@ -9,6 +9,7 @@
 
 namespace DataFeedWatch\Connector\Model;
 
+use DataFeedWatch\Connector\Helper\Registry;
 use DataFeedWatch\Connector\Api\ConnectorInterface;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Type as ProductType;
@@ -23,18 +24,37 @@ use Magento\Downloadable\Model\Product\Type as DownloadableType;
 class Connector implements ConnectorInterface
 {
     const MODULE_NAME = 'DataFeedWatch_Connector';
-    
+
+    /** @var \Magento\Framework\Module\ModuleListInterface  */
     public $moduleList;
+
+    /** @var \Magento\Store\Model\StoreManagerInterface  */
     public $storeManager;
+
+    /** @var \Magento\Framework\App\Config\ScopeConfigInterface  */
     public $scopeConfig;
+
+    /** @var ResourceModel\Product\CollectionFactory  */
     public $productCollectionFactory;
+
+    /** @var \DataFeedWatch\Connector\Helper\Data  */
     public $dataHelper;
+
+    /** @var Api\User  */
     public $dfwApiUser;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\DateTime  */
     public $dateTime;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\Timezone  */
     public $timeZone;
+
+    /** @var Registry  */
+    public $registryHelper;
 
     /**
      * Connector constructor.
+     * @param Registry $registryHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Framework\Module\ModuleListInterface $moduleList
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -45,6 +65,7 @@ class Connector implements ConnectorInterface
      * @param Api\User $dfwApiUser
      */
     public function __construct(
+        Registry $registryHelper,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -52,9 +73,9 @@ class Connector implements ConnectorInterface
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Stdlib\DateTime\Timezone $timeZone,
-        \DataFeedWatch\Connector\Model\Api\User $dfwApiUser
+        Api\User $dfwApiUser
     ) {
-
+        $this->registryHelper           = $registryHelper;
         $this->moduleList               = $moduleList;
         $this->dateTime                 = $dateTime;
         $this->timeZone                 = $timeZone;

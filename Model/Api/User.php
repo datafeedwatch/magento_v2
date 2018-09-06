@@ -13,6 +13,10 @@ namespace DataFeedWatch\Connector\Model\Api;
 use Magento\Authorization\Model\UserContextInterface;
 use Magento\User\Model\User as MagentoUser;
 
+/**
+ * Class User
+ * @package DataFeedWatch\Connector\Model\Api
+ */
 class User extends MagentoUser
 {
     const API_KEY_SHUFFLE_STRING = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -134,7 +138,10 @@ class User extends MagentoUser
             ->setUserId($this->getId())->setResources($resource)->saveRel();
         $this->sendNewApiKeyToDfw();
     }
-    
+
+    /**
+     * @return mixed
+     */
     public function createDfwUserRole()
     {
         $role = $this->_roleFactory->create();
@@ -152,7 +159,10 @@ class User extends MagentoUser
 
         return $role;
     }
-    
+
+    /**
+     *
+     */
     public function generateApiKey()
     {
         $key = substr(
@@ -162,7 +172,10 @@ class User extends MagentoUser
         );
         $this->decodedApiKey = sha1(time() . $key);
     }
-    
+
+    /**
+     *
+     */
     public function addUserData()
     {
         $data = [
@@ -176,7 +189,10 @@ class User extends MagentoUser
         
         $this->addData($data);
     }
-    
+
+    /**
+     *
+     */
     public function sendNewApiKeyToDfw()
     {
         $this->curl->setOption(CURLOPT_HTTPGET, true);
@@ -186,9 +202,10 @@ class User extends MagentoUser
         $this->curl->get($this->getRegisterUrl());
         $this->resetOauth();
     }
-    
+
     /**
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getRegisterUrl()
     {
@@ -201,6 +218,9 @@ class User extends MagentoUser
                . $this->getDecodedApiKey() . '&version=2';
     }
 
+    /**
+     *
+     */
     public function resetOauth()
     {
         $this->oauthToken->resetFailuresCount(
@@ -244,7 +264,10 @@ class User extends MagentoUser
     {
         return $this->decodedApiKey;
     }
-    
+
+    /**
+     * @throws \Exception
+     */
     public function deleteUserAndRole()
     {
         $role = $this->_roleFactory->create();

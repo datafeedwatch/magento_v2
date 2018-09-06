@@ -9,6 +9,7 @@
 
 namespace DataFeedWatch\Connector\Model\ResourceModel\Product;
 
+use DataFeedWatch\Connector\Helper\Registry;
 use DataFeedWatch\Connector\Model\ResourceModel\Product\Collection\Db;
 
 /**
@@ -17,6 +18,9 @@ use DataFeedWatch\Connector\Model\ResourceModel\Product\Collection\Db;
  */
 class Collection extends Db
 {
+    /** @var Registry  */
+    public $registryHelper;
+
     /**
      * @return bool
      */
@@ -33,11 +37,10 @@ class Collection extends Db
         );
         $this->_initTables();
     }
-    
+
     /**
      * @param bool $joinLeft
-     *
-     * @return $this
+     * @return $this|Db
      */
     public function _productLimitationPrice($joinLeft = true)
     {
@@ -99,29 +102,41 @@ class Collection extends Db
             return $this;
         }
 
+        $statusInharitance = $this->registryHelper->isStatusAttributeInheritable();
         $statusAttributeId = $this->getAttribute('status')->getId();
 
         /** add status filter - for main entity */
-        $this->getSelect()->joinLeft(
-            ['product_status' => 'catalog_product_entity_int'],
-            'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
-            ['product_status' => 'value']
-        );
+        if ($statusInharitance == 1) {
+            $this->getSelect()->joinLeft(
+                ['product_status' => 'catalog_product_entity_int'],
+                'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
+                ['product_status' => 'value']
+            );
+            /** apply status filter for product and its parent values **/
+            $this->getSelect()->where('
+                     (product_status.value = ' . $this->optionsFilters['status'] . ')'
+            );
+        } else {
+            $this->getSelect()->joinLeft(
+                ['product_status' => 'catalog_product_entity_int'],
+                'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
+                ['product_status' => 'value']
+            );
 
-        /** add status filter - parent status */
-        $this->getSelect()->joinLeft(
-            ['parent_status' => 'catalog_product_entity_int'],
-            'parent_status.entity_id = catalog_product_relation.parent_id and parent_status.attribute_id = ' . $statusAttributeId,
-            ['parent_status' => 'value']
-        );
+            /** add status filter - parent status */
+            $this->getSelect()->joinLeft(
+                ['parent_status' => 'catalog_product_entity_int'],
+                'parent_status.entity_id = catalog_product_relation.parent_id and parent_status.attribute_id = ' . $statusAttributeId,
+                ['parent_status' => 'value']
+            );
 
-        /** apply status filter for product and its parent values **/
-        $this->getSelect()->where('
-             (type_id <> "simple" and product_status.value = "' . $this->optionsFilters['status'] .'") or 
-             (parent_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is not null) or 
-             (product_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is null)
-             '
-        );
+            /** apply status filter for product and its parent values **/
+            $this->getSelect()->where('
+                 (type_id <> "simple" and product_status.value = "' . $this->optionsFilters['status'] . '") or 
+                 (parent_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is not null) or 
+                 (product_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is null)'
+            );
+        }
 
         return $this;
     }

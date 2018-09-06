@@ -73,12 +73,18 @@ class UpgradeData implements UpgradeDataInterface
         }
     }
 
+    /**
+     *
+     */
     public function version010To100()
     {
         $this->config->deleteConfig('datafeedwatch_connector/general/debug', 'default', 0);
         $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
     }
 
+    /**
+     *
+     */
     public function version110To120()
     {
         $this->eavSetup->removeAttribute(Product::ENTITY, 'dfw_parent_ids');

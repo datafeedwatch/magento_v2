@@ -15,6 +15,10 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class ChangeProductUpdatedAtPlugin
+ * @package DataFeedWatch\Connector\Observer
+ */
 class ChangeProductUpdatedAtPlugin implements ObserverInterface
 {
     /** @var DataHelper */

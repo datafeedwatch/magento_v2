@@ -28,11 +28,11 @@ class Items extends Template
         
         return $this->getLayout()->getBlock('datafeed.grid.items.row')->setAttributeItem($attribute)->toHtml();
     }
-    
+
     /**
-     * @param int $page
-     *
+     * @param $page
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setPage($page)
     {
@@ -42,20 +42,20 @@ class Items extends Template
         
         return $this;
     }
-    
+
     /**
-     * @return \DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Pager
+     * @return bool|\Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPager()
     {
-        
         return $this->getLayout()->getBlock('datafeed.grid.pager');
     }
-    
+
     /**
-     * @param int $limit
-     *
+     * @param $limit
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setLimit($limit)
     {
@@ -65,18 +65,20 @@ class Items extends Template
         
         return $this;
     }
-    
+
     /**
      * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPagerHtml()
     {
         
         return $this->getPager()->toHtml();
     }
-    
+
     /**
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCollection()
     {

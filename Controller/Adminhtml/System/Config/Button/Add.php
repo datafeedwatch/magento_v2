@@ -21,6 +21,7 @@ class Add extends Button
 {
     /**
      * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {

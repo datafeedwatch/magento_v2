@@ -16,6 +16,10 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\UninstallInterface;
 use Magento\TestFramework\Inspection\Exception;
 
+/**
+ * Class Uninstall
+ * @package DataFeedWatch\Connector\Setup
+ */
 class Uninstall implements UninstallInterface
 {
     /** @var \DataFeedWatch\Connector\Model\Api\User */

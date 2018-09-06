@@ -16,6 +16,10 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class CheckAndUpdateAttributeInheritance
+ * @package DataFeedWatch\Connector\Observer
+ */
 class CheckAndUpdateAttributeInheritance implements ObserverInterface
 {
     /** @var DataHelper */
