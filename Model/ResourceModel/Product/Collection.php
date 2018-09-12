@@ -105,7 +105,7 @@ class Collection extends Db
         $statusAttributeId = $this->getAttribute('status')->getId();
 
         /** add status filter - for main entity */
-        if ($statusInharitance == 1) {
+        if ($statusInharitance == 1 || $statusInharitance == 3) {
             $this->getSelect()->joinLeft(
                 ['product_status' => 'catalog_product_entity_int'],
                 'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
