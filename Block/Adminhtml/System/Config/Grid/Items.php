@@ -82,7 +82,6 @@ class Items extends Template
      */
     public function getCollection()
     {
-        
         return $this->getPager()->getCollection();
     }
 }
