@@ -12,11 +12,8 @@ $inheritanceStatus = $attribute->getCanConfigureInheritance() === '0' ? ' disabl
 <div class="attribute_item">
     <div class="attribute_name">
         <a href="<?php /* @noEscape */ echo $block->getAttributeLink() ?>" target="_blank">
-            <?php /* @noEscape */ echo $block->getAttributeLabel(); ?>
-        </a><br />
-        <?php if ($attribute->getFrontendInput() == 'select' && (int)$attribute->getData('is_global') && ($attribute->getData('backend_type') == "int")) :?>
-            <span style="font-size: 10px"><?= __('Please verify attribute settings. Attributes used for configurable product creation should have always CHILD inheritance configured'); ?></span>
-        <?php endif; ?>
+            <?php /* @noEscape */ echo $block->getAttributeLabel() ?>
+        </a>
     </div>
     <div class="attribute_import">
         <select name="import_<?php /* @noEscape */ echo $attribute->getId() ?>"
@@ -56,8 +53,6 @@ $inheritanceStatus = $attribute->getCanConfigureInheritance() === '0' ? ' disabl
                        )
                        "/>
         </div>
-
-        <?php if (!$attribute->getIsRequired()): ?>
         <div class="inheritance_child_then_parent">
             <input type="radio" name="inheritance_<?php /* @noEscape */ echo $attribute->getId() ?>"
                 <?php /* @noEscape */ echo $inheritanceStatus ?>
@@ -70,6 +65,5 @@ $inheritanceStatus = $attribute->getCanConfigureInheritance() === '0' ? ' disabl
                        )
                        "/>
         </div>
-        <?php endif; ?>
     </div>
 </div>
