@@ -29,6 +29,7 @@ class Collection extends Db
         return false;
     }
 
+
     public function _construct()
     {
         $this->_init(

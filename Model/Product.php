@@ -301,22 +301,27 @@ class Product extends coreProduct
     public function fillAllAttributesData()
     {
         $productAttributes = array_keys($this->getAttributes());
+
         $attributeCollection = $this->_registry->registry(Registry::ALL_IMPORTABLE_ATTRIBUTES_KEY);
         /** @var \Magento\Eav\Model\Attribute $attribute */
         foreach ($attributeCollection as $attribute) {
             $attributeCode = $attribute->getAttributeCode();
+
             if (empty($attributeCode) || !in_array($attributeCode, $productAttributes)) {
                 continue;
             }
+
             if ('status' === $attributeCode) {
                 $this->importData[$attributeCode] = $this->getStatus() == 1 ? 'Enabled' : 'Disabled';
                 continue;
             }
+
             if ($attribute->usesSource()) {
                 $value = $attribute->getSource()->getOptionText($this->getData($attributeCode));
             } else {
                 $value = $attribute->getFrontend()->getValue($this);
             }
+
             if ($value instanceof \Magento\Framework\Phrase) {
                 $value = $value->getText();
             } elseif ($value === false) {
