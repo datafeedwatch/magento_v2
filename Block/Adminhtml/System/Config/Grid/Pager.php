@@ -14,13 +14,17 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as ProductA
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
+/**
+ * Class Pager
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid
+ */
 class Pager extends Template
 {
     /** @var int */
     public $page = 1;
     
     /** @var int */
-    public $limit = 10;
+    public $limit = 20;
     
     /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection */
     public $attributeCollection;
@@ -46,14 +50,12 @@ class Pager extends Template
      */
     public function getCollection()
     {
-        $this->attributeCollection->addVisibleFilter()->setPageSize($this->limit)
-                                  ->setCurPage($this->page);
-        $this->attributeCollection->getSelect()
-                                  ->where(
-                                      'additional_table.can_configure_inheritance != 0 
-                                      and additional_table.import_to_dfw != 0 
-                                      or additional_table.can_configure_inheritance = 1'
-                                  );
+        $this->attributeCollection->addVisibleFilter()
+            ->addFieldToFilter('additional_table.can_configure_inheritance', ['neq' => 0])
+            ->addFieldToFilter('additional_table.import_to_dfw', ['neq' => 0])
+            ->addFieldToFilter('additional_table.can_configure_inheritance', 1)
+            ->setPageSize($this->limit)
+            ->setCurPage($this->page);
         $this->attributeCollection->setOrder('frontend_label', 'asc');
         $this->attributeCollection->load();
         
@@ -79,7 +81,6 @@ class Pager extends Template
      */
     public function getPage()
     {
-        
         return (int) $this->page;
     }
     

@@ -44,12 +44,17 @@ interface ConnectorInterface
      * @param string $store = null
      * @param string[] $type = string[]
      * @param string $status = null
-     * @param int $perPage = 100
+     * @param int $per_page = 100
      * @param int $page = 1
      *
      * @return string[]
      */
-    public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1);
+    public function products(
+        $store = null,
+        $type = [],
+        $status = null,
+        $per_page = 100,
+        $page = 1);
 
     /**
      * Retrieve product count
@@ -59,12 +64,18 @@ interface ConnectorInterface
      * @param string $store = null
      * @param string[] $type = string[]
      * @param string $status = null
-     * @param int $perPage = 100
+     * @param int $per_page = 100
      * @param int $page = 1
      *
      * @return int
      */
-    public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1);
+    public function productCount(
+        $store = null,
+        $type = [],
+        $status = null,
+        $per_page = 100,
+        $page = 1
+    );
 
     /**
      * Retrieve products based on last update
@@ -75,8 +86,8 @@ interface ConnectorInterface
      * @param string[] $type = string[]
      * @param string $status = null
      * @param string $timezone = null
-     * @param string $fromDate = null
-     * @param int $perPage = 100
+     * @param string $from_date = null
+     * @param int $per_page = 100
      * @param int $page = 1
      *
      * @return string[]
@@ -86,8 +97,8 @@ interface ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     );
 
@@ -100,8 +111,8 @@ interface ConnectorInterface
      * @param string[] $type = string[]
      * @param string $status = null
      * @param string $timezone = null
-     * @param string $fromDate = null
-     * @param int $perPage = 100
+     * @param string $from_date = null
+     * @param int $per_page = 100
      * @param int $page = 1
      *
      * @return int
@@ -111,8 +122,8 @@ interface ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     );
 
@@ -125,8 +136,8 @@ interface ConnectorInterface
      * @param string[] $type = string[]
      * @param string $status = null
      * @param string $timezone = null
-     * @param string $fromDate = null
-     * @param int $perPage = 100
+     * @param string $from_date = null
+     * @param int $per_page = 100
      * @param int $page = 1
      *
      * @return string[]
@@ -136,8 +147,8 @@ interface ConnectorInterface
         $type = [],
         $status = null,
         $timezone = null,
-        $fromDate = null,
-        $perPage = 100,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     );
 

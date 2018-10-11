@@ -10,6 +10,7 @@
 
 namespace DataFeedWatch\Connector\Setup;
 
+use DataFeedWatch\Connector\Model\Api\User;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Api\AttributeRepositoryInterface;
@@ -21,7 +22,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Cron\Model\ScheduleFactory;
 use Magento\PageCache\Model\Cache\Type as Cache;
 
 /**
@@ -29,11 +29,11 @@ use Magento\PageCache\Model\Cache\Type as Cache;
  */
 class InstallData implements InstallDataInterface
 {
+    /** @var User */
+    private $user;
+
     /** @var DataHelper */
     private $dataHelper;
-
-    /** @var ScheduleFactory */
-    private $scheduleFactory;
 
     /** @var EavSetupFactory */
     private $eavSetupFactory;
@@ -49,21 +49,21 @@ class InstallData implements InstallDataInterface
 
     /**
      * InstallData constructor.
+     * @param User $user
      * @param DataHelper $dataHelper
-     * @param ScheduleFactory $scheduleFactory
      * @param EavSetupFactory $eavSetupFactory
      * @param AttributeRepositoryInterface $attributeRepository
-     * @param ModuleDataSetupInterface $setup
+     * @param Cache $cache
      */
     public function __construct(
+        User $user,
         DataHelper $dataHelper,
-        ScheduleFactory $scheduleFactory,
         EavSetupFactory $eavSetupFactory,
         AttributeRepositoryInterface $attributeRepository,
         Cache $cache
     ) {
+        $this->user                = $user;
         $this->dataHelper          = $dataHelper;
-        $this->scheduleFactory     = $scheduleFactory;
         $this->eavSetupFactory     = $eavSetupFactory;
         $this->attributeRepository = $attributeRepository;
         $this->cache               = $cache;
@@ -75,26 +75,32 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        $this->setup = $setup;
+        if ($context instanceof ModuleContextInterface) {
+            $this->setup = $setup;
 
-        $this->installAttributes();
-        $this->scheduleDataInstall();
-        $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['config']);
+            $this->installAttributes();
+            $this->user->loadDfwUser();
+            $this->user->createDfwUser();
+            $this->dataHelper->restoreOriginalAttributesConfig();
+            $types = ['config', 'collections', 'eav', 'config_api', 'config_api2'];
+            foreach ($types as $type) {
+                $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, [$type]);
+            }
+        }
     }
 
-    protected function installAttributes()
+    public function installAttributes()
     {
         $this->installIgnoreDataFeedAttribute();
-        $this->installDfwParentIdsAttribute();
     }
 
-    protected function installIgnoreDataFeedAttribute()
+    public function installIgnoreDataFeedAttribute()
     {
         $properties = [
             'type'                     => 'int',
             'label'                    => 'Ignore In DataFeedWatch',
             'input'                    => 'select',
-            'source'                   => 'Magento\Eav\Model\Entity\Attribute\Source\Boolean',
+            'source'                   => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
             'sort_order'               => 100,
             'global'                   => ScopedAttributeInterface::SCOPE_GLOBAL,
             'group'                    => 'General Information',
@@ -121,7 +127,7 @@ class InstallData implements InstallDataInterface
      * @param array $attributeProperties
      * @param string $entityType
      */
-    protected function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY)
+    public function createAttribute($attributeCode, array $attributeProperties, $entityType = Product::ENTITY)
     {
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->setup]);
@@ -135,50 +141,5 @@ class InstallData implements InstallDataInterface
             );
             $this->cache->clean(\Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, ['eav']);
         }
-    }
-
-    protected function installDfwParentIdsAttribute()
-    {
-        $properties = [
-            'type'                     => 'varchar',
-            'label'                    => 'dfw_parent_ids',
-            'input'                    => 'text',
-            'sort_order'               => 110,
-            'global'                   => ScopedAttributeInterface::SCOPE_STORE,
-            'group'                    => 'General Information',
-            'visible'                  => true,
-            'required'                 => false,
-            'visible_on_front'         => false,
-            'is_html_allowed_on_front' => false,
-            'is_configurable'          => false,
-            'searchable'               => false,
-            'filterable'               => false,
-            'comparable'               => false,
-            'unique'                   => false,
-            'user_defined'             => true,
-            'default'                  => '',
-            'is_user_defined'          => false,
-            'used_in_product_listing'  => false,
-        ];
-        $this->createAttribute('dfw_parent_ids', $properties);
-    }
-
-    protected function scheduleDataInstall()
-    {
-        $currentTimestamp = time();
-        $createdAt        = strftime('%Y-%m-%d %H:%M:00', $currentTimestamp);
-        $scheduledAt      = strftime('%Y-%m-%d %H:%M:00', $currentTimestamp + 120);
-        $schedule         = $this->scheduleFactory->create();
-        $schedule->setJobCode('datafeedwatch_connector_installer')
-                 ->setCreatedAt($createdAt)
-                 ->setScheduledAt($scheduledAt)->setStatus(\Magento\Cron\Model\Schedule::STATUS_PENDING)->save();
-
-        $scheduledAt = strftime('%Y-%m-%d %H:%M:00', $currentTimestamp + 240);
-        $schedule    = $this->scheduleFactory->create();
-        $schedule->setJobCode('datafeedwatch_connector_fill_updated_at_table')
-                 ->setCreatedAt($createdAt)
-                 ->setScheduledAt($scheduledAt)->setStatus(\Magento\Cron\Model\Schedule::STATUS_PENDING)->save();
-
-        $this->dataHelper->setInstallationIncomplete();
     }
 }

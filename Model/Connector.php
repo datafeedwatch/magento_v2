@@ -1,48 +1,84 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 18.08.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model;
 
+use DataFeedWatch\Connector\Helper\Registry;
 use DataFeedWatch\Connector\Api\ConnectorInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedType;
+use Magento\Downloadable\Model\Product\Type as DownloadableType;
 
+/**
+ * Class Connector
+ * @package DataFeedWatch\Connector\Model
+ */
 class Connector implements ConnectorInterface
 {
     const MODULE_NAME = 'DataFeedWatch_Connector';
-    
-    protected $moduleList;
-    protected $storeManager;
-    protected $scopeConfig;
-    protected $productCollectionFactory;
-    protected $dataHelper;
-    protected $dfwApiUser;
+
+    /** @var \Magento\Framework\Module\ModuleListInterface  */
+    public $moduleList;
+
+    /** @var \Magento\Store\Model\StoreManagerInterface  */
+    public $storeManager;
+
+    /** @var \Magento\Framework\App\Config\ScopeConfigInterface  */
+    public $scopeConfig;
+
+    /** @var ResourceModel\Product\CollectionFactory  */
+    public $productCollectionFactory;
+
+    /** @var \DataFeedWatch\Connector\Helper\Data  */
+    public $dataHelper;
+
+    /** @var Api\User  */
+    public $dfwApiUser;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\DateTime  */
+    public $dateTime;
+
+    /** @var \Magento\Framework\Stdlib\DateTime\Timezone  */
+    public $timeZone;
+
+    /** @var Registry  */
+    public $registryHelper;
 
     /**
      * Connector constructor.
-     *
-     * @param \Magento\Framework\App\Helper\Context              $context
-     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
-     * @param ResourceModel\Product\CollectionFactory            $productCollectionFactory
-     * @param \DataFeedWatch\Connector\Helper\Data               $dataHelper
-     * @param Api\User                                           $dfwApiUser
+     * @param Registry $registryHelper
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param ResourceModel\Product\CollectionFactory $productCollectionFactory
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param \Magento\Framework\Stdlib\DateTime\Timezone $timeZone
+     * @param Api\User $dfwApiUser
      */
     public function __construct(
+        Registry $registryHelper,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \DataFeedWatch\Connector\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \DataFeedWatch\Connector\Helper\Data $dataHelper,
-        \DataFeedWatch\Connector\Model\Api\User $dfwApiUser
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        \Magento\Framework\Stdlib\DateTime\Timezone $timeZone,
+        Api\User $dfwApiUser
     ) {
-
+        $this->registryHelper           = $registryHelper;
         $this->moduleList               = $moduleList;
+        $this->dateTime                 = $dateTime;
+        $this->timeZone                 = $timeZone;
         $this->scopeConfig              = $context->getScopeConfig();
         $this->storeManager             = $storeManager;
         $this->productCollectionFactory = $productCollectionFactory;
@@ -63,12 +99,7 @@ class Connector implements ConnectorInterface
      */
     public function gmtOffset()
     {
-        $timeZone = $this->scopeConfig->getValue('general/locale/timezone');
-        $timeZone = new \DateTimeZone($timeZone);
-        $time     = new \DateTime('now', $timeZone);
-        $offset   = (int)($timeZone->getOffset($time) / 3600);
-
-        return $offset;
+        return $this->dateTime->getGmtOffset('hours');
     }
 
     /**
@@ -84,79 +115,83 @@ class Connector implements ConnectorInterface
     /**
      * {@inheritdoc}
      */
-    public function products($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    public function products($store = null, $type = [], $status = null, $per_page = 100, $page = 1)
     {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
-        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
-            $options['fillParentIds'] = true;
-        }
+        $this->filterOptions($options, $store, $type, $status, null, null, $per_page, $page);
         $collection = $this->getProductCollection($options);
         $collection->applyInheritanceLogic();
-
         return $this->processProducts($collection);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function productCount($store = null, $type = [], $status = null, $perPage = 100, $page = 1)
+    public function productCount($store = null, $type = [], $status = null, $per_page = 100, $page = 1)
     {
-        $options = ['fillParentIds' => false];
-        $this->filterOptions($options, $store, $type, $status, null, null, $perPage, $page);
+        $options = [];
+        $this->filterOptions($options, $store, $type, $status, null, null, $per_page, $page);
         $collection = $this->getProductCollection($options);
-        $amount     = (int) $collection->getSize();
 
-        return $amount;
+        return (int) $collection->getSize();
     }
 
     /**
      * {@inheritdoc}
      */
     public function updatedProducts(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $updatedAt = null,
+        $per_page = 100,
         $page = 1
     ) {
         $options = [];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
-        if (!isset($options['fillParentIds']) && $options['page'] === 1) {
-            $options['fillParentIds'] = true;
-        }
+        $this->filterOptions($options, $store, $type, $status, $timezone, $updatedAt, $per_page, $page);
+
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
             $collection->applyInheritanceLogic();
-
             return $this->processProducts($collection);
         } else {
-
-            return $this->products($options);
+            return $this->products(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
         }
+
     }
 
     /**
      * {@inheritdoc}
      */
     public function updatedProductCount(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
-        $options = ['fillParentIds' => false];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
+        $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
         if (!$this->isFromDateEarlierThanConfigDate($options)) {
             $collection = $this->getProductCollection($options);
-            $amount     = (int) $collection->getSize();
+            $amount     = (int)$collection->getSize();
         } else {
-            $amount = $this->productCount($options);
+            unset($options['updated_at']);
+            $amount = $this->productCount(
+                $options['store'],
+                $options['type'],
+                $options['status'],
+                $options['per_page'],
+                $options['page']
+            );
         }
 
         return $amount;
@@ -166,16 +201,16 @@ class Connector implements ConnectorInterface
      * {@inheritdoc}
      */
     public function productIds(
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
-        $options = ['fillParentIds' => false];
-        $this->filterOptions($options, $store, $type, $status, $timezone, $fromDate, $perPage, $page);
+        $options = [];
+        $this->filterOptions($options, $store, $type, $status, $timezone, $from_date, $per_page, $page);
         $collection = $this->getProductCollection($options);
 
         return $collection->getColumnValues('entity_id');
@@ -192,7 +227,7 @@ class Connector implements ConnectorInterface
     /**
      * @return array
      */
-    protected function getStoresArray()
+    public function getStoresArray()
     {
         $storeViews = [];
         foreach ($this->storeManager->getWebsites() as $website) {
@@ -211,8 +246,10 @@ class Connector implements ConnectorInterface
     }
 
     /**
-     * @param array $options
-     * @return \DataFeedWatch\Connector\Model\ResourceModel\Product\Collection
+     * @param $options
+     * @return ResourceModel\Product\Collection
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getProductCollection($options)
     {
@@ -229,38 +266,47 @@ class Connector implements ConnectorInterface
      * @param string[] $type
      * @param string $status
      * @param string $timezone
-     * @param string $fromDate
-     * @param int  $perPage
-     * @param int  $page
+     * @param string $from_date
+     * @param int $per_page
+     * @param int $page
      */
     public function filterOptions(
-        &$options, 
-        $store = null, 
-        $type = [], 
-        $status = null, 
-        $timezone = null, 
-        $fromDate = null, 
-        $perPage = 100, 
+        &$options,
+        $store = null,
+        $type = [],
+        $status = null,
+        $timezone = null,
+        $from_date = null,
+        $per_page = 100,
         $page = 1
     ) {
+        if (empty($options) || !is_array($options)) {
+            $options = [];
+        }
         if ($store !== null && is_string($store)) {
             $options['store'] = $store;
         }
         if ($type !== null && is_array($type)) {
             $options['type'] = $type;
         }
-        if ($status !== null && is_string($status)) {
+        if ($status !== null && is_string($status) || is_int($status)) {
             $options['status'] = $status;
         }
         if ($timezone !== null && is_string($timezone)) {
             $options['timezone'] = $timezone;
         }
-        if ($fromDate !== null && is_string($fromDate)) {
-            $options['from_date'] = $fromDate;
+        if ($from_date !== null && is_string($from_date)) {
+            $options['updated_at'] = $from_date;
         }
-        $options['per_page'] = (int)$perPage;
+        $options['per_page'] = (int)$per_page;
         $options['page'] = (int)$page;
+        $options['status'] = $status;
 
+        $this->builtInFiltering($options);
+    }
+
+    public function builtInFiltering(&$options)
+    {
         $this->filterStoreOption($options);
 
         if (isset($options['type'])) {
@@ -271,17 +317,14 @@ class Connector implements ConnectorInterface
             $this->filterStatusOption($options);
         }
 
-        if (isset($options['timezone'])) {
-            $this->filterTimeZoneOption($options);
-        }
-
-        if (isset($options['from_date'])) {
+        if (isset($options['updated_at'])) {
             $this->filterFromDateOption($options);
         }
     }
 
     /**
-     * @param array $options
+     * @param $options
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function filterStoreOption(&$options)
     {
@@ -301,15 +344,22 @@ class Connector implements ConnectorInterface
     {
         $types          = $options['type'];
         $magentoTypes   = [
-            \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE,
-            \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE,
-            \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE,
-            \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE,
-            \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL,
-            \Magento\Downloadable\Model\Product\Type::TYPE_DOWNLOADABLE,
+            ProductType::TYPE_SIMPLE,
+            ProductType::TYPE_BUNDLE,
+            ConfigurableType::TYPE_CODE,
+            GroupedType::TYPE_CODE,
+            ProductType::TYPE_VIRTUAL,
+            DownloadableType::TYPE_DOWNLOADABLE,
         ];
         $types = array_map('strtolower', $types);
         $types = array_intersect($types, $magentoTypes);
+        if ((
+        in_array(ProductType::TYPE_BUNDLE, $types)
+        || in_array(ConfigurableType::TYPE_CODE, $types)
+        || in_array(GroupedType::TYPE_CODE, $types)
+        ) && !in_array(ProductType::TYPE_SIMPLE, $types)) {
+            $types[] = ProductType::TYPE_SIMPLE;
+        }
         if (!empty($types)) {
             $options['type'] = $types;
         } else {
@@ -322,25 +372,15 @@ class Connector implements ConnectorInterface
      */
     public function filterStatusOption(&$options)
     {
-        $status = (string) $options['status'];
-        if ($status === '0') {
-            $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED;
-        } elseif ($status === '1') {
-            $options['status'] = \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
+        $status = (int)$options['status'];
+        if ($status) {
+            if ($status == 1) {
+                $options['status'] = Status::STATUS_ENABLED;
+            } else {
+                $options['status'] = Status::STATUS_DISABLED;
+            }
         } else {
-            unset($options['status']);
-        }
-    }
-
-    /**
-     * @param array $options
-     */
-    public function filterTimeZoneOption(&$options)
-    {
-        try {
-            $options['timezone'] = new \DateTimeZone($options['timezone']);
-        } catch (\Exception $e) {
-            $options['timezone'] = null;
+            $options['status'] = null;
         }
     }
 
@@ -352,12 +392,7 @@ class Connector implements ConnectorInterface
         if (!isset($options['timezone'])) {
             $options['timezone'] = null;
         }
-        try {
-            $options['from_date'] = new \DateTime($options['from_date'], $options['timezone']);
-        } catch (\Exception $e) {
-            $options['from_date'] = new \DateTime();
-        }
-        $options['from_date'] = $options['from_date']->format('Y-m-d H:i:s');
+        $options['updated_at'] = $this->dateTime->date(null, $options['updated_at']);
     }
 
     /**
@@ -365,7 +400,7 @@ class Connector implements ConnectorInterface
      *
      * @return array
      */
-    protected function processProducts($collection)
+    public function processProducts($collection)
     {
         $products = [];
         foreach ($collection as $product) {
@@ -379,12 +414,17 @@ class Connector implements ConnectorInterface
      * @param array $options
      * @return bool
      */
-    protected function isFromDateEarlierThanConfigDate($options)
+    public function isFromDateEarlierThanConfigDate($options)
     {
-        if (!isset($options['from_date'])) {
+        if (!isset($options['updated_at'])) {
             return false;
         }
 
-        return $options['from_date'] < $this->dataHelper->getLastInheritanceUpdateDate();
+        if ($this->dataHelper->getLastInheritanceUpdateDate() == null) {
+            return true;
+        }
+
+        // parse dates to timestamps
+        return strtotime($options['updated_at']) < strtotime($this->dataHelper->getLastInheritanceUpdateDate());
     }
 }

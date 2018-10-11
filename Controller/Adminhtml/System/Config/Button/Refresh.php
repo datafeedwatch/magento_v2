@@ -14,8 +14,15 @@ use DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button;
 use DataFeedWatch\Connector\Model\Api\User as ApiUser;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
+/**
+ * Class Refresh
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config\Button
+ */
 class Refresh extends Button
 {
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         try {

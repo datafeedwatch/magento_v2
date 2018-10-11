@@ -10,6 +10,10 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
+/**
+ * Class Restore
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button
+ */
 class Restore extends BaseButton
 {
     /**

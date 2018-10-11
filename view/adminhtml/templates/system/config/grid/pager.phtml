@@ -26,14 +26,14 @@
         <input type="text" name="page" value="<?php /* @noEscape */ echo $currentPage; ?>" class="input-text page"
                onkeyup="DataFeedWatchGrid.getInheritanceGrid(
                    this.value,
-               <?php /* @noEscape */ echo $currentLimit; ?>
+                <?php /* @noEscape */ echo $currentLimit; ?>
                    )"/>
     
         <?php if ($currentPage < $lastPage) : ?>
             <button type="button"
                     title="<?php /* @noEscape */ echo __('Next page'); ?>"
                     class="action-next"
-                    onclick="DataFeedWatchGrid.getInheritanceGrid(<?php echo sprintf(
+                    onclick="DataFeedWatchGrid.getInheritanceGrid(<?php /* @noEscape */ echo sprintf(
                         '%d, %d',
                         $currentPage + 1,
                         $currentLimit

@@ -13,6 +13,10 @@ namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
 use Magento\Framework\View\Element\Template;
 
+/**
+ * Class Row
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Grid\Items
+ */
 class Row extends Template
 {
     /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
@@ -23,7 +27,6 @@ class Row extends Template
      */
     public function getInheritanceSource()
     {
-        
         return InheritanceSource::class;
     }
     

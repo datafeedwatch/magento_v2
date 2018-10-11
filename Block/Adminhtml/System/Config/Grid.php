@@ -15,6 +15,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 
+/**
+ * Class Grid
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config
+ */
 class Grid extends Field
 {
     /** @var DataHelper */
@@ -56,7 +60,7 @@ class Grid extends Field
     /**
      * @return $this
      */
-    protected function _prepareLayout()
+    public function _prepareLayout()
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
@@ -71,18 +75,9 @@ class Grid extends Field
      *
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
         $this->setHtmlId($element->getData('html_id'));
         return $this->_toHtml();
-    }
-
-    /**
-     * @param AbstractElement $element
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
     }
 }

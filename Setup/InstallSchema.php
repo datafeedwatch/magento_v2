@@ -19,10 +19,10 @@ use Magento\Framework\Setup\InstallSchemaInterface;
 class InstallSchema implements InstallSchemaInterface
 {
     /** @var \Magento\Framework\Setup\SchemaSetupInterface */
-    protected $setup;
+    public $setup;
     
     /** @var \Magento\Framework\DB\Adapter\AdapterInterface */
-    protected $connection;
+    public $connection;
     
     /**
      * @param \Magento\Framework\Setup\SchemaSetupInterface   $setup
@@ -32,14 +32,19 @@ class InstallSchema implements InstallSchemaInterface
         \Magento\Framework\Setup\SchemaSetupInterface $setup,
         \Magento\Framework\Setup\ModuleContextInterface $context
     ) {
-        $this->setup      = $setup;
-        $this->connection = $this->setup->getConnection();
-        
-        $this->extendsCatalogEavAttributeTable();
-        $this->createUpdatedProductsTable();
+        if ($context instanceof \Magento\Framework\Setup\ModuleContextInterface) {
+            $this->setup      = $setup;
+            $this->connection = $this->setup->getConnection();
+
+            $this->extendsCatalogEavAttributeTable();
+            $this->createUpdatedProductsTable();
+        }
     }
-    
-    protected function extendsCatalogEavAttributeTable()
+
+    /**
+     *
+     */
+    public function extendsCatalogEavAttributeTable()
     {
         $table = $this->setup->getTable('catalog_eav_attribute');
         
@@ -52,7 +57,7 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param string $table
      */
-    protected function createCanConfigureInheritanceColumn($table)
+    public function createCanConfigureInheritanceColumn($table)
     {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
@@ -69,19 +74,20 @@ class InstallSchema implements InstallSchemaInterface
      * @param       $columnName
      * @param array $properties
      */
-    protected function addColumn($table, $columnName, array $properties)
+    public function addColumn($table, $columnName, array $properties)
     {
+        $this->setup->startSetup();
         if (!$this->connection->tableColumnExists($table, $columnName)) {
-            $this->setup->startSetup();
-            $this->connection->addColumn($table, $columnName, $properties);
-            $this->setup->endSetup();
+            $this->connection->dropColumn($table, $columnName);
         }
+        $this->connection->addColumn($table, $columnName, $properties);
+        $this->setup->endSetup();
     }
     
     /**
      * @param string $table
      */
-    protected function createInheritanceColumn($table)
+    public function createInheritanceColumn($table)
     {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
@@ -96,7 +102,7 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param string $table
      */
-    protected function createCanConfigureImportColumn($table)
+    public function createCanConfigureImportColumn($table)
     {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
@@ -111,7 +117,7 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param string $table
      */
-    protected function createImportToDfwColumn($table)
+    public function createImportToDfwColumn($table)
     {
         $properties = [
             'type'     => Table::TYPE_SMALLINT,
@@ -123,31 +129,43 @@ class InstallSchema implements InstallSchemaInterface
         $this->addColumn($table, 'import_to_dfw', $properties);
     }
     
-    protected function createUpdatedProductsTable()
+    public function createUpdatedProductsTable()
     {
         $table = $this->setup->getTable('datafeedwatch_updated_products');
-        if (!$this->connection->isTableExists($table)) {
-            $this->setup->startSetup();
-            $updatedProductsTable = $this->connection->newTable($table)
-                                                     ->addColumn('dfw_prod_id',
-                                                         Table::TYPE_INTEGER,
-                                                         null,
-                                                         [
-                                                             'identity' => true,
-                                                             'unsigned' => true,
-                                                             'nullable' => false,
-                                                             'primary'  => true,
-                                                         ], 'Product ID')
-                                                     ->addColumn('updated_at',
-                                                         Table::TYPE_TIMESTAMP,
-                                                         null,
-                                                         [
-                                                             'nullable' => true,
-                                                         ],
-                                                         'Updated At')
-                                                     ->setComment('Updated Products Table');
-            $this->connection->createTable($updatedProductsTable);
-            $this->setup->endSetup();
+        $this->setup->startSetup();
+        if ($this->connection->isTableExists($table)) {
+            $this->connection->dropTable($table);
         }
+        $updatedProductsTable = $this->connection->newTable($table)
+            ->addColumn(
+                'dfw_prod_id',
+                Table::TYPE_INTEGER,
+                null,
+                [
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'primary'  => true,
+                ],
+                'Product ID'
+            )->addColumn(
+                'updated_at',
+                Table::TYPE_TIMESTAMP,
+                null,
+                [
+                    'nullable' => true,
+                ],
+                'Updated At'
+            )->addIndex(
+                $this->setup->getIdxName(
+                    $table,
+                    ['dfw_prod_id'],
+                    \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE
+                ),
+                ['dfw_prod_id'],
+                ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE]
+            )->setComment('Updated Products Table');
+        $this->connection->createTable($updatedProductsTable);
+        $this->setup->endSetup();
     }
 }

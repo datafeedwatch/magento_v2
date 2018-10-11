@@ -16,13 +16,17 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class CheckAndUpdateAttributeInheritance
+ * @package DataFeedWatch\Connector\Observer
+ */
 class CheckAndUpdateAttributeInheritance implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
 
     /** @var \Magento\Framework\App\ResourceConnection */
-    protected $resource;
+    public $resource;
 
     /**
      * @param DataHelper                                $dataHelper
@@ -44,8 +48,8 @@ class CheckAndUpdateAttributeInheritance implements ObserverInterface
     {
         $attribute = $observer->getAttribute();
         if ($attribute->getForceSave() !== true) {
-            if (!$attribute->getCanConfigureImport() 
-                && !$attribute->isObjectNew() 
+            if (!$attribute->getCanConfigureImport()
+                && !$attribute->isObjectNew()
                 && $attribute->getImportToDfw() !== null) {
                 $attribute->setImportToDfw($attribute->getOrigData('import_to_dfw'));
             }
@@ -65,7 +69,7 @@ class CheckAndUpdateAttributeInheritance implements ObserverInterface
      *
      * @return bool
      */
-    protected function canSaveUpdateDate($attribute)
+    private function canSaveUpdateDate($attribute)
     {
         return ($attribute->dataHasChangedFor('inheritance') && (int) $attribute->getOrigData('import_to_dfw') === 1)
                || $attribute->dataHasChangedFor('import_to_dfw')

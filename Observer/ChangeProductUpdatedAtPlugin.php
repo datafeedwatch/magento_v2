@@ -15,16 +15,20 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class ChangeProductUpdatedAtPlugin
+ * @package DataFeedWatch\Connector\Observer
+ */
 class ChangeProductUpdatedAtPlugin implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
 
     /** @var \Magento\Framework\App\ResourceConnection */
-    protected $resource;
+    public $resource;
 
     /**
-     * @param DataHelper                                $dataHelper
+     * @param DataHelper $dataHelper
      * @param \Magento\Framework\App\ResourceConnection $resource
      */
     public function __construct(
@@ -41,13 +45,23 @@ class ChangeProductUpdatedAtPlugin implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        /** @var \Magento\Catalog\Model\Product $category */
-        $product    = $observer->getProduct();
-        $sql = sprintf(
-            'UPDATE %s SET `updated_at` = \'%s\' WHERE `entity_id` = %s',
-            $product->getResource()->getEntityTable(),
-            gmdate('Y-m-d H:i:s'), $product->getId()
-        );
-        $product->getResource()->getConnection()->query($sql);
+        $date = gmdate('Y-m-d H:i:s');
+        /** @var \Magento\Catalog\Model\Product $product */
+        $product = $observer->getProduct();
+        if ('configurable' === $product->getTypeId()) {
+            /** @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable $typeInstance */
+            $typeInstance = $product->getTypeInstance();
+            $childIds     = $typeInstance->getChildrenIds($product->getId());
+            $childIds     = array_key_exists(0, $childIds) ? $childIds[0] : $childIds;
+            $childIds     = !empty($childIds) ? array_values($childIds) : [];
+            if (!empty($childIds)) {
+                $childIds   = implode(',', $childIds);
+                $connection = $this->resource->getConnection();
+                $table      = $this->resource->getTableName('catalog_product_entity');
+                $query      = "update {$table} set updated_at = '{$date}' where entity_id in ($childIds)";
+                $connection->query($query);
+            }
+        }
+        $product->setData('updated_at', $date);
     }
 }

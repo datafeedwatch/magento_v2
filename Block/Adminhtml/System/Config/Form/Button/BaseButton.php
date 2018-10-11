@@ -15,6 +15,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 
+/**
+ * Class BaseButton
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button
+ */
 abstract class BaseButton extends Field implements ButtonInterface
 {
     /** @var DataHelper */
@@ -34,23 +38,14 @@ abstract class BaseButton extends Field implements ButtonInterface
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
-        return $this->getLayout()
-                    ->createBlock('Magento\Backend\Block\Widget\Button')
+        return !$element instanceof AbstractElement ? parent::_getElementHtml($element): $this->getLayout()
+                    ->createBlock(\Magento\Backend\Block\Widget\Button::class)
                     ->setType('button')
                     ->setClass('scalable')
                     ->setLabel($this->getButtonLabel())
                     ->setOnClick($this->getButtonOnClick())
                     ->toHtml();
-    }
-
-    /**
-     * @param AbstractElement $element
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        return !$this->dataHelper->getInstallationComplete() ? '' : parent::render($element);
     }
 }

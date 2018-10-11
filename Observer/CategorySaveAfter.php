@@ -15,10 +15,14 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class CategorySaveAfter
+ * @package DataFeedWatch\Connector\Observer
+ */
 class CategorySaveAfter implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     /**
      * @param DataHelper $dataHelper

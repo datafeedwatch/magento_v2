@@ -13,12 +13,18 @@ namespace DataFeedWatch\Connector\Observer\Adminhtml;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class AddAttributeFields
+ * @package DataFeedWatch\Connector\Observer\Adminhtml
+ */
 class AddAttributeFields implements ObserverInterface
 {
     /** @var \Magento\Config\Model\Config\Source\YesnoFactory */
     private $yesNoFactory;
+
     /** @var \Magento\Framework\Registry */
     private $registry;
+
     /** @var \DataFeedWatch\Connector\Model\System\Config\Source\Inheritance */
     private $inheritance;
     

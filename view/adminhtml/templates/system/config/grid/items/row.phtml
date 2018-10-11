@@ -16,7 +16,7 @@ $inheritanceStatus = $attribute->getCanConfigureInheritance() === '0' ? ' disabl
         </a>
     </div>
     <div class="attribute_import">
-        <select name="import_<?php echo $attribute->getId() ?>"
+        <select name="import_<?php /* @noEscape */ echo $attribute->getId() ?>"
             <?php /* @noEscape */ echo $attribute->getCanConfigureImport() === '0' ? ' disabled ' : '' ?>
                 onchange="DataFeedWatchGrid.saveImport(
                     '<?php /* @noEscape */ echo $attribute->getAttributeCode() ?>',

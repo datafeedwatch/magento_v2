@@ -13,17 +13,28 @@ namespace DataFeedWatch\Connector\Plugin;
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
 use Magento\TestFramework\Inspection\Exception;
 
+/**
+ * Class ConfigPlugin
+ * @package DataFeedWatch\Connector\Plugin
+ */
 class ConfigPlugin
 {
     /** @var DataHelper */
-    protected $dataHelper;
-    
+    public $dataHelper;
+
+    /**
+     * ConfigPlugin constructor.
+     * @param DataHelper $dataHelper
+     */
     public function __construct(
         DataHelper $dataHelper
     ) {
         $this->dataHelper = $dataHelper;
     }
-    
+
+    /**
+     * @param \Magento\Config\Model\Config $config
+     */
     public function beforeSave(\Magento\Config\Model\Config $config)
     {
         $productUrlXpath = DataHelper::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH;
@@ -42,23 +53,21 @@ class ConfigPlugin
      *
      * @return bool
      */
-    protected function hasConfigDataChanged($config, $xpath)
+    private function hasConfigDataChanged($config, $xpath)
     {
         
         return $config->getConfigDataValue($xpath) !== $this->getConfigDataFromXpath($config, $xpath);
     }
-    
+
     /**
-     * @param \Magento\Config\Model\Config $config
-     * @param string                       $xpath
-     *
+     * @param $config
+     * @param $xpath
      * @return mixed|null
      */
-    protected function getConfigDataFromXpath($config, $xpath)
+    private function getConfigDataFromXpath($config, $xpath)
     {
         $xpath = explode('/', $xpath);
         if (!is_array($xpath)) {
-            
             return null;
         }
         
@@ -73,30 +82,25 @@ class ConfigPlugin
             if (is_array($configPath) && array_key_exists($group, $configPath)) {
                 $configPath = $configPath[$group];
             } else {
-                
                 return null;
             }
             if (is_array($configPath) && array_key_exists('fields', $configPath)) {
                 $configPath = $configPath['fields'];
             } else {
-                
                 return null;
             }
             if (is_array($configPath) && array_key_exists($field, $configPath)) {
                 $configPath = $configPath[$field];
             } else {
-                
                 return null;
             }
             
             if (is_array($configPath) && array_key_exists('value', $configPath)) {
-                
                 return $configPath['value'];
             } else {
-                
                 return null;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }

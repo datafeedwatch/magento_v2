@@ -10,6 +10,10 @@
 
 namespace DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button;
 
+/**
+ * Class Refresh
+ * @package DataFeedWatch\Connector\Block\Adminhtml\System\Config\Form\Button
+ */
 class Refresh extends BaseButton
 {
     /**

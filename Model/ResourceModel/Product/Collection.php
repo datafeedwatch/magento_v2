@@ -1,19 +1,26 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 20.09.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model\ResourceModel\Product;
 
+use DataFeedWatch\Connector\Helper\Registry;
 use DataFeedWatch\Connector\Model\ResourceModel\Product\Collection\Db;
 
+/**
+ * Class Collection
+ * @package DataFeedWatch\Connector\Model\ResourceModel\Product
+ */
 class Collection extends Db
 {
+    /** @var Registry  */
+    public $registryHelper;
+
     /**
      * @return bool
      */
@@ -22,61 +29,58 @@ class Collection extends Db
         return false;
     }
 
-    protected function _construct()
+
+    public function _construct()
     {
-        $this->_init('DataFeedWatch\Connector\Model\Product', 'DataFeedWatch\Connector\Model\ResourceModel\Product');
+        $this->_init(
+            \DataFeedWatch\Connector\Model\Product::class,
+            \Magento\Catalog\Model\ResourceModel\Product::class
+        );
         $this->_initTables();
     }
-    
+
     /**
      * @param bool $joinLeft
-     *
-     * @return $this
+     * @return $this|Db
      */
-    protected function _productLimitationPrice($joinLeft = true)
+    public function _productLimitationPrice($joinLeft = true)
     {
         parent::_productLimitationPrice($joinLeft);
-        
         return $this;
     }
-    
+
     /**
-     * @param array $options
+     * @param $options
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function applyFiltersOnCollection($options)
     {
         $this->optionsFilters = $options;
+
         $this->setFlag('has_stock_status_filter', true);
+        $this->joinRelationTable();
         $this->applyStoreFilter();
         $this->registryHelper->initImportRegistry($this->getStoreId());
-        $this->joinVisibilityTable(Db::VISIBILITY_TABLE_ALIAS_DEFAULT_STORE, '0');
-        $this->joinVisibilityTable(Db::ORIGINAL_VISIBILITY_TABLE_ALIAS, $this->getStoreId());
-        if ($options['fillParentIds']) {
-            $this->fillParentIds();
-        }
-        $this->addAttributeToSelect('dfw_parent_ids');
-        $this->joinParentIdsTable(Db::PARENT_IDS_TABLE_ALIAS_DEFAULT_STORE, '0');
-        $this->joinParentIdsTable(Db::ORIGINAL_PARENT_IDS_TABLE_ALIAS, $this->getStoreId());
-        $this->addRuleDate();
-        $this->applyTypeFilter();
         $this->joinQty();
         $this->addFinalPrice();
         $this->addUrlRewrite();
-        $this->applyStatusFilter();
         $this->applyUpdatedAtFilter();
-        $this->addAttributeToSelect('ignore_datafeedwatch');
-        $this->addAttributeToFilter('ignore_datafeedwatch', [['null' => true], ['neq' => 1]], 'left');
-
+        $this->applyTypeFilter();
+        $this->addAttributeToSelect('status');
+        $this->addAttributeToSelect('price');
+        $this->addAttributeToSelect('special_price');
+        $this->applyStatusFilter();
         $this->setPage($this->optionsFilters['page'], $this->optionsFilters['per_page']);
-        
         return $this;
     }
 
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    protected function applyStoreFilter()
+    public function applyStoreFilter()
     {
         if (isset($this->optionsFilters['store'])) {
             $store          = $this->_storeManager->getStore($this->optionsFilters['store']);
@@ -92,39 +96,47 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyStatusFilter()
+    public function applyStatusFilter()
     {
         if (!isset($this->optionsFilters['status'])) {
             return $this;
         }
 
-        if ($this->registryHelper->isStatusAttributeInheritable()) {
-            $this->buildFilterStatusCondition();
-            $this->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS, $this->getStoreId())
-                 ->joinInheritedStatusTable(self::INHERITED_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0')
-                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS, $this->getStoreId())
-                 ->joinOriginalStatusTable(self::ORIGINAL_STATUS_TABLE_ALIAS_DEFAULT_STORE, '0');
-            $this->getSelect()->where($this->filterStatusCondition . ' = ?', $this->optionsFilters['status']);
+        $statusInharitance = $this->registryHelper->isStatusAttributeInheritable();
+        $statusAttributeId = $this->getAttribute('status')->getId();
+
+        /** add status filter - for main entity */
+        if ($statusInharitance == 1 || $statusInharitance == 3) {
+            $this->getSelect()->joinLeft(
+                ['product_status' => 'catalog_product_entity_int'],
+                'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
+                ['product_status' => 'value']
+            );
+            /** apply status filter for product and its parent values **/
+            $this->getSelect()->where('
+                     (product_status.value = ' . $this->optionsFilters['status'] . ')'
+            );
         } else {
-            $this->addAttributeToFilter('status', $this->optionsFilters['status']);
+            $this->getSelect()->joinLeft(
+                ['product_status' => 'catalog_product_entity_int'],
+                'product_status.entity_id =  `e`.entity_id and product_status.attribute_id = ' . $statusAttributeId,
+                ['product_status' => 'value']
+            );
+
+            /** add status filter - parent status */
+            $this->getSelect()->joinLeft(
+                ['parent_status' => 'catalog_product_entity_int'],
+                'parent_status.entity_id = catalog_product_relation.parent_id and parent_status.attribute_id = ' . $statusAttributeId,
+                ['parent_status' => 'value']
+            );
+
+            /** apply status filter for product and its parent values **/
+            $this->getSelect()->where('
+                 (type_id <> "simple" and product_status.value = "' . $this->optionsFilters['status'] . '") or 
+                 (parent_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is not null) or 
+                 (product_status.value = ' . $this->optionsFilters['status'] . ' and type_id="simple" and parent_id is null)'
+            );
         }
-
-        return $this;
-    }
-
-    public function fillParentIds()
-    {
-        $this->_storeManager->setCurrentStore(\Magento\Store\Model\Store::ADMIN_CODE);
-
-        $collection = $this->productCollectionFactory->create();
-        foreach ($collection as $product) {
-            $parentIds = $this->typeConfigurable->getParentIdsByChild($product->getId());
-            if (!empty($parentIds)) {
-                $product->setDfwParentIds(current($parentIds));
-                $product->getResource()->saveAttribute($product, 'dfw_parent_ids');
-            }
-        }
-        $this->_storeManager->setCurrentStore($this->getStoreId());
 
         return $this;
     }
@@ -132,7 +144,7 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyTypeFilter()
+    public function applyTypeFilter()
     {
         if (isset($this->optionsFilters['type'])) {
             $this->addAttributeToFilter('type_id', ['in' => $this->optionsFilters['type']]);
@@ -144,19 +156,21 @@ class Collection extends Db
     /**
      * @return $this
      */
-    protected function applyUpdatedAtFilter()
+    public function applyUpdatedAtFilter()
     {
-        if (!isset($this->optionsFilters['from_date'])) {
+        if (!isset($this->optionsFilters['updated_at'])) {
             return $this;
+        } else {
+            $this->getSelect()->where('updated_at >= ?', $this->optionsFilters['updated_at']);
         }
-
-        $this->getSelect()->where($this->ruleDateSelect . ' >= ?', $this->optionsFilters['from_date']);
 
         return $this;
     }
-    
+
     /**
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function applyInheritanceLogic()
     {
@@ -172,32 +186,62 @@ class Collection extends Db
     }
 
     /**
-     * @return $this
+     * @param $parentProductCollection
+     * @param $parentId
+     * @return null
      */
-    protected function addParentData()
+    private function isParentProductSet($parentProductCollection, $parentId)
     {
+        $parentProductSet = null;
+
+        foreach ($parentProductCollection as $parentProduct) {
+            if ($parentId == $parentProduct->getId()) {
+                $parentProductSet = $parentProduct;
+                break;
+            }
+        }
+
+        return $parentProductSet;
+    }
+
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function addParentData()
+    {
+        /** @var  $parentCollection */
         $parentCollection = $this->getParentProductsCollection();
+        $parentCollection->setPage(1, null);
+
+        /** @var  $parentCollection */
         $parentCollection = $parentCollection->getItems();
+
         foreach ($this->getItems() as $product) {
-            $parentId = $product->getParentId();
+            $parentId = (int)$product->getParentId();
             $parentId = explode(',', $parentId);
             if (is_array($parentId)) {
                 $parentId = current($parentId);
             }
+            $parentId = !is_numeric($parentId) ? 0 : (string)$parentId;
+            $parentProduct = $this->isParentProductSet($parentCollection, $parentId);
 
-            if (empty($parentId) || !isset($parentCollection[$parentId])) {
+            if (empty($parentId) || !$parentProduct) {
                 continue;
             }
-            $product->setParent($parentCollection[$parentId]);
+            $product->setParent($parentProduct);
         }
 
         return $this;
     }
-    
+
     /**
-     * @return mixed
+     * @return Collection
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    protected function getParentProductsCollection()
+    public function getParentProductsCollection()
     {
         $parentCollection = clone $this;
         $parentCollection->_reset();

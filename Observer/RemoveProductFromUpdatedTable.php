@@ -15,13 +15,17 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
 
+/**
+ * Class RemoveProductFromUpdatedTable
+ * @package DataFeedWatch\Connector\Observer
+ */
 class RemoveProductFromUpdatedTable implements ObserverInterface
 {
     /** @var DataHelper */
-    protected $dataHelper;
+    public $dataHelper;
     
     /** @var \Magento\Framework\App\ResourceConnection */
-    protected $resource;
+    public $resource;
     
     /**
      * @param DataHelper                                $dataHelper

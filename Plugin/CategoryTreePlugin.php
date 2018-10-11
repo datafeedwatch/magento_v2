@@ -11,19 +11,33 @@
 namespace DataFeedWatch\Connector\Plugin;
 
 use DataFeedWatch\Connector\Helper\Data as DataHelper;
+use Magento\Catalog\Model\Category;
 
+/**
+ * Class CategoryTreePlugin
+ * @package DataFeedWatch\Connector\Plugin
+ */
 class CategoryTreePlugin
 {
     /** @var DataHelper */
-    protected $dataHelper;
-    
+    public $dataHelper;
+
+    /**
+     * CategoryTreePlugin constructor.
+     * @param DataHelper $dataHelper
+     */
     public function __construct(DataHelper $dataHelper)
     {
         $this->dataHelper = $dataHelper;
     }
-    
-    public function afterMove(\Magento\Catalog\Model\Category $category)
+
+    /**
+     * @param Category $category
+     */
+    public function afterMove(Category $category)
     {
-        $this->dataHelper->updateLastInheritanceUpdateDate();
+        if ($category instanceof Category) {
+            $this->dataHelper->updateLastInheritanceUpdateDate();
+        }
     }
 }

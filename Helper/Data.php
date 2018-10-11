@@ -13,10 +13,13 @@ namespace DataFeedWatch\Connector\Helper;
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
 use Magento\Framework\App\Helper\AbstractHelper;
 
+/**
+ * Class Data
+ * @package DataFeedWatch\Connector\Helper
+ */
 class Data extends AbstractHelper
 {
     const MY_DATA_FEED_WATCH_URL               = 'https://my.datafeedwatch.com/';
-    const INSTALLATION_COMPLETE                = 'datafeedwatch_connector/general/installation_complete';
     const RUN_CRON_INSTALLER                   = 'datafeedwatch_connector/general/run_cron_installer';
     const PRODUCT_URL_CUSTOM_INHERITANCE_XPATH = 'datafeedwatch_connector/custom_inheritance/product_url';
     const IMAGE_URL_CUSTOM_INHERITANCE_XPATH   = 'datafeedwatch_connector/custom_inheritance/image_url';
@@ -56,23 +59,6 @@ class Data extends AbstractHelper
         parent::__construct($context);
     }
 
-    public function setInstallationIncomplete()
-    {
-        $this->resourceConfig->saveConfig(self::INSTALLATION_COMPLETE, 0, 'default', 0);
-        $this->resourceConfig->saveConfig(self::RUN_CRON_INSTALLER, '* * * * *', 'default', 0);
-    }
-
-    public function setInstallationComplete()
-    {
-        $this->resourceConfig->saveConfig(self::INSTALLATION_COMPLETE, 1, 'default', 0);
-        $this->resourceConfig->saveConfig(self::RUN_CRON_INSTALLER, '0 0 5 31 2 ?', 'default', 0);
-    }
-
-    public function getInstallationComplete()
-    {
-        return $this->scopeConfig->isSetFlag(self::INSTALLATION_COMPLETE);
-    }
-    
     /**
      * @return bool
      */
@@ -159,7 +145,6 @@ class Data extends AbstractHelper
             'sku',
             'updated_at',
             'ignore_datafeedwatch',
-            'dfw_parent_ids',
             'quantity_and_stock_status',
             'options_container',
             'sku_type',
@@ -185,7 +170,6 @@ class Data extends AbstractHelper
             'thumbnail',
             'updated_at',
             'ignore_datafeedwatch',
-            'dfw_parent_ids',
             'quantity_and_stock_status',
             'options_container',
             'sku_type',
@@ -225,7 +209,6 @@ class Data extends AbstractHelper
             'status'                    => InheritanceSource::CHILD_THEN_PARENT_OPTION_ID,
             'updated_at'                => InheritanceSource::PARENT_OPTION_ID,
             'ignore_datafeedwatch'      => InheritanceSource::CHILD_OPTION_ID,
-            'dfw_parent_ids'            => InheritanceSource::CHILD_OPTION_ID,
             'quantity_and_stock_status' => InheritanceSource::CHILD_OPTION_ID,
             'options_container'         => InheritanceSource::CHILD_OPTION_ID,
             'sku_type'                  => InheritanceSource::CHILD_OPTION_ID,
@@ -237,16 +220,15 @@ class Data extends AbstractHelper
             'price_view'                => InheritanceSource::CHILD_OPTION_ID,
             'swatch_image'              => InheritanceSource::CHILD_OPTION_ID,
         ];
-        
-        $catalogAttributes = $this->collectionFactory->create();
 
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $catalogAttributes */
+        $catalogAttributes = $this->collectionFactory->create();
         foreach ($catalogAttributes as $attribute) {
             $attribute->setData('can_configure_inheritance', null);
             $attribute->setData('inheritance', null);
             $attribute->setData('can_configure_import', null);
             $attribute->setData('import_to_dfw', null);
             $attribute->setData('force_save', true);
-            $attribute->save();
             $attributeCode = $attribute->getAttributeCode();
             $inheritance   = InheritanceSource::CHILD_OPTION_ID;
             if (array_key_exists($attributeCode, $inheritanceData)) {
@@ -255,9 +237,9 @@ class Data extends AbstractHelper
             $attribute->setImportToDfw((int)in_array($attributeCode, $enableImport))
                       ->setCanConfigureImport((int)!in_array($attributeCode, $cannotConfigureImportField))
                       ->setCanConfigureInheritance((int)!in_array($attributeCode, $cannotConfigureInheritanceField))
-                      ->setInheritance($inheritance)
-                      ->save();
+                      ->setInheritance($inheritance);
         }
+        $catalogAttributes->walk('save');
         
         $this->resourceConfig->saveConfig(self::PRODUCT_URL_CUSTOM_INHERITANCE_XPATH, 1, 'default', 0);
         $this->resourceConfig->saveConfig(self::IMAGE_URL_CUSTOM_INHERITANCE_XPATH, 0, 'default', 0);

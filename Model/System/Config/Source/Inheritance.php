@@ -1,17 +1,20 @@
 <?php
 /**
  * Created by Q-Solutions Studio
- * Date: 22.08.16
  *
  * @category    DataFeedWatch
  * @package     DataFeedWatch_Connector
- * @author      Lukasz Owczarczuk <lukasz@qsolutionsstudio.com>
+ * @author      Jakub Winkler <jwinkler@qsolutionsstudio.com>
  */
 
 namespace DataFeedWatch\Connector\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
+/**
+ * Class Inheritance
+ * @package DataFeedWatch\Connector\Model\System\Config\Source
+ */
 class Inheritance implements ArrayInterface
 {
     const CHILD_OPTION_ID                = 1;
@@ -31,15 +34,15 @@ class Inheritance implements ArrayInterface
         return [
             [
                 'value' => self::CHILD_OPTION_ID,
-                'label' => __(self::CHILD_OPTION_LABEL),
+                'label' => __('Child'),
             ],
             [
                 'value' => self::PARENT_OPTION_ID,
-                'label' => __(self::PARENT_OPTION_LABEL),
+                'label' => __('Parent'),
             ],
             [
                 'value' => self::CHILD_THEN_PARENT_OPTION_ID,
-                'label' => __(self::CHILD_THEN_PARENT_OPTION_LABEL),
+                'label' => __('Child Then Parent'),
             ],
         ];
     }
@@ -52,9 +55,9 @@ class Inheritance implements ArrayInterface
     public function toArray()
     {
         return [
-            self::CHILD_OPTION_ID             => __(self::CHILD_OPTION_LABEL),
-            self::PARENT_OPTION_ID            => __(self::PARENT_OPTION_LABEL),
-            self::CHILD_THEN_PARENT_OPTION_ID => __(self::CHILD_THEN_PARENT_OPTION_LABEL),
+            self::CHILD_OPTION_ID             => __('Child'),
+            self::PARENT_OPTION_ID            => __('Parent'),
+            self::CHILD_THEN_PARENT_OPTION_ID => __('Child Then Parent'),
         ];
     }
 }

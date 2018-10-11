@@ -12,6 +12,10 @@ namespace DataFeedWatch\Connector\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 
+/**
+ * Class Grid
+ * @package DataFeedWatch\Connector\Controller\Adminhtml\System\Config
+ */
 abstract class Grid extends Action
 {
     /**
@@ -22,23 +26,24 @@ abstract class Grid extends Action
     const ADMIN_RESOURCE = 'DataFeedWatch_Connector::config';
     
     /** @var \Magento\Framework\Registry */
-    protected $coreRegistry;
+    public $coreRegistry;
     
     /** @var \Magento\Framework\View\Result\PageFactory */
-    protected $resultPageFactory;
+    public $resultPageFactory;
     
     /** @var \Magento\Catalog\Model\Product\Attribute\Repository */
-    protected $productAttributeRepository;
+    public $productAttributeRepository;
     
     /** @var \DataFeedWatch\Connector\Helper\Data */
-    protected $dataHelper;
-    
+    public $dataHelper;
+
     /**
-     * @param Action\Context                                      $context
-     * @param \Magento\Framework\Registry                         $coreRegistry
-     * @param \Magento\Framework\View\Result\PageFactory          $resultPageFactory
+     * Grid constructor.
+     * @param Action\Context $context
+     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Magento\Catalog\Model\Product\Attribute\Repository $productAttributeRepository
-     * @param \DataFeedWatch\Connector\Helper\Data                $dataHelper
+     * @param \DataFeedWatch\Connector\Helper\Data $dataHelper
      */
     public function __construct(
         \Magento\Backend\App\Action\Context $context,

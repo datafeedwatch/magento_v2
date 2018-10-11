@@ -17,7 +17,7 @@
         <observer name="datafeedwatch_connector_catalog_product_delete_before"
                   instance="\DataFeedWatch\Connector\Observer\RemoveProductFromUpdatedTable" />
     </event>
-    <event name="catalog_product_save_after">
+    <event name="catalog_product_save_before">
         <observer name="datafeedwatch_connector_catalog_product_save_after"
                   instance="\DataFeedWatch\Connector\Observer\ChangeProductUpdatedAtPlugin" />
     </event>
