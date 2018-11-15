@@ -11,6 +11,7 @@
 namespace DataFeedWatch\Connector\Helper;
 
 use DataFeedWatch\Connector\Model\System\Config\Source\Inheritance as InheritanceSource;
+use DataFeedWatch\Connector\Model\System\Config\Source\Mode as DataFeedMode;
 use Magento\Framework\App\Helper\AbstractHelper;
 
 /**
@@ -118,7 +119,12 @@ class Data extends AbstractHelper
      */
     public function getDataFeedWatchUrl()
     {
-        return self::MY_DATA_FEED_WATCH_URL;
+        $mode = $this->scopeConfig->getValue(DataFeedMode::XPATH_DATAFEED_CONNECTOR_MODE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        if ($mode == DataFeedMode::DATAFEED_CONNECTOR_MODE_TEST) {
+            return $this->scopeConfig->getValue(DataFeedMode::XPATH_DATAFEED_CONNECTOR_TEST_URL, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        } else {
+            return self::MY_DATA_FEED_WATCH_URL;
+        }
     }
     
     public function restoreOriginalAttributesConfig()
